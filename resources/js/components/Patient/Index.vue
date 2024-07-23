@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Course Information</div>
+                    <div class="card-header">Patient Information</div>
 
                     <div class="card-body">
                         <alert-error :form="form"></alert-error>

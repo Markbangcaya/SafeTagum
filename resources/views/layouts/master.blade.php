@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ asset('/images/jd life.png') }}" rel="icon">
-    <title>{{ config('app.name', 'JD Life Limited') }}</title>
+    <link href="{{ asset('/images/City Health Office Logo.png') }}" rel="icon">
+    <title>{{ config('app.name') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css"> --}}
@@ -29,9 +29,9 @@
         </nav>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="/" class="brand-link">
-                <img src="/images/jd life.png" alt="AdminLTE Logo" class="brand-image"
+                <img src="/images/City Health Office Logo.png" alt="AdminLTE Logo" class="brand-image"
                     style="opacity: .8">
-                <span class="brand-text font-weight-light">JD Life Limited</span>
+                <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
             </a>
             <div class="sidebar">
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -47,16 +47,16 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
                         <li class="nav-item">
-                            <router-link to="/Student" class="nav-link">
+                            <router-link to="/Patient" class="nav-link">
                                 <i class="nav-icon fas fa-user-alt"></i>
-                                <p>Student</p>
+                                <p>Patient</p>
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/Courses" class="nav-link">
+                            <router-link to="/Report" class="nav-link">
                                 <i class="nav-icon fas fa-book"></i>
                                 <p>
-                                    Courses
+                                    Report
                                 </p>
                             </router-link>
                         </li>

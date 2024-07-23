@@ -6,23 +6,21 @@
 
 3.  cp .env.example .env
 
-4.  php artisan key:generate
+4.  change DB_DATABASE=agrishop in .env
 
-5.  php artisan migrate
+5.  php artisan key:generate
 
-6.  php artisan db:seed
+6.  php artisan migrate
 
-7.  change DB_DATABASE=agrishop in .env
+7.  php artisan db:seed
 
 8.  create database name agrishop
 
 9.  php artisan passport:install
 
-10. php artisan key:generate
+10. Register to have Access
 
-11. Register to have Access
-
-12. Default Account
+11. Default Account
 
     demo users
     name = Example User

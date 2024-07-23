@@ -23,34 +23,34 @@ class PermissionsDemoSeeder extends Seeder
         // Role::create(['guard_name' => 'admin', 'name' => 'manager']);
         // $permission = Permission::create(['guard_name' => 'admin', 'name' => 'publish articles']);
 
-        Permission::create(['guard_name' => 'api','name' => 'edit user']);
-        Permission::create(['guard_name' => 'api','name' => 'delete user']);
-        Permission::create(['guard_name' => 'api','name' => 'create user']);
-        Permission::create(['guard_name' => 'api','name' => 'access user']);
-        Permission::create(['guard_name' => 'api','name' => 'list user']);
-        Permission::create(['guard_name' => 'api','name' => 'show user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'edit user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'delete user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'create user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'access user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'list user']);
+        Permission::create(['guard_name' => 'api', 'name' => 'show user']);
 
-        Permission::create(['guard_name' => 'api','name' => 'edit permission']);
-        Permission::create(['guard_name' => 'api','name' => 'delete permission']);
-        Permission::create(['guard_name' => 'api','name' => 'create permission']);
-        Permission::create(['guard_name' => 'api','name' => 'access permission']);
-        Permission::create(['guard_name' => 'api','name' => 'list permission']);
-        Permission::create(['guard_name' => 'api','name' => 'show permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'edit permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'delete permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'create permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'access permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'list permission']);
+        Permission::create(['guard_name' => 'api', 'name' => 'show permission']);
 
-        Permission::create(['guard_name' => 'api','name' => 'edit role']);
-        Permission::create(['guard_name' => 'api','name' => 'delete role']);
-        Permission::create(['guard_name' => 'api','name' => 'create role']);
-        Permission::create(['guard_name' => 'api','name' => 'access role']);
-        Permission::create(['guard_name' => 'api','name' => 'list role']);
-        Permission::create(['guard_name' => 'api','name' => 'show role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'edit role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'delete role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'create role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'access role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'list role']);
+        Permission::create(['guard_name' => 'api', 'name' => 'show role']);
 
         // create roles and assign existing permissions
-        $role1 = Role::create(['guard_name' => 'api','name' => 'user']);
+        $role1 = Role::create(['guard_name' => 'api', 'name' => 'user']);
         $role1->givePermissionTo('access user');
         $role1->givePermissionTo('show user');
         $role1->givePermissionTo('list user');
 
-        $role2 = Role::create(['guard_name' => 'api','name' => 'admin']);
+        $role2 = Role::create(['guard_name' => 'api', 'name' => 'admin']);
         $role2->givePermissionTo('delete user');
         $role2->givePermissionTo('edit user');
         $role2->givePermissionTo('access user');
@@ -73,7 +73,7 @@ class PermissionsDemoSeeder extends Seeder
         $role2->givePermissionTo('create role');
         $role2->givePermissionTo('list role');
 
-        $role3 = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
+        $role3 = Role::create(['guard_name' => 'api', 'name' => 'Super-Admin']);
         // gets all permissions via Gate::before rule; see AuthServiceProvider
 
         // create demo users

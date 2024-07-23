@@ -8,14 +8,14 @@ const routes = [
         component: require('./components/NotFound.vue').default
     },
     {
-        path: '/Student',
-        name: 'Student',
-        component: require('./components/Student.vue').default,
+        path: '/Patient',
+        name: 'Patient',
+        component: require('./components/Patient/Index.vue').default,
     },
     {
-        path: '/Courses',
-        name: 'Courses',
-        component: require('./components/Courses.vue').default
+        path: '/Report',
+        name: 'Report',
+        component: require('./components/Report/Index.vue').default
     },
     //---------------------------------------------------------USER
     {
