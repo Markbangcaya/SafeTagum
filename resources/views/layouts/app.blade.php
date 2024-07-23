@@ -18,6 +18,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    
+    <!-- Include the CesiumJS JavaScript and CSS files -->
+    {{-- <script src="https://cesium.com/downloads/cesiumjs/releases/1.105.1/Build/Cesium/Cesium.js"></script> --}}
+    {{-- <link href="https://cesium.com/downloads/cesiumjs/releases/1.105.1/Build/Cesium/Widgets/widgets.css" rel="stylesheet"> --}}
+    <script src="https://cdn.jsdelivr.net/npm/cesium@1.105.2/Build/Cesium/Cesium.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.105.2/Build/Cesium/Widgets/widgets.min.css">
 </head>
 <body>
     <div id="app">

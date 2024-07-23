@@ -26,7 +26,12 @@ Vue.use(LaravelPermissionToVueJS)
 
 import Multiselect from 'vue-multiselect'
 Vue.component('multiselect', Multiselect)
+// ---------------------------------------
+// import { Viewer } from "cesium";
+// import "cesium/Build/Cesium/Widgets/widgets.css";
 
+// const viewer = new Viewer("cesiumContainer");
+// ---------------------------------------
 
 Vue.prototype.can = function (value) {
     return window.Laravel.jsPermissions.permissions.includes(value);
