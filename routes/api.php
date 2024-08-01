@@ -19,12 +19,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::group(['prefix' => 'course'], function () {
-        Route::get('all', [App\Http\Controllers\HomeController::class, 'all_courses']);
+    Route::group(['prefix' => 'disease'], function () {
+        Route::get('all', [App\Http\Controllers\API\DiseaseController::class, 'index_all']);
     });
-    Route::group(['prefix' => 'create'], function () {
-        Route::post('student', [App\Http\Controllers\HomeController::class, 'store_student']);
-        Route::post('course', [App\Http\Controllers\HomeController::class, 'store_course']);
+    Route::group(['prefix' => 'barangay'], function () {
+        Route::get('all', [App\Http\Controllers\API\BarangayController::class, 'index_all']);
+    });
+    Route::group(['prefix' => 'patient'], function () {
+        Route::post('create', [App\Http\Controllers\API\PatientController::class, 'store']);
+        Route::post('forecast', [App\Http\Controllers\API\PatientController::class, 'forecast']);
     });
     Route::group(['prefix' => 'user'], function () {
         Route::get('list', [App\Http\Controllers\API\UserController::class, 'index']);

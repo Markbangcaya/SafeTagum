@@ -12,7 +12,7 @@ class PermissionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('api',['role:super-admin|admin']);
+        $this->middleware('api', ['role:super-admin|admin']);
     }
     /**
      * Display a listing of the resource.
@@ -23,10 +23,10 @@ class PermissionController extends Controller
     {
         abort_if(Gate::denies('list permission'), 403, 'You do not have the required authorization.');
         $data = Permission::latest();
-        if($request->search){
-                $data = $data->where('name','LIKE', '%'.$request->search.'%');
+        if ($request->search) {
+            $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
         }
-        $data= $data->paginate($request->length);
+        $data = $data->paginate($request->length);
         return response(['data' => $data], 200);
     }
     public function index_all()
@@ -45,7 +45,7 @@ class PermissionController extends Controller
         abort_if(Gate::denies('create permission'), 403, 'You do not have the required authorization.');
         Artisan::call('cache:forget spatie.permission.cache');
         Artisan::call('cache:clear');
-        $this->validate($request,[
+        $this->validate($request, [
             'name' => 'required|string|unique:permissions,name',
             'guard_name' => 'required|string',
         ]);
@@ -77,8 +77,8 @@ class PermissionController extends Controller
     public function update(Request $request, $id)
     {
         abort_if(Gate::denies('edit permission'), 403, 'You do not have the required authorization.');
-        $this->validate($request,[
-            'name' => 'required|string|unique:permissions,name,'.$request->id,
+        $this->validate($request, [
+            'name' => 'required|string|unique:permissions,name,' . $request->id,
             'guard_name' => 'required|string',
         ]);
         $permission = Permission::findOrFail($id);

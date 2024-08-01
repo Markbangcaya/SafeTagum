@@ -48,13 +48,13 @@
                         data-accordion="false">
                         <li class="nav-item">
                             <router-link to="/Patient" class="nav-link">
-                                <i class="nav-icon fas fa-user-alt"></i>
+                                <i class="nav-icon fas fa-hospital-user"></i>
                                 <p>Patient</p>
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <router-link to="/Report" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
+                                <i class="nav-icon fas fa-file-shield"></i>
                                 <p>
                                     Report
                                 </p>

@@ -12,7 +12,7 @@
 
 6.  php artisan migrate
 
-7.  php artisan db:seed
+7.  php artisan db:seed PermissionsDemoSeeder
 
 8.  create database name agrishop
 
