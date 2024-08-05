@@ -18,11 +18,11 @@ class RandomForestPrediction
 
     public function predictResult()
     {
-        $this->readFile();
-        $model = new RandomForest(new classificationTree(10), 300, 0.1, true);
+        // $this->readFile();
+        // $model = new RandomForest(new classificationTree(10), 300, 0.1, true);
 
-        $dataset = new Labeled($this->samples, $this->targets);
-        info($dataset);
+        // $dataset = new Labeled($this->samples, $this->targets);
+        // info($dataset);
     }
 
     public function readFile()

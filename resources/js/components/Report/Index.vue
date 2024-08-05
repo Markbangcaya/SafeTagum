@@ -32,7 +32,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>Expected Cases</label>
+                                    <label>Expected Cases in Year</label>
                                     <p>{{ this.cases }}</p>
                                 </div>
                                 <div class="form-group">
@@ -115,7 +115,7 @@ export default {
             this.form.post('/api/patient/forecast').then(response => {
                 // console.log(response.data.data);
                 this.markers = response.data;
-                this.cases = '230 Expected Cases in Barangay' + this.form.barangay.name;
+                this.cases = response.data.prediction + ' Expected Cases in Barangay ' + this.form.barangay.name;
 
                 Swal.fire({
                     title: 'Forecast Successfully',
