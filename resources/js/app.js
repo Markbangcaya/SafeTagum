@@ -26,7 +26,24 @@ Vue.use(LaravelPermissionToVueJS)
 
 import Multiselect from 'vue-multiselect'
 Vue.component('multiselect', Multiselect)
-
+//----------------------------------------
+// import VueChartJs from 'vue-chartjs';
+// Vue.use(VueChartJs);
+import {
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    PointElement,
+    LineElement,
+    CategoryScale,
+    LinearScale
+} from 'chart.js'
+import { Bar, Line } from 'vue-chartjs'
+Vue.component('bar', Bar);
+// Vue.use(Chart);
+Vue.component('line-chart', Line);
 // ---------------------------------------
 // import Vue from 'vue';
 import { LMap, LTileLayer, LMarker, LGeoJson } from "vue2-leaflet";

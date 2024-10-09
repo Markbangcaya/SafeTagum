@@ -8,9 +8,19 @@ const routes = [
         component: require('./components/NotFound.vue').default
     },
     {
+        path: '/Dashboard',
+        name: 'Dashboard',
+        component: require('./components/Dashboard.vue').default
+    },
+    {
         path: '/Patient',
         name: 'Patient',
         component: require('./components/Patient/Index.vue').default,
+    },
+    {
+        path: '/Forecast',
+        name: 'Forecast',
+        component: require('./components/Forecast/Index.vue').default
     },
     {
         path: '/Report',

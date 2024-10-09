@@ -26,8 +26,12 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('all', [App\Http\Controllers\API\BarangayController::class, 'index_all']);
     });
     Route::group(['prefix' => 'patient'], function () {
+        Route::get('list', [App\Http\Controllers\API\PatientController::class, 'index']);
         Route::post('create', [App\Http\Controllers\API\PatientController::class, 'store']);
+        Route::put('update/{id}', [App\Http\Controllers\API\PatientController::class, 'update']);
         Route::post('forecast', [App\Http\Controllers\API\PatientController::class, 'forecast']);
+        Route::get('detokenized/{id}', [App\Http\Controllers\API\PatientController::class, 'detokenized']);
+        Route::post('report', [App\Http\Controllers\API\PatientController::class, 'report']);
     });
     Route::group(['prefix' => 'user'], function () {
         Route::get('list', [App\Http\Controllers\API\UserController::class, 'index']);

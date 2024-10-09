@@ -1,86 +1,197 @@
 <template>
-    <div class="container">
-        <div class="card">
-            <div class="card-header">Forecasting Information</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label>Type of Disease</label>
-                            <multiselect v-model="form.type_of_disease" :options="option_diseases" :multiple="false"
-                                :close-on-select="true" :clear-on-select="false" :preserve-search="true"
-                                placeholder="Pick some" label="name" track-by="name" :preselect-first="true">
-                            </multiselect>
-                            <has-error :form="form" field="type_of_disease" />
-                        </div>
-
-                        <div class="form-group">
-                            <label>Barangay</label>
-                            <multiselect v-model="form.barangay" :options="option_barangay" :multiple="false"
-                                :close-on-select="true" :clear-on-select="false" :preserve-search="true"
-                                placeholder="Pick some" label="name" track-by="name" :preselect-first="true">
-                            </multiselect>
-                            <has-error :form="form" field="barangay" />
-                        </div>
-                        <div class="form-group">
-                            <label>Date Range</label>
-                            <date-range-picker v-model="form.date" style="width: 100%;">
-                            </date-range-picker>
-                            <has-error :form="form" field="date" />
-                        </div>
-                        <hr>
+    <div>
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Report</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Report</a></li>
+                            <!-- <li class="breadcrumb-item active">Starter Page</li> -->
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-12">
                         <div class="card">
+                            <!-- <div class="card-header">Report Information</div> -->
                             <div class="card-body">
-                                <div class="form-group">
-                                    <label>Expected Cases in Year</label>
-                                    <p>{{ this.cases }}</p>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label>Type of Disease</label>
+                                            <multiselect v-model="form.type_of_disease" :options="option_diseases"
+                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
+                                                :preserve-search="true" placeholder="Pick some" label="name"
+                                                track-by="name" :preselect-first="true">
+                                            </multiselect>
+                                            <has-error :form="form" field="type_of_disease" />
+                                        </div>
+
+                                        <!-- <div class="form-group">
+                                            <label>Barangay</label>
+                                            <multiselect v-model="form.barangay" :options="option_barangay"
+                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
+                                                :preserve-search="true" placeholder="Pick some" label="name"
+                                                track-by="name" :preselect-first="true">
+                                            </multiselect>
+                                            <has-error :form="form" field="barangay" />
+                                        </div> -->
+                                        <div class="form-group">
+                                            <label>Date Range</label>
+                                            <date-range-picker v-model="form.date" style="width: 100%;">
+                                            </date-range-picker>
+                                            <has-error :form="form" field="date" />
+                                        </div>
+                                        <hr>
+                                        <!-- <div class="card">
+                                            <div class="card-body">
+                                                <div class="form-group">
+                                                    <label>Expected Cases in Year</label>
+                                                    <p>{{ this.cases }}</p>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Barangay</label>
+                                                <p>test</p>
+                                                </div> 
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                    <div class="col-8 border">
+                                        <label class="text-center">Reported HFMD Cases and Case Fatality Rate by
+                                            BARANGAY in TAGUM CITY,
+                                            MW 1 – 32, (n = 32)<span class="badge badge-danger"> As of Morbidity Week 1
+                                                - 32</span></label>
+                                        <div class="row">
+                                            <label>Age Groups Affected</label>
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-info elevation-1"><i
+                                                            class="fas fa-baby"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">0-5 Years Old</span>
+                                                        <span class="info-box-number">
+                                                            10
+                                                            <small>%</small>
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box mb-3">
+                                                    <span class="info-box-icon bg-primary elevation-1"><i
+                                                            class="fas fa-child-dress"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">6-10 Years Old</span>
+                                                        <span class="info-box-number">41,410</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- <div class="clearfix hidden-xs-up"></div> -->
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box mb-3">
+                                                    <span class="info-box-icon bg-warning elevation-1"><i
+                                                            class="fas fa-child"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">11-15 Years Old</span>
+                                                        <span class="info-box-number">760</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box mb-3">
+                                                    <span class="info-box-icon bg-secondary elevation-1"><i
+                                                            class="fas fa-person"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">16 And Above Years Old</span>
+                                                        <span class="info-box-number">2,000</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box mb-3">
+                                                    <span class="info-box-icon bg-danger elevation-1"><i
+                                                            class="fas fa-skull-crossbones"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Death</span>
+                                                        <span class="info-box-number">41,410</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box mb-3">
+                                                    <span class="info-box-icon bg-success elevation-1"><i
+                                                            class="fas fa-circle-plus"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Grand Total of Cases</span>
+                                                        <span class="info-box-number">41,410</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <label>Age Groups Affected Per Barangay</label>
+                                        <bar :data="barData" :options="options" />
+                                        <hr>
+                                        <div>
+                                            <span v-if="loading">Loading...</span>
+                                            <label for="checkbox">GeoJSON Visibility</label>
+                                            <input id="checkbox" v-model="show" type="checkbox">
+                                            <br>
+                                        </div>
+                                        <l-map ref="map" :zoom="zoom" :center="center"
+                                            style="height: 700px; width: 100%">
+                                            <l-tile-layer :url="url" :attribution="attribution" />
+                                            <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
+                                                :options-style="styleFunction" />
+                                            <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
+                                                :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
+                                                :color="marker.color">
+                                                <l-popup>
+                                                    <p>Count :<b>{{ marker.count }}</b></p>
+                                                </l-popup>
+                                            </l-circle-marker>
+                                        </l-map>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Barangay</label>
-                                    <p>test</p>
-                                </div>
+                                <button type="button" class="btn btn-success" @click="report">Create Report</button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-8 border">
-                        <div>
-                            <span v-if="loading">Loading...</span>
-                            <label for="checkbox">GeoJSON Visibility</label>
-                            <input id="checkbox" v-model="show" type="checkbox">
-                            <br>
-                        </div>
-                        <l-map ref="map" :zoom="zoom" :center="center" style="height: 700px; width: 100%">
-                            <l-tile-layer :url="url" :attribution="attribution" />
-                            <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick" />
-                            <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
-                                :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
-                                :color="marker.color">
-                                <l-popup>
-                                    <p>Count :<b>{{ marker.count }}</b></p>
-                                </l-popup>
-                            </l-circle-marker>
-                        </l-map>
-                    </div>
                 </div>
-                <button type="button" class="btn btn-success" @click="forecast">Forecast</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import L from 'leaflet';
-import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
-
+// import L from 'leaflet';
+// import { latLng } from "leaflet";
+// import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
 export default {
     components: {
-        LMap,
-        LTileLayer,
-        LGeoJson,
-        LMarker,
-        LPopup,
-        LCircleMarker
+        // LMap,
+        // LTileLayer,
+        // LGeoJson,
+        // LMarker,
+        // LPopup,
+        // LCircleMarker,
+        // CategoryScale,
+        // LinearScale,
+        // BarElement,
+        // Title,
+        // Tooltip,
+        // Legend,
+        // Bar
     },
     data() {
         return {
@@ -108,28 +219,180 @@ export default {
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution:
                 '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            props: {
+                monthlyVendorDetectionsBarChartData: {
+                    type: Object,
+                    required: true
+                },
+                lowSeverity: {
+                    type: Number,
+                    required: true
+                },
+                mediumSeverity: {
+                    type: Number,
+                    required: true
+                },
+                highSeverity: {
+                    type: Number,
+                    required: true
+                },
+                criticalSeverity: {
+                    type: Number,
+                    required: true
+                }
+            },
+            data: {
+                low: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                med: [20, 34, 54, 66, 30, 40, 50, 60, 30, 40, 50, 60],
+                high: [69, 69, 69, 69, 96, 99, 96, 69, 69, 44, 20, 11],
+                crit: [15, 25, 35, 45, 55, 65, 75, 85, 95, 69, 54, 20]
+            },
+            // calculate every month's total
+            // sumData: data.low.map((num, idx) => {
+            //     return num + data.med[idx] + data.high[idx] + data.crit[idx];
+            // }),
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: false,
+                        text: 'Reported HFMD Cases and Case Fatality Rate by BARANGAY in TAGUM  CITY, MW 1 – 32, (n = 32)',
+                        font: {
+                            size: 16
+                        },
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Barangay',
+                            position: 'bottom'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        suggestedMax: 20
+                    },
+                },
+                tension: 0.1
+            },
+            barData: {
+                labels: ['APOKON', 'BUSAON', 'CANOCOTAN', 'CUAMBOGAN', 'LA FILIPINA', 'MADAUM', 'MAGDUM'],
+                datasets: [
+                    {
+                        label: '0-5 Years Old',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgb(49,212,246)',
+                        borderColor: 'rgb(12,204,244)',
+                        borderWidth: 1
+
+                    },
+                    {
+                        label: '6-10 Years Old',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgb(24,124,256)',
+                        borderColor: 'rgb(12,108,252)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '11-15 Years Old',
+                        data: [20, 34, 54, 66, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(234, 179, 8, .3)',
+                        borderColor: 'rgb(234, 179, 8)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '16 And Above Years Old',
+                        data: [69, 69, 69, 69, 96, 99, 96, 69, 69, 44, 20, 11],
+                        backgroundColor: 'rgb(112,116,124)',
+                        borderColor: 'rgb(112,116,124)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Death',
+                        data: [15, 25, 35, 45, 55, 65, 75, 85, 95, 69, 54, 20],
+                        backgroundColor: 'rgba(239, 68, 68, .3)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Grand Total of Cases',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(34, 197, 94, .3)',
+                        borderColor: 'rgb(34, 197, 94)',
+                        borderWidth: 1
+                    },
+                    // {
+                    //     label: 'Total',
+                    //     data: sumData,//props.monthlyVendorDetectionsBarChartData.data,
+                    //     backgroundColor: 'rgba(168, 85, 247, .3)',
+                    //     borderColor: 'rgb(168, 85, 247)',
+                    //     stack: 'combined',
+                    //     type: 'line',
+                    //     pointRadius: 10,
+                    //     pointHitRadius: 12
+                    // }
+                ]
+            }
+        }
+    },
+    computed: {
+        styleFunction() {
+            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
+            return feature => ({
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.5,
+                fillColor: fillColor,
+                fillOpacity: 0.5
+            });
         }
     },
     methods: {
-        forecast() {
-            this.form.post('/api/patient/forecast').then(response => {
-                // console.log(response.data.data);
-                this.markers = response.data;
-                this.cases = response.data.prediction + ' Expected Cases in Barangay ' + this.form.barangay.name;
+        report() {
+            this.styleFunction();
+            this.LineFunction();
+            console.log(this.geojson.features[0].properties);
+            // this.form.post('/api/patient/report').then(response => {
+            // console.log(response.data.data);
+            //     this.markers = response.data;
+            //     this.cases = response.data.prediction + ' Expected Cases in Barangay ' + this.form.barangay.name;
 
-                Swal.fire({
-                    title: 'Forecast Successfully',
-                    html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
-                    icon: 'success',
-                })
-            }).catch(() => {
-                Swal.fire({
-                    title: 'Forecast Unsuccessfully',
-                    html: "Provide needed information",
-                    icon: 'warning',
-                })
-            });
+            //     Swal.fire({
+            //         title: 'Forecast Successfully',
+            //         html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
+            //         icon: 'success',
+            //     })
+            // }).catch(() => {
+            //     Swal.fire({
+            //         title: 'Forecast Unsuccessfully',
+            //         html: "Provide needed information",
+            //         icon: 'warning',
+            //     })
+            // });
         },
+        // getColor(properties) {
+        //     // Implement your logic to determine the color based on properties
+        //     if (properties.population > 100000) {
+        //         return 'red';
+        //     } else if (properties.population > 50000) {
+        //         return 'yellow';
+        //     } else {
+        //         return 'green';
+        //     }
+        // },
         handleMapClick(e) {
             const { lat, lng } = e.latlng;
             this.form.latitude = lat;
@@ -209,12 +472,17 @@ export default {
                 ]
             };
 
+            data.features[0].properties.color = "white";
+            data.features[0].properties.fillColor = "red";
+            data.features[0].properties.fillOpacity = 1;
+            // this.$forceUpdate();
+            console.log(data.features[0].properties.weight = 3);
+            console.log(data.features[0].properties.opacity = 1);
             this.geojson = data;
             // Use the geojsonData to populate your LGeoJson component
         } catch (error) {
             console.error('Error fetching GeoJSON data:', error);
         }
-
         this.loading = false;
     },
     mounted() {

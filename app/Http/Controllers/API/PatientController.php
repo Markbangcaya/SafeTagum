@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use App\Models\Patient;
+use App\Models\Tokenized;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mockery\Generator\StringManipulation\Pass\Pass;
 use Phpml\Regression\LeastSquares;
 use Phpml\CrossValidation\CrossValidation;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class PatientController extends Controller
 {
@@ -18,9 +22,54 @@ class PatientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+        abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
+        $data = Patient::with('Barangay', 'Disease')->latest();
+
+        if ($request->search) {
+            $data = $data->where('email', 'LIKE', '%' . $request->search . '%');
+        }
+        $data = $data->paginate($request->length);
+        return response(['data' => $data], 200);
+    }
+    private function detokenize($data)
+    {
+        //
+        //https://github.com/shetabit/token-builder
+        // $token = Str::random(60);
+        //Check the get to first for blockchain implementation
+        $token = Tokenized::select('originaldata')->where('token', $data)->first();
+
+        return $token;
+    }
+    public function detokenized($id)
+    {
+        //Check the get to first for blockchain implementation
+        $user = Patient::where('id', $id)->first();
+
+        // abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
+        // $data = Patient::with('Barangay', 'Disease')->latest();
+        // if ($request->search) {
+        //     $data = $data->where('email', 'LIKE', '%' . $request->search . '%');
+        // }
+        // $data = $data->paginate($request->length);
+        return response([
+            'firstname' => $this->detokenize($user['firstname']),
+            'middlename' => $this->detokenize($user['middlename']),
+            'lastname' => $this->detokenize($user['lastname'])
+        ], 200);
+    }
+    private function tokenize($data)
+    {
+        //
+        //https://github.com/shetabit/token-builder
+        $token = Str::random(60);
+
+        Tokenized::create(['token' => $token, 'originaldata' => $data]);
+
+        return $token;
     }
     public function forecast(Request $request)
     {
@@ -122,6 +171,7 @@ class PatientController extends Controller
 
         return response(['data' => $data, 'prediction' => round($prediction[0], 2)], 200);
     }
+    public function report(Request $request) {}
     /**
      * Store a newly created resource in storage.
      *
@@ -154,11 +204,12 @@ class PatientController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-        // dd($request->barangay['id']);
+        // dd($this->tokenize($request->firstname));
+
         Patient::create([
-            'firstname' => $request->firstname,
-            'middlename' => $request->middlename,
-            'lastname' => $request->lastname,
+            'firstname' => $this->tokenize($request->firstname),
+            'middlename' => $this->tokenize($request->middlename),
+            'lastname' => $this->tokenize($request->lastname),
             'birthdate' => $request->birthdate,
             'gender' => $request->gender,
             'occupation' => $request->occupation,
@@ -200,9 +251,65 @@ class PatientController extends Controller
      * @param  \App\Models\Patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Patient $patient)
+    public function update(Request $request, $id)
     {
-        //
+        $user = Auth::User();
+
+        $this->validate($request, [
+            'firstname' => 'required|string',
+            'middlename' => 'required|string',
+            'lastname' => 'required|string',
+            'birthdate' => 'required|date',
+            'gender' => 'required|string',
+            'occupation' => 'required|string',
+            'civil_status' => 'required|string',
+            'nationality' => 'required|string',
+            'contact_number' => 'required|numeric',
+            // 'email' => 'required|email|unique:email',
+            'email' => 'required|email',
+            'type_of_disease.id' => 'required|numeric',
+
+            //Patient Address
+            'streetpurok' => 'required|string',
+            'barangay.id' => 'required|numeric',
+            'city' => 'required|string',
+            'province' => 'required|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+        $patient = Patient::findOrFail($id);
+        $patient->update([
+            // 'firstname' => $this->tokenize($request->firstname),
+            // 'middlename' => $this->tokenize($request->middlename),
+            // 'lastname' => $this->tokenize($request->lastname),
+            'birthdate' => $request->birthdate,
+            'gender' => $request->gender,
+            'occupation' => $request->occupation,
+            'civil_status' => $request->civil_status,
+            'nationality' => $request->nationality,
+            'contact_number' => $request->contact_number,
+            'email' => $request->email,
+            'type_of_disease' => $request->type_of_disease['id'],
+
+            //Patient Address
+            'street/purok' => $request->streetpurok,
+            'barangay' => $request->barangay['id'],
+            'city' => $request->city,
+            'province' => $request->province,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+
+            'last_modified_by' => $user->id,
+        ]);
+        // dd($user, $request->password);
+        // if ($request->password) {
+        // $user->password = $request->password;
+        // $user->password = Hash::make($request->password);
+
+        // }
+        $patient->save();
+
+        return response(['message' => 'success'], 200);
     }
 
     /**

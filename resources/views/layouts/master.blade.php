@@ -28,7 +28,7 @@
             </ul>
         </nav>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/" class="brand-link">
+            <a href="/Dashboard" class="brand-link">
                 <img src="/images/City Health Office Logo.png" alt="AdminLTE Logo" class="brand-image"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
@@ -47,14 +47,28 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
                         <li class="nav-item">
+                            <router-link to="/Dashboard" class="nav-link">
+                                <i class="nav-icon fas fa-dashboard"></i>
+                                <p>Dashboard</p>
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link to="/Patient" class="nav-link">
                                 <i class="nav-icon fas fa-hospital-user"></i>
                                 <p>Patient</p>
                             </router-link>
                         </li>
                         <li class="nav-item">
+                            <router-link to="/Forecast" class="nav-link">
+                                <i class="nav-icon fas fa-chart-simple"></i>
+                                <p>
+                                    Forecast
+                                </p>
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link to="/Report" class="nav-link">
-                                <i class="nav-icon fas fa-file-shield"></i>
+                                <i class="nav-icon fas fa-file-lines"></i>
                                 <p>
                                     Report
                                 </p>
