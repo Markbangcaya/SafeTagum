@@ -6,7 +6,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" href="/images/City Health Office Logo.png" type="image/x-icon">
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
@@ -25,7 +25,7 @@
     <script src="https://cdn.jsdelivr.net/npm/cesium@1.105.2/Build/Cesium/Cesium.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.105.2/Build/Cesium/Widgets/widgets.min.css">
 </head>
-<body>
+<body style="background-color: hsl(0, 0%, 96%)">
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -80,10 +80,8 @@
                 </div>
             </div>
         </nav>
-
-        <main class="py-4">
+        <main>
             @yield('content')
         </main>
-    </div>
 </body>
 </html>

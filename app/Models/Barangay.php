@@ -17,6 +17,6 @@ class Barangay extends Model
 
     public function patient()
     {
-        return $this->hasMany(Patient::class, 'barangay');
+        return $this->hasMany(Patient::class,);
     }
 }

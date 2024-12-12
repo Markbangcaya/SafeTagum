@@ -10,10 +10,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mockery\Generator\StringManipulation\Pass\Pass;
-use Phpml\Regression\LeastSquares;
-use Phpml\CrossValidation\CrossValidation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use Phpml\Regression\LeastSquares;
+use Phpml\Regression\ARIMA;
+use Phpml\CrossValidation\CrossValidation;
+use Illuminate\Support\Facades\Http;
 
 class PatientController extends Controller
 {
@@ -79,99 +81,79 @@ class PatientController extends Controller
         $this->validate($request, [
             'type_of_disease' => 'required',
             'barangay' => 'required',
-            'date' => 'required',
+            // 'date' => 'required',
         ]);
 
-        $data = Patient::selectRaw('FLOOR(patients.latitude * 1000) / 1000 AS latitude, FLOOR(patients.longitude * 1000) / 1000 AS longitude, COUNT(*) as count, STDDEV(patients.latitude) * 111300 AS radius, "green" as color')
-            // ->with('barangay', 'disease')
+        $data = Patient::select('latitude', 'longitude')
+            ->with('barangay', 'disease')
             ->groupBy('latitude', 'longitude')
-            ->where('patients.barangay', $request->barangay['id'])
-            ->whereBetween('patients.created_at', $request->date)
+            ->where('patients.barangay_id', $request->barangay['id'])
+            ->where('patients.type_of_disease', $request->type_of_disease['id'])
+            // ->whereBetween('patients.created_at', $request->date)
             ->get();
 
-        //
-        // $randomforestResult = (new RandomForestPrediction('C:\Users\Mark Bangcaya\Downloads\Data.csv', ['Malaria', 'Measles']))->predictResult();
+        $response = Http::get('http://127.0.0.1:5000/forecast');
+        $forecastData = $response->json();
 
-        $filePath = public_path('Data.csv');
-        // $file = $request->file($filePath); // Assuming input name is 'csv_file'
-
-        if (file_exists($filePath)) {
-            // Validate the file if necessary
-            // $validatedData = $request->validate([
-            //     'csv_file' => 'required|file|mimes:csv,xlsx'
-            // ]);
-            // Read the CSV file
-            // $data = Excel::toArray(new YourImport, $file);
-
-            $file = fopen($filePath, 'r');
-            $header = fgetcsv($file); // Read header row
-            while (($row = fgetcsv($file)) !== false) {
-                $alldataset[] = array_combine($header, $row);
-            }
-
-            fclose($file);
-
-            // dd($alldataset);
-            foreach ($alldataset as $row) {
-                if ($row['Disease'] === $request->type_of_disease['name']) {
-                    $dataset[] = $row;
-                }
-            }
-
-            // dd($dataset);
-            // Split data into training and testing sets
-            $trainSize = floor(count($dataset) * 0.8);
-            $trainData = array_slice($dataset, 0, $trainSize);
-            $testData = array_slice($dataset, $trainSize);
-
-            // Prepare training data
-            $trainSamples = [];
-            $trainTargets = [];
-            for ($i = 1; $i < count($trainData); $i++) {
-                $trainSamples[] = [$trainData[$i - 1]['Number of reported cases']];
-                $trainTargets[] = $trainData[$i]['Number of reported cases'];
-            }
-
-            // dd($trainSamples, $trainTargets);
-
-            // Create and train the model
-            $model = new LeastSquares();
-            $model->train($trainSamples, $trainTargets);
-
-            // Prepare test data
-            $testSamples = [];
-            $testTargets = [];
-            for ($i = 1; $i < count($testData); $i++) {
-                $testSamples[] = [$testData[$i - 1]['Number of reported cases']];
-                $testTargets[] = $testData[$i]['Number of reported cases'];
-            }
-
-            // Make predictions
-            $prediction = $model->predict($testSamples);
-
-            // Calculate MSE
-            $mse = 0;
-            for ($i = 0; $i < count($prediction); $i++) {
-                $error = $prediction[$i] - $testTargets[$i];
-                $mse += $error * $error;
-            }
-            $mse /= count($prediction);
-
-            // dd($mse, $prediction);
-            // return response()->json(['message' => 'CSV imported successfully'], 200);
-        } else {
-            return response()->json(['message' => 'No file uploaded'], 400);
-        }
-
-        // if ($request->search) {
-        //     $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
-        // }
-
-        // $data = $data->paginate($request->length);
-
-        return response(['data' => $data, 'prediction' => round($prediction[0], 2)], 200);
+        return response(['forcasting' => $forecastData['Forecast Value'], 'data' => $data], 200);
     }
-    public function report(Request $request) {}
+    public function report(Request $request)
+    {
+        $this->validate($request, [
+            'type_of_disease' => 'required',
+            // 'barangay' => 'required',
+            'date' => 'required',
+        ]);
+        $patient = Patient::select('latitude', 'longitude')
+            ->with('barangay', 'disease')
+            // ->groupBy('latitude', 'longitude')
+            // ->where('patients.barangay_id', $request->barangay['id'])
+            ->where('patients.type_of_disease', $request->type_of_disease['id'])
+            ->whereBetween('patients.created_at', [$request->date["startDate"], $request->date["endDate"]])
+            ->get();
+
+        $cases = Patient::with('barangay', 'disease')
+            ->where('patients.type_of_disease', $request->type_of_disease['id'])
+            ->whereBetween('patients.created_at', [$request->date["startDate"], $request->date["endDate"]])
+            ->groupBy('barangay_id')
+            ->selectRaw('barangay_id, 
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 
+                            ELSE 0 
+                         END) as count_0_5,
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 
+                            ELSE 0 
+                         END) as count_6_10,
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 
+                            ELSE 0 
+                         END) as count_11_15,
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 
+                            ELSE 0 
+                         END) as count_16_above,
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 
+                            ELSE 0 
+                         END) +
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 
+                            ELSE 0 
+                         END) +
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 
+                            ELSE 0 
+                         END) +
+                         SUM(CASE 
+                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 
+                            ELSE 0 
+                         END) as total_cases')
+            ->orderBy('barangay_id', 'asc')
+            ->get();
+        // dd($cases);
+        return response(['data' => $patient, 'cases' => $cases], 200);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -221,7 +203,7 @@ class PatientController extends Controller
 
             //Patient Address
             'street/purok' => $request->streetpurok,
-            'barangay' => $request->barangay['id'],
+            'barangay_id' => $request->barangay['id'],
             'city' => $request->city,
             'province' => $request->province,
             'latitude' => $request->latitude,
@@ -293,7 +275,7 @@ class PatientController extends Controller
 
             //Patient Address
             'street/purok' => $request->streetpurok,
-            'barangay' => $request->barangay['id'],
+            'barangay_id' => $request->barangay['id'],
             'city' => $request->city,
             'province' => $request->province,
             'latitude' => $request->latitude,

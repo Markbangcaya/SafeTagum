@@ -26,6 +26,18 @@
                             class="fas fa-bars"></i></a>
                 </li>
             </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-1">
+                    <h1 class="display-6 mt-1 fs-3 fw-bold ls-tight">
+                        <span class="text-success">Safe</span>Tagum: Notifiable Disease Information System
+                    </h1>
+                </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link" data-widget="fullscreen" data-bs-toggle="tooltip" data-bs-placement="top" title="Fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+              </ul>
         </nav>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="/Dashboard" class="brand-link">
@@ -145,11 +157,7 @@
             <router-view></router-view>
         </div>
         <footer class="main-footer">
-            <div class="float-right d-none d-sm-inline">
-                Anything you want
-            </div>
-            <strong>Copyright &copy; 2014-2021 <a href="#">AdminLTE.io</a>.</strong> All rights
-            reserved.
+            <strong>&copy; 2024 SafeTagum</strong> All rights reserved.
         </footer>
     </div>
     @auth

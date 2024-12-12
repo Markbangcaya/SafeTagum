@@ -3,14 +3,13 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
-
+        <div class="col-md-7">
+            <div class="card my-5">
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
-
+                        <h2 class="fw-bold mb-2 text-uppercase text-center">Register</h2>
+                        <p class="mb-5 text-center">Please enter all the fields</p>
                         <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
 
@@ -62,7 +61,7 @@
                         </div>
 
                         <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
+                            <div class="col-md-12 offset-md-8">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Register') }}
                                 </button>

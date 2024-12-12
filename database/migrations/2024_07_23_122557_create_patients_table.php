@@ -29,7 +29,7 @@ class CreatePatientsTable extends Migration
             $table->string('street/purok');
             $table->decimal('latitude', 16, 14);
             $table->decimal('longitude', 16, 14);
-            $table->unsignedBigInteger('barangay');
+            $table->unsignedBigInteger('barangay_id');
             $table->string('city');
             $table->string('province');
 
@@ -39,7 +39,7 @@ class CreatePatientsTable extends Migration
             $table->softDeletes();
 
 
-            $table->foreign('barangay')->references('id')->on('barangays');
+            $table->foreign('barangay_id')->references('id')->on('barangays');
             $table->foreign('type_of_disease')->references('id')->on('diseases');
             $table->foreign('last_modified_by')->references('id')->on('users');
 

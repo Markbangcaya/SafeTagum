@@ -57,6 +57,7 @@
                                             <th>Gender</th>
                                             <th>Contact Number</th>
                                             <th>Type of Disease</th>
+                                            <th>Barangay</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -70,13 +71,14 @@
                                             <td>{{ data.gender }}</td>
                                             <td>{{ data.contact_number }}</td>
                                             <td>{{ data.disease.name }}</td>
+                                            <td>{{ data.barangay.name }}</td>
                                             <td class="text-right">
                                                 <button type="button" class="btn btn-success btn-sm"
+                                                    @click="openAssessModal(data)" v-if="can('edit user')"><i
+                                                        class="fas fa-search-plus"></i> Assessment</button>
+                                                <!-- <button type="button" class="btn btn-danger btn-sm"
                                                     @click="openEditModal(data)" v-if="can('edit user')"><i
-                                                        class="fas fa-user-plus"></i> Tracing</button>
-                                                <button type="button" class="btn btn-danger btn-sm"
-                                                    @click="openEditModal(data)" v-if="can('edit user')"><i
-                                                        class="fas fa-location-dot"></i> Location</button>
+                                                        class="fas fa-location-dot"></i> Location</button> -->
                                                 <button type="button" class="btn btn-primary btn-sm"
                                                     @click="openEditModal(data)" v-if="can('edit user')"><i
                                                         class="fas fa-edit"></i> Edit</button>
@@ -104,6 +106,8 @@
                     <add-modal @getData="getData"></add-modal>
                     <!-- declare the edit modal -->
                     <edit-modal @getData="getData" :row="selected_user" :page="current_page"></edit-modal>
+                    <!-- declare the assess modal -->
+                    <assess-modal @getData="getData" :row="selected_user" :page="current_page"></assess-modal>
                 </div>
             </div>
         </div>
@@ -112,10 +116,12 @@
 <script>
 import addModal from "./Add.vue";
 import EditModal from "./Edit.vue";
+import AssessModal from "./Assessment.vue";
 export default {
     components: {
         addModal,
         EditModal,
+        AssessModal,
     },
     data() {
         return {
@@ -139,6 +145,10 @@ export default {
         openEditModal(data) {
             this.selected_user = data;
             $('#edit-patient').modal('show');
+        },
+        openAssessModal(data) {
+            this.selected_user = data;
+            $('#assessment-patient').modal('show');
         },
         getData(page) {
             if (typeof page === 'undefined' || page.type == 'keyup' || page.type == 'change' || page.type == 'click') {

@@ -43,33 +43,51 @@
                                             </multiselect>
                                             <has-error :form="form" field="barangay" />
                                         </div>
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                             <label>Date Range</label>
                                             <date-range-picker v-model="form.date" style="width: 100%;">
                                             </date-range-picker>
                                             <has-error :form="form" field="date" />
-                                        </div>
+                                        </div> -->
+                                        <button type="button" class="btn btn-success"
+                                            @click="forecast">Forecast</button>
                                         <hr>
-                                        <div class="card">
+                                        <!-- <div class="card">
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label>Expected Cases in Year</label>
                                                     <p>{{ this.cases }}</p>
                                                 </div>
-                                                <!-- <div class="form-group">
-                                    <label>Barangay</label>
-                                    <p>test</p>
-                                </div> -->
+                                                <div class="form-group">
+                                                    <label>Barangay</label>
+                                                    <p>test</p>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
-                                    <div class="col-8 border">
-                                        <label class="text-center">Non- Neonatal Tetanus Cases in TAGUM CITY (Jan 1 –
-                                            Aug 10), 2023 vs 2024
-                                            <span class="badge badge-danger"> As of Morbidity Week 1
-                                                - 32</span></label>
+                                    <!-- 
+                                    <div v-if="this.form.enable == true" class="col-8" id="data"
+                                        style="opacity: 0.5; pointer-events: none;"> -->
+                                    <div v-if="this.form.enable == true" class="col-8 border-left">
+                                        <label v-if="this.form.enable == true" class="text-center">{{
+                                            form.type_of_disease.name }} Cases in Barangay {{ form.barangay.name }}
+                                            <!-- ({{
+                                                this.form.date.startDate.toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                }) }} -
+                                            {{ this.form.date.endDate.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            }) }}), 2023 vs 2024 -->
+                                            <!-- <span class="badge badge-danger"> As of Morbidity Week {{
+                                                this.form.start_morbidity_week }}
+                                                - {{ this.form.end_morbidity_week }}</span> -->
+                                        </label>
                                         <div class="row">
-                                            <div class="col-12 col-sm-6 col-md-3">
+                                            <div class="col-12 col-sm-6 col-md-4">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-info elevation-1"><i
                                                             class="fas fa-virus"></i></span>
@@ -82,7 +100,7 @@
 
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-sm-6 col-md-3">
+                                            <div class="col-12 col-sm-6 col-md-4">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-primary elevation-1"><i
                                                             class="fas fa-virus"></i></span>
@@ -93,7 +111,7 @@
                                                 </div>
                                             </div>
                                             <!-- <div class="clearfix hidden-xs-up"></div> -->
-                                            <div class="col-12 col-sm-6 col-md-3">
+                                            <div class="col-12 col-sm-6 col-md-4">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-success elevation-1"><i
                                                             class="fas fa-percentage"></i></span>
@@ -119,7 +137,15 @@
                                             </p>
                                         </div>
                                         <hr>
-                                        <!-- <line-chart :data="trafficChartToday" :options="options" /> -->
+                                        <label v-if="this.form.enable == true">Previous number of {{
+                                            form.type_of_disease.name }} cases in Barangay {{
+                                                this.form.barangay.name }} and the
+                                            Forecasted cases</label>
+                                        <line-chart ref="lineChart" :data="lineData" :options="options" />
+                                        <hr>
+                                        <label v-if="this.form.enable == true">Affected
+                                            {{ this.form.type_of_disease.name }} cases in Barangay {{
+                                                this.form.barangay.name }} </label>
                                         <!-- <canvas id="chartCanvas"></canvas> -->
                                         <!-- <Line id="TrafficToday" :options="options" :data="trafficChartToday" /> -->
                                         <!-- <TrafficLineToday>Chart could not be loaded</TrafficLineToday> -->
@@ -133,17 +159,15 @@
                                             style="height: 700px; width: 100%">
                                             <l-tile-layer :url="url" :attribution="attribution" />
                                             <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick" />
-                                            <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
-                                                :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
-                                                :color="marker.color">
-                                                <l-popup>
+                                            <l-marker v-for="(marker, index) in markers.data" :key="index"
+                                                :lat-lng="[marker.latitude, marker.longitude]">
+                                                <!-- <l-popup>
                                                     <p>Count :<b>{{ marker.count }}</b></p>
-                                                </l-popup>
-                                            </l-circle-marker>
+                                                </l-popup> -->
+                                            </l-marker>
                                         </l-map>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-success" @click="forecast">Forecast</button>
                             </div>
                         </div>
                     </div>
@@ -157,18 +181,19 @@
 // import L from 'leaflet';
 // import { latLng } from "leaflet";
 // import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
-import { Chart } from 'chart.js';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
+// import { Chart } from 'chart.js';
+// import {
+//     Chart as ChartJS,
+//     CategoryScale,
+//     LinearScale,
+//     PointElement,
+//     LineElement,
+//     Title,
+//     Tooltip,
+//     Legend
+// } from 'chart.js'
+// import { Line } from 'vue-chartjs'
+import Chart from 'chart.js/auto';
 export default {
     components: {
         // LMap,
@@ -177,13 +202,13 @@ export default {
         // LMarker,
         // LPopup,
         // LCircleMarker
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        Tooltip,
-        Legend
+        // CategoryScale,
+        // LinearScale,
+        // PointElement,
+        // LineElement,
+        // Title,
+        // Tooltip,
+        // Legend
     },
     data() {
         return {
@@ -192,6 +217,9 @@ export default {
                 //Patient Address
                 barangay: '',
                 date: '',
+                start_morbidity_week: '0',
+                end_morbidity_week: '0',
+                enable: false
             }),
 
             option_diseases: [],
@@ -211,50 +239,151 @@ export default {
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution:
                 '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            // trafficChartToday: {
-            //     labels: ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'],
-            //     datasets: [
-            //         {
-            //             label: 'IP Addresses',
-            //             backgroundColor: [
-            //                 'rgba(0, 0, 0, 1)',
-            //             ], //Green, Yellow, Orange, Red
-            //             data: [40, 420, 80, 10, 20, 30, 40, 555, 67, 3, 22, 90]
-            //         }
-            //     ]
-            // },
-            // options: {
-            //     responsive: true,
-            //     maintainAspectRatio: false,
-            //     plugins: {
-            //         title: {
-            //             display: true,
-            //             text: "Today",
-            //             position: 'bottom'
-            //         }
-            //     }
-            // }
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: false,
+                        text: 'Reported HFMD Cases and Case Fatality Rate by BARANGAY in TAGUM  CITY, MW 1 - 32, (n = 32)',
+                        font: {
+                            size: 16
+                        },
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Morbidity Week',
+                            position: 'bottom'
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        suggestedMax: 20
+                    },
+                },
+                tension: 0.1
+            },
+            lineData: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51'],
+                datasets: [
+                    {
+                        label: 'Epidemic Thresholds',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(239, 68, 68, .3)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 2,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: 'Alert Thresholds',
+                        data: [20, 34, 54, 66, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(234, 179, 8, .3)',
+                        borderColor: 'rgb(234, 179, 8)',
+                        borderWidth: 2,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: '2021',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgb(112,116,124)',
+                        borderColor: 'rgb(112,116,124)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: '2022',
+                        data: [69, 69, 69, 69, 96, 99, 96, 69, 69, 44, 20, 11],
+                        backgroundColor: 'rgb(49,212,246)',
+                        borderColor: 'rgb(12,204,244)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: '2023',
+                        data: [15, 25, 35, 45, 55, 65, 75, 85, 95, 69, 54, 20],
+                        backgroundColor: 'rgb(24,124,256)',
+                        borderColor: 'rgb(12,108,252)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: '2024',
+                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        backgroundColor: 'rgba(34, 197, 94, .3)',
+                        // borderColor: 'rgb(34, 197, 94)',
+                        borderWidth: 1,
+                        type: 'bar',
+                        borderColor: function (context) {
+                            const index = context.dataIndex;
+                            const length = context.dataset.data.length;
+
+                            if (index === length - 1) {
+                                return 'rgb(239, 68, 68)' // Color for the last bar (forecasted value)
+                            } else {
+                                return 'rgb(34, 197, 94)'; // Default color for other bars
+                            }
+                        },
+                    },
+                ]
+            }
         }
     },
     methods: {
         forecast() {
-            this.form.post('/api/patient/forecast').then(response => {
-                // console.log(response.data.data);
-                this.markers = response.data;
-                this.cases = response.data.prediction + ' Expected Cases in Barangay ' + this.form.barangay.name;
-
-                Swal.fire({
-                    title: 'Forecast Successfully',
-                    html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
-                    icon: 'success',
-                })
-            }).catch(() => {
-                Swal.fire({
-                    title: 'Forecast Unsuccessfully',
-                    html: "Provide needed information",
-                    icon: 'warning',
-                })
+            Swal.fire({
+                titleText: 'Forecasting the data...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
             });
+            setTimeout(() => {
+                this.form.post('/api/patient/forecast').then(response => {
+                    // this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
+                    // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
+                    this.form.enable = true;
+                    // const myDiv = document.getElementById("data");
+                    // myDiv.style.opacity = "1";
+                    // myDiv.style.pointerEvents = "auto";
+
+                    this.markers = response.data;
+                    // this.cases = response.data.forcasting + ' Expected Cases in Barangay ' + this.form.barangay.name;
+                    // this.lineData.datasets[5].data[11].push(response.data.forcasting);
+                    // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
+                    // this.$refs.lineChart.chartInstance.update();
+                    console.log(response);
+                    Swal.fire({
+                        title: 'Forecast Successfully',
+                        html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
+                        icon: 'success',
+                    })
+                }).catch(() => {
+                    Swal.fire({
+                        title: 'Forecast Unsuccessfully',
+                        html: "Provide needed information",
+                        icon: 'warning',
+                    })
+                });
+            }, 2000); // Adjust the delay in milliseconds as needed
         },
         handleMapClick(e) {
             const { lat, lng } = e.latlng;
@@ -346,25 +475,6 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
-        // const ctx = this.$refs.chartCanvas.getContext('2d');
-        // const ctx = document.getElementById('chartCanvas').getContext('2d');
-        // const chartCanvas = new Chart(ctx, {
-        //     type: 'line',
-        //     data: {
-        //         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        //         datasets: [{
-        //             label: 'My First Dataset',
-        //             data: [65, 59, 80, 81, 56, 55, 40],
-        //             borderColor: 'rgba(255, 99, 132, 1)',
-        //             backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        //         }]
-        //     }
-        //     ,
-        //     options: {
-        //         responsive: true,
-        //         maintainAspectRatio: false,
-        //     }
-        // });
         // // Replace with your GeoJSON file path or API endpoint
         // fetch('map (1).geojson')
         //     .then(response => response.json())

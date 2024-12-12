@@ -14,17 +14,17 @@
                             <div class="row">
                                 <div class="form-group col-4">
                                     <label>First Name</label>
-                                    <input v-model="form.firstname" type="text" class="form-control">
+                                    <input disabled v-model="form.firstname" type="text" class="form-control">
                                     <has-error :form="form" field="firstname" />
                                 </div>
                                 <div class="form-group col-4">
                                     <label>Middle Name</label>
-                                    <input v-model="form.middlename" type="text" class="form-control">
+                                    <input disabled v-model="form.middlename" type="text" class="form-control">
                                     <has-error :form="form" field="middlename" />
                                 </div>
                                 <div class="form-group col-4">
                                     <label>Last Name</label>
-                                    <input v-model="form.lastname" type="text" class="form-control">
+                                    <input disabled v-model="form.lastname" type="text" class="form-control">
                                     <has-error :form="form" field="lastname" />
                                 </div>
                                 <div class="form-group col-3">
@@ -114,15 +114,15 @@
                                         <span v-if="loading">Loading...</span>
                                         <label for="checkbox">GeoJSON Visibility</label>
                                         <input id="checkbox" v-model="show" type="checkbox">
-                                        <label for="checkboxTooltip">Enable tooltip</label>
+                                        <!-- <label for="checkboxTooltip">Enable tooltip</label>
                                         <input id="checkboxTooltip" v-model="enableTooltip" type="checkbox">
-                                        <input v-model="fillColor" type="color">
+                                        <input v-model="fillColor" type="color"> -->
                                         <br>
                                     </div>
                                     <l-map ref="map" :zoom="zoom" :center="center" style="height: 700px; width: 100%">
                                         <l-tile-layer :url="url" :attribution="attribution" />
-                                        <l-geo-json v-if="show" :geojson="geojson" :options="options"
-                                            :options-style="styleFunction" @click="handleMapClick" />
+                                        <l-geo-json v-if="show" :geojson="geojson" :options-style="styleFunction"
+                                            @click="handleMapClick" />
                                         <l-marker :lat-lng="marker" />
                                     </l-map>
                                     <div class="row">
@@ -152,9 +152,9 @@
 </template>
 
 <script>
-import L from 'leaflet';
+// import L from 'leaflet';
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LGeoJson } from "vue2-leaflet";
+// import { LMap, LTileLayer, LMarker, LGeoJson } from "vue2-leaflet";
 
 export default {
     props: {
@@ -162,10 +162,10 @@ export default {
         page: { required: true },
     },
     components: {
-        LMap,
-        LTileLayer,
-        LGeoJson,
-        LMarker
+        // LMap,
+        // LTileLayer,
+        // LGeoJson,
+        // LMarker
     },
     data() {
         return {
@@ -227,23 +227,23 @@ export default {
                 })
             });
         },
-        options() {
-            return {
-                onEachFeature: this.onEachFeatureFunction
-            };
-        },
-        styleFunction() {
-            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-            return () => {
-                return {
-                    weight: 2,
-                    color: "#ECEFF1",
-                    opacity: 1,
-                    fillColor: fillColor,
-                    fillOpacity: 1
-                };
-            };
-        },
+        // options() {
+        //     return {
+        //         onEachFeature: this.onEachFeatureFunction
+        //     };
+        // },
+        // styleFunction() {
+        //     const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
+        //     return () => {
+        //         return {
+        //             weight: 2,
+        //             color: "#ECEFF1",
+        //             opacity: 1,
+        //             fillColor: fillColor,
+        //             fillOpacity: 1
+        //         };
+        //     };
+        // },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {
                 return () => { };
@@ -361,8 +361,10 @@ export default {
     },
     watch: {
         row: function () {
+            // console.log(this.row);
             this.form.fill(this.row);
             this.form.type_of_disease = this.row.disease;
+            this.form.streetpurok = this.row['street/purok'];
             this.marker = latLng(this.row.latitude, this.row.longitude);
         }
     },

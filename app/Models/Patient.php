@@ -16,7 +16,7 @@ class Patient extends Model
 
     public function barangay()
     {
-        return $this->belongsTo(Barangay::class, 'barangay');
+        return $this->belongsTo(Barangay::class, 'barangay_id');
     }
 
     public function disease()

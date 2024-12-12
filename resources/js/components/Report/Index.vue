@@ -49,6 +49,8 @@
                                             </date-range-picker>
                                             <has-error :form="form" field="date" />
                                         </div>
+                                        <button type="button" class="btn btn-success" @click="report">Create
+                                            Report</button>
                                         <hr>
                                         <!-- <div class="card">
                                             <div class="card-body">
@@ -63,22 +65,38 @@
                                             </div>
                                         </div> -->
                                     </div>
-                                    <div class="col-8 border">
-                                        <label class="text-center">Reported HFMD Cases and Case Fatality Rate by
-                                            BARANGAY in TAGUM CITY,
-                                            MW 1 – 32, (n = 32)<span class="badge badge-danger"> As of Morbidity Week 1
-                                                - 32</span></label>
+                                    <div v-if="this.form.enable == true" class="col-8 border-left">
+                                        <label v-if="this.form.enable == true" class="text-center">Reported {{
+                                            form.type_of_disease.name }} Cases and
+                                            Case Fatality Rate by Barangay in Tagum City,
+                                            ({{
+                                                this.form.date.startDate.toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                }) }} -
+                                            {{ this.form.date.endDate.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            }) }}), 2023 vs 2024
+                                            <span class="badge badge-danger"> As of Morbidity Week {{
+                                                this.form.start_morbidity_week }}
+                                                - {{ this.form.end_morbidity_week }}</span>
+                                        </label>
                                         <div class="row">
-                                            <label>Age Groups Affected</label>
+                                            <label v-if="this.form.enable == true">Age Groups Affected by {{
+                                                this.form.type_of_disease.name }}</label>
                                             <div class="col-12 col-sm-6 col-md-3">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-info elevation-1"><i
                                                             class="fas fa-baby"></i></span>
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">0-5 Years Old</span>
+                                                        <span class="info-box-text">0-5
+                                                            Years Old</span>
                                                         <span class="info-box-number">
                                                             10
-                                                            <small>%</small>
+                                                            <!-- <small>%</small> -->
                                                         </span>
                                                     </div>
 
@@ -139,9 +157,13 @@
                                             </div>
                                         </div>
                                         <hr>
-                                        <label>Age Groups Affected Per Barangay</label>
-                                        <bar :data="barData" :options="options" />
+                                        <label v-if="this.form.enable == true">Age Groups Affected by {{
+                                            this.form.type_of_disease.name }} Per Barangay</label>
+                                        <bar ref="bar" :data="barData" :options="options" />
                                         <hr>
+                                        <label v-if="this.form.enable == true">Affected by {{
+                                            this.form.type_of_disease.name }}
+                                            Cases Per Barangay</label>
                                         <div>
                                             <span v-if="loading">Loading...</span>
                                             <label for="checkbox">GeoJSON Visibility</label>
@@ -153,17 +175,19 @@
                                             <l-tile-layer :url="url" :attribution="attribution" />
                                             <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
                                                 :options-style="styleFunction" />
-                                            <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
+                                            <l-marker v-for="(marker, index) in markers.data" :key="index"
+                                                :lat-lng="[marker.latitude, marker.longitude]">
+                                            </l-marker>
+                                            <!-- <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
                                                 :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
                                                 :color="marker.color">
                                                 <l-popup>
                                                     <p>Count :<b>{{ marker.count }}</b></p>
                                                 </l-popup>
-                                            </l-circle-marker>
+                                            </l-circle-marker> -->
                                         </l-map>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-success" @click="report">Create Report</button>
                             </div>
                         </div>
                     </div>
@@ -200,6 +224,9 @@ export default {
                 //Patient Address
                 barangay: '',
                 date: '',
+                start_morbidity_week: '0',
+                end_morbidity_week: '0',
+                enable: false
             }),
 
             option_diseases: [],
@@ -289,11 +316,11 @@ export default {
                 tension: 0.1
             },
             barData: {
-                labels: ['APOKON', 'BUSAON', 'CANOCOTAN', 'CUAMBOGAN', 'LA FILIPINA', 'MADAUM', 'MAGDUM'],
+                labels: [],
                 datasets: [
                     {
                         label: '0-5 Years Old',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgb(49,212,246)',
                         borderColor: 'rgb(12,204,244)',
                         borderWidth: 1
@@ -301,35 +328,35 @@ export default {
                     },
                     {
                         label: '6-10 Years Old',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgb(24,124,256)',
                         borderColor: 'rgb(12,108,252)',
                         borderWidth: 1
                     },
                     {
                         label: '11-15 Years Old',
-                        data: [20, 34, 54, 66, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgba(234, 179, 8, .3)',
                         borderColor: 'rgb(234, 179, 8)',
                         borderWidth: 1
                     },
                     {
                         label: '16 And Above Years Old',
-                        data: [69, 69, 69, 69, 96, 99, 96, 69, 69, 44, 20, 11],
+                        data: [],
                         backgroundColor: 'rgb(112,116,124)',
                         borderColor: 'rgb(112,116,124)',
                         borderWidth: 1
                     },
                     {
                         label: 'Death',
-                        data: [15, 25, 35, 45, 55, 65, 75, 85, 95, 69, 54, 20],
+                        data: [],
                         backgroundColor: 'rgba(239, 68, 68, .3)',
                         borderColor: 'rgb(239, 68, 68)',
                         borderWidth: 1
                     },
                     {
                         label: 'Grand Total of Cases',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgba(34, 197, 94, .3)',
                         borderColor: 'rgb(34, 197, 94)',
                         borderWidth: 1
@@ -348,40 +375,77 @@ export default {
             }
         }
     },
-    computed: {
-        styleFunction() {
-            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-            return feature => ({
-                weight: 3,
-                color: "#ffffff",
-                opacity: 0.5,
-                fillColor: fillColor,
-                fillOpacity: 0.5
-            });
-        }
-    },
+    // computed: {
+    //     styleFunction() {
+    //         const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
+    //         return feature => ({
+    //             weight: 3,
+    //             color: "#ffffff",
+    //             opacity: 0.5,
+    //             fillColor: fillColor,
+    //             fillOpacity: 0.5
+    //         });
+    //     }
+    // },
     methods: {
         report() {
-            this.styleFunction();
-            this.LineFunction();
-            console.log(this.geojson.features[0].properties);
-            // this.form.post('/api/patient/report').then(response => {
-            // console.log(response.data.data);
-            //     this.markers = response.data;
-            //     this.cases = response.data.prediction + ' Expected Cases in Barangay ' + this.form.barangay.name;
+            Swal.fire({
+                titleText: 'Creating Report...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            setTimeout(() => {
+                // this.styleFunction();
+                // this.LineFunction();
+                // console.log(this.geojson.features[0].properties);
 
-            //     Swal.fire({
-            //         title: 'Forecast Successfully',
-            //         html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
-            //         icon: 'success',
-            //     })
-            // }).catch(() => {
-            //     Swal.fire({
-            //         title: 'Forecast Unsuccessfully',
-            //         html: "Provide needed information",
-            //         icon: 'warning',
-            //     })
-            // });
+                this.form.post('/api/patient/report').then(response => {
+                    this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
+                    this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
+                    this.form.enable = true;
+                    // const myDiv = document.getElementById("data");
+                    // myDiv.style.opacity = "1";
+                    // myDiv.style.pointerEvents = "auto";
+                    // console.log(response.data);
+                    this.markers = response.data;
+                    //Empty and Cleaning Bar Chart
+                    this.barData.labels.push();
+                    this.barData.datasets[0].data.push();
+
+                    for (let i = 0; i < response.data.cases.length; i++) {
+                        this.barData.labels.push(response.data.cases[i].barangay.name);
+
+                        this.barData.datasets[0].data.push(response.data.cases[i].count_0_5);
+
+                        this.barData.datasets[1].data.push(response.data.cases[i].count_6_10);
+
+                        this.barData.datasets[2].data.push(response.data.cases[i].count_11_15);
+
+                        this.barData.datasets[3].data.push(response.data.cases[i].count_16_above);
+
+                        this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
+                        // console.log(response.data.cases[i].barangay.name);
+                    }
+
+                    // Update the chart
+                    this.chart.update();
+
+                    Swal.fire({
+                        title: 'Report Successfully',
+                        html: "All data belongs to <b>" + this.form.type_of_disease.name + "</b> case being display",
+                        icon: 'success',
+                    })
+                }).catch(() => {
+                    Swal.fire({
+                        title: 'Report Unsuccessfully',
+                        html: "Provide needed information",
+                        icon: 'warning',
+                    })
+                });
+            }, 2000); // Adjust the delay in milliseconds as needed
         },
         // getColor(properties) {
         //     // Implement your logic to determine the color based on properties

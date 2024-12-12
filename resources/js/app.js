@@ -27,8 +27,6 @@ Vue.use(LaravelPermissionToVueJS)
 import Multiselect from 'vue-multiselect'
 Vue.component('multiselect', Multiselect)
 //----------------------------------------
-// import VueChartJs from 'vue-chartjs';
-// Vue.use(VueChartJs);
 import {
     Chart as ChartJS,
     Title,
@@ -38,23 +36,28 @@ import {
     PointElement,
     LineElement,
     CategoryScale,
-    LinearScale
+    LinearScale,
+    ArcElement
 } from 'chart.js'
-import { Bar, Line } from 'vue-chartjs'
+import { Bar, Line, Doughnut } from 'vue-chartjs'
+ChartJS.register(Title, Tooltip, Legend, ArcElement, PointElement, BarElement, LineElement, CategoryScale, LinearScale)
 Vue.component('bar', Bar);
-// Vue.use(Chart);
+Vue.component('Doughnut', Doughnut);
 Vue.component('line-chart', Line);
 // ---------------------------------------
 // import Vue from 'vue';
-import { LMap, LTileLayer, LMarker, LGeoJson } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
 
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);
 Vue.component('l-marker', LMarker);
 Vue.component('l-geo-json', LGeoJson);
+Vue.component('l-popup', LPopup);
+Vue.component('l-circle-marker', LCircleMarker);
 
-import { Icon } from 'leaflet';
+import { Icon, latLng } from 'leaflet';
+Vue.use(latLng)
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
