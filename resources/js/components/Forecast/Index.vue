@@ -68,7 +68,7 @@
                                     <!-- 
                                     <div v-if="this.form.enable == true" class="col-8" id="data"
                                         style="opacity: 0.5; pointer-events: none;"> -->
-                                    <div v-if="this.form.enable == true" class="col-8 border-left">
+                                    <div class="col-8 border-left">
                                         <label v-if="this.form.enable == true" class="text-center">{{
                                             form.type_of_disease.name }} Cases in Barangay {{ form.barangay.name }}
                                             <!-- ({{
@@ -141,7 +141,8 @@
                                             form.type_of_disease.name }} cases in Barangay {{
                                                 this.form.barangay.name }} and the
                                             Forecasted cases</label>
-                                        <line-chart ref="lineChart" :data="lineData" :options="options" />
+                                        <line-chart v-if="this.form.enable == true" ref="lineChart" :data="lineData"
+                                            :options="options" />
                                         <hr>
                                         <label v-if="this.form.enable == true">Affected
                                             {{ this.form.type_of_disease.name }} cases in Barangay {{
@@ -271,17 +272,17 @@ export default {
                     y: {
                         stacked: false,
                         beginAtZero: true,
-                        suggestedMax: 20
+                        suggestedMax: 10
                     },
                 },
                 tension: 0.1
             },
             lineData: {
-                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51'],
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'],
                 datasets: [
                     {
                         label: 'Epidemic Thresholds',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3],
                         backgroundColor: 'rgba(239, 68, 68, .3)',
                         borderColor: 'rgb(239, 68, 68)',
                         borderWidth: 2,
@@ -290,7 +291,7 @@ export default {
                     },
                     {
                         label: 'Alert Thresholds',
-                        data: [20, 34, 54, 66, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 4],
                         backgroundColor: 'rgba(234, 179, 8, .3)',
                         borderColor: 'rgb(234, 179, 8)',
                         borderWidth: 2,
@@ -299,7 +300,7 @@ export default {
                     },
                     {
                         label: '2021',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgb(112,116,124)',
                         borderColor: 'rgb(112,116,124)',
                         borderWidth: 1,
@@ -308,7 +309,7 @@ export default {
                     },
                     {
                         label: '2022',
-                        data: [69, 69, 69, 69, 96, 99, 96, 69, 69, 44, 20, 11],
+                        data: [],
                         backgroundColor: 'rgb(49,212,246)',
                         borderColor: 'rgb(12,204,244)',
                         borderWidth: 1,
@@ -317,7 +318,7 @@ export default {
                     },
                     {
                         label: '2023',
-                        data: [15, 25, 35, 45, 55, 65, 75, 85, 95, 69, 54, 20],
+                        data: [],
                         backgroundColor: 'rgb(24,124,256)',
                         borderColor: 'rgb(12,108,252)',
                         borderWidth: 1,
@@ -326,21 +327,19 @@ export default {
                     },
                     {
                         label: '2024',
-                        data: [30, 40, 50, 60, 30, 40, 50, 60, 30, 40, 50, 60],
+                        data: [],
                         backgroundColor: 'rgba(34, 197, 94, .3)',
-                        // borderColor: 'rgb(34, 197, 94)',
+                        borderColor: 'rgb(34, 197, 94)',
                         borderWidth: 1,
                         type: 'bar',
-                        borderColor: function (context) {
-                            const index = context.dataIndex;
-                            const length = context.dataset.data.length;
-
-                            if (index === length - 1) {
-                                return 'rgb(239, 68, 68)' // Color for the last bar (forecasted value)
-                            } else {
-                                return 'rgb(34, 197, 94)'; // Default color for other bars
-                            }
-                        },
+                    },
+                    {
+                        label: 'Forecasted Data',
+                        data: [],
+                        backgroundColor: 'rgba(34, 197, 94, .3)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 1,
+                        type: 'bar',
                     },
                 ]
             }
@@ -370,7 +369,26 @@ export default {
                     // this.lineData.datasets[5].data[11].push(response.data.forcasting);
                     // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
                     // this.$refs.lineChart.chartInstance.update();
-                    console.log(response);
+                    const jsonData = JSON.parse(response.data.forecasting);
+                    for (let i = 0; i < jsonData.length; i++) {
+                        if (Math.round(jsonData[i].Year) == 2021) {
+                            this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                        } else if (Math.round(jsonData[i].Year) == 2022) {
+                            this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                        } else if (Math.round(jsonData[i].Year) == 2023) {
+                            this.lineData.datasets[4].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                        } else if (Math.round(jsonData[i].Year) == 2024) {
+                            this.lineData.datasets[5].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                        } else {
+                            const date = new Date(jsonData[i].Date);
+                            const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
+                            const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
+                            const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
+                            const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
+                            this.lineData.datasets[6].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                        }
+                    }
+
                     Swal.fire({
                         title: 'Forecast Successfully',
                         html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",

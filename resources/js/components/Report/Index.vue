@@ -65,7 +65,7 @@
                                             </div>
                                         </div> -->
                                     </div>
-                                    <div v-if="this.form.enable == true" class="col-8 border-left">
+                                    <div class="col-8 border-left">
                                         <label v-if="this.form.enable == true" class="text-center">Reported {{
                                             form.type_of_disease.name }} Cases and
                                             Case Fatality Rate by Barangay in Tagum City,
@@ -159,7 +159,8 @@
                                         <hr>
                                         <label v-if="this.form.enable == true">Age Groups Affected by {{
                                             this.form.type_of_disease.name }} Per Barangay</label>
-                                        <bar ref="bar" :data="barData" :options="options" />
+                                        <bar v-if="this.form.enable == true" ref="bar" :data="barData"
+                                            :options="options" />
                                         <hr>
                                         <label v-if="this.form.enable == true">Affected by {{
                                             this.form.type_of_disease.name }}
@@ -427,11 +428,7 @@ export default {
                         this.barData.datasets[3].data.push(response.data.cases[i].count_16_above);
 
                         this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
-                        // console.log(response.data.cases[i].barangay.name);
                     }
-
-                    // Update the chart
-                    this.chart.update();
 
                     Swal.fire({
                         title: 'Report Successfully',

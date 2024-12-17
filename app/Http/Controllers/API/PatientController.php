@@ -95,7 +95,7 @@ class PatientController extends Controller
         $response = Http::get('http://127.0.0.1:5000/forecast');
         $forecastData = $response->json();
 
-        return response(['forcasting' => $forecastData['Forecast Value'], 'data' => $data], 200);
+        return response(['forecasting' => $forecastData, 'data' => $data], 200);
     }
     public function report(Request $request)
     {
