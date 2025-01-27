@@ -58,12 +58,12 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <router-link to="/Dashboard" class="nav-link">
                                 <i class="nav-icon fas fa-dashboard"></i>
                                 <p>Dashboard</p>
                             </router-link>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <router-link to="/Patient" class="nav-link">
                                 <i class="nav-icon fas fa-hospital-user"></i>
@@ -96,7 +96,7 @@
                                 </router-link>
                             </li>
                         @endcan
-                        @can('access permission')
+                        {{-- @can('access permission')
                             <li class="nav-item">
                                 <router-link to="/permission" class="nav-link">
                                     <i class="nav-icon fas fa-user-lock"></i>
@@ -105,7 +105,7 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
+                        @endcan --}}
                         @can('access role')
                             <li class="nav-item">
                                 <router-link to="/role" class="nav-link">

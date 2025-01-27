@@ -119,7 +119,7 @@
                                         <input v-model="fillColor" type="color"> -->
                                         <br>
                                     </div>
-                                    <l-map ref="map" :zoom="zoom" :center="center" style="height: 700px; width: 100%">
+                                    <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
                                         <l-tile-layer :url="url" :attribution="attribution" />
                                         <l-geo-json v-if="show" :geojson="geojson" :options-style="styleFunction"
                                             @click="handleMapClick" />

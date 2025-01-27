@@ -78,21 +78,21 @@
                                     </b-form-radio-group>
                                     <has-error :form="form" field="gender" />
                                 </div>
-                                <div class="form-group col-3">
+                                <!-- <div class="form-group col-3">
                                     <label>Occupation</label>
                                     <input v-model="form.occupation" type="text" class="form-control">
                                     <has-error :form="form" field="occupation" />
-                                </div>
+                                </div> -->
                                 <div class="form-group col-3">
                                     <label>Civil Status</label>
                                     <input v-model="form.civil_status" type="text" class="form-control">
                                     <has-error :form="form" field="civil_status" />
                                 </div>
-                                <div class="form-group col-3">
+                                <!-- <div class="form-group col-3">
                                     <label>Nationality</label>
                                     <input v-model="form.nationality" type="text" class="form-control">
                                     <has-error :form="form" field="nationality" />
-                                </div>
+                                </div> -->
                                 <div class="form-group col-3">
                                     <label>Contact Number</label>
                                     <input v-model="form.contact_number" type="text" class="form-control">
@@ -155,12 +155,12 @@
                                         <input v-model="fillColor" type="color"> -->
                                         <br>
                                     </div>
-                                    <l-map ref="map" :zoom="zoom" :center="center" style="height: 700px; width: 100%">
+                                    <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
                                         <l-tile-layer :url="url" :attribution="attribution" />
                                         <l-geo-json v-if="show" :geojson="geojson" :options-style="styleFunction" />
                                         <l-marker :lat-lng="marker" />
                                     </l-map>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="form-group col-6">
                                             <label>Latitude</label>
                                             <input v-model="form.latitude" type="text" class="form-control" disabled>
@@ -171,7 +171,7 @@
                                             <input v-model="form.longitude" type="text" class="form-control" disabled>
                                             <has-error :form="form" field="longitude" />
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
