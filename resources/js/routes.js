@@ -29,6 +29,14 @@ const routes = [
     },
     //---------------------------------------------------------USER
     {
+        path: '/disease',
+        name: 'disease',
+        component: require('./components/Disease/IndexDisease.vue').default,
+        props: true,
+    },
+    //---------------------------------------------------------END USER
+    //---------------------------------------------------------USER
+    {
         path: '/users',
         name: 'users',
         component: require('./components/Users/IndexUser.vue').default,

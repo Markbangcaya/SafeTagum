@@ -14,33 +14,86 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="form-group col-3">
+                                    <label>Case ID</label>
+                                    <input v-model="form.case_id" type="text" class="form-control">
+                                    <has-error :form="form" field="case_id" />
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Epi ID</label>
+                                    <input v-model="form.epi_id" type="text" class="form-control">
+                                    <has-error :form="form" field="epi_id" />
+                                </div>
+                                <div class="form-group col-3">
+                                    <label>Health Facility</label>
+                                    <input v-model="form.health_facility" type="text" class="form-control">
+                                    <has-error :form="form" field="health_facility" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-3">
                                     <label>Date Onset of illness</label>
-                                    <!-- <v-text-field label="Date of Birth" v-model="birthdate" type="date" /> -->
-                                    <input v-model="form.birthdate" type="date" class="form-control">
-                                    <has-error :form="form" field="birthdate" />
+                                    <input v-model="form.date_onset_of_illness" type="date" class="form-control">
+                                    <has-error :form="form" field="date_onset_of_illness" />
                                 </div>
                                 <div class="form-group col-3">
                                     <label>Patient Admitted</label>
-                                    <!-- <v-text-field label="Date of Birth" v-model="birthdate" type="date" /> -->
-                                    <input v-model="form.birthdate" type="date" class="form-control">
-                                    <has-error :form="form" field="birthdate" />
+                                    <input v-model="form.patient_admitted" type="date" class="form-control">
+                                    <has-error :form="form" field="patient_admitted" />
                                 </div>
                                 <div class="form-group col-3">
                                     <label>Case Classification</label>
-                                    <!-- <v-text-field label="Date of Birth" v-model="birthdate" type="date" /> -->
-                                    <select class="form-select" name="" id="">
+                                    <select class="form-select" v-model="form.case_classification">
                                         <option value="Suspected">Suspected</option>
                                         <option value="Probable">Probable</option>
                                         <option value="Confirmed">Confirmed</option>
                                     </select>
-                                    <has-error :form="form" field="birthdate" />
+                                    <has-error :form="form" field="case_classification" />
                                 </div>
                                 <div class="form-group col-3">
-                                    <label>Date of Death</label>
-                                    <!-- <v-text-field label="Date of Birth" v-model="birthdate" type="date" /> -->
-                                    <input v-model="form.birthdate" type="date" class="form-control">
-                                    <has-error :form="form" field="birthdate" />
+                                    <label>Date of Death</label><br>
+                                    <input :disabled="!deathcheckbox" v-model="form.date_of_death" type="date"
+                                        class="form-control">
+                                    <input id="deathcheckbox" v-model="deathcheckbox" type="checkbox">
+                                    <label>Check to Enable</label>
+                                    <has-error :form="form" field="date_of_death" />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Patient Monitoring</div>
+                        <div class="card-body">
+                            <div class="table-responsive p-0">
+                                <table class="table table-head-fixed text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Case ID</th>
+                                            <th>Epi ID</th>
+                                            <th>Health Facility</th>
+                                            <th>Date Onset of illness</th>
+                                            <th>Patient Admitted</th>
+                                            <th>Case Classification</th>
+                                            <th>Date of Death</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(data, index) in option_users" :key="index">
+                                            <td>{{ data.case_id }}</td>
+                                            <td v-if="data != null">{{
+                                                data.epi_id }}</td>
+                                            <td v-else class="text-danger">No Epi ID</td>
+                                            <td>{{ data.health_facility }}</td>
+                                            <td>{{ data.date_onset_of_illness }}</td>
+                                            <td>{{ data.patient_admitted }}</td>
+                                            <td>{{ data.case_classification }}</td>
+                                            <td>{{ data.date_of_death }}</td>
+                                        </tr>
+                                        <tr v-if="option_users.length === 0">
+                                            <td colspan="8" class="text-center">No Existing data</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -179,7 +232,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" @click="update">Save</button>
+                    <button type="button" class="btn btn-primary" @click="save">Save</button>
                 </div>
             </div>
         </div>
@@ -205,6 +258,15 @@ export default {
     data() {
         return {
             form: new Form({
+                case_id: '',
+                epi_id: '',
+                date_onset_of_illness: '',
+                health_facility: '',
+                patient_admitted: '',
+                case_classification: '',
+                date_of_death: '',
+                type_of_disease: '',
+
                 id: '',
                 firstname: '',
                 middlename: '',
@@ -226,9 +288,12 @@ export default {
                 latitude: '',
                 longitude: '',
             }),
-
+            option_users: [],
             option_diseases: [],
             option_barangay: [],
+
+            //
+            deathcheckbox: false,
 
             //Maps
             loading: false,
@@ -245,8 +310,11 @@ export default {
         }
     },
     methods: {
-        update() {
-            this.form.put('/api/patient/update/' + this.form.id).then(() => {
+        save() {
+            if (this.deathcheckbox == false) {
+                this.form.date_of_death = null; // Clear date if unchecked
+            }
+            this.form.post('/api/patient/assessment/' + this.form.id).then(() => {
                 toast.fire({
                     icon: 'success',
                     text: 'Data Saved.',
@@ -254,7 +322,7 @@ export default {
                 this.form.reset();
                 //"page" maintain selected page in the parent page
                 this.$emit('getData', this.page);// call method from parent (reload data table)
-                $('#edit-patient').modal('hide');
+                $('#assessment-patient').modal('hide');
             }).catch(() => {
                 toast.fire({
                     icon: 'error',
@@ -262,23 +330,18 @@ export default {
                 })
             });
         },
-        // options() {
-        //     return {
-        //         onEachFeature: this.onEachFeatureFunction
-        //     };
-        // },
-        // styleFunction() {
-        //     const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-        //     return () => {
-        //         return {
-        //             weight: 2,
-        //             color: "#ECEFF1",
-        //             opacity: 1,
-        //             fillColor: fillColor,
-        //             fillOpacity: 1
-        //         };
-        //     };
-        // },
+        styleFunction() {
+            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
+            return () => {
+                return {
+                    weight: 2,
+                    color: "#ECEFF1",
+                    opacity: 1,
+                    fillColor: fillColor,
+                    fillOpacity: 1
+                };
+            };
+        },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {
                 return () => { };
@@ -396,12 +459,13 @@ export default {
     },
     watch: {
         row: function () {
-            // console.log(this.row);
+            this.option_users = this.row.patient__assessment;
+            console.log(this.option_users);
             this.form.fill(this.row);
             this.form.type_of_disease = this.row.disease;
-            // this.form.streetpurok = this.row.street / purok;
+            this.form.streetpurok = this.row['street/purok'];
             this.marker = latLng(this.row.latitude, this.row.longitude);
-        }
+        },
     },
     mounted() {
         this.loadDisease();
@@ -425,7 +489,6 @@ export default {
         //     .catch(error => {
         //         console.error('Error saving location:', error);
         //     });
-
     }
 }
 </script>

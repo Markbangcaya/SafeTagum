@@ -21,6 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => 'disease'], function () {
         Route::get('all', [App\Http\Controllers\API\DiseaseController::class, 'index_all']);
+        Route::get('list', [App\Http\Controllers\API\DiseaseController::class, 'index']);
+        Route::post('create', [App\Http\Controllers\API\DiseaseController::class, 'store']);
+        Route::put('update/{id}', [App\Http\Controllers\API\DiseaseController::class, 'update']);
+        Route::delete('delete/{id}', [App\Http\Controllers\API\DiseaseController::class, 'destroy']);
     });
     Route::group(['prefix' => 'barangay'], function () {
         Route::get('all', [App\Http\Controllers\API\BarangayController::class, 'index_all']);
@@ -29,7 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('list', [App\Http\Controllers\API\PatientController::class, 'index']);
         Route::post('create', [App\Http\Controllers\API\PatientController::class, 'store']);
         Route::put('update/{id}', [App\Http\Controllers\API\PatientController::class, 'update']);
-        // Route::post('forecast', [App\Http\Controllers\API\ForecastController::class, 'forecast']);
+        Route::post('assessment/{id}', [App\Http\Controllers\API\PatientController::class, 'assessment']);
         Route::post('forecast', [App\Http\Controllers\API\PatientController::class, 'forecast']);
         Route::get('detokenized/{id}', [App\Http\Controllers\API\PatientController::class, 'detokenized']);
         Route::post('report', [App\Http\Controllers\API\PatientController::class, 'report']);

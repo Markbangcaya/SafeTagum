@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Barangay</label>
-                                        <multiselect v-model="form.barangay" :options="option_barangay"
+                                        <multiselect disabled v-model="form.barangay" :options="option_barangay"
                                             :multiple="false" :close-on-select="true" :clear-on-select="false"
                                             :preserve-search="true" placeholder="Pick some" label="name"
                                             track-by="na me" :preselect-first="true">
@@ -100,12 +100,14 @@
                                     </div>
                                     <div class="form-group">
                                         <label>City</label>
-                                        <input v-model="form.city" type="text" class="form-control">
+                                        <input disabled v-model="form.city" type="text" placeholder="Tagum City"
+                                            class="form-control">
                                         <has-error :form="form" field="city" />
                                     </div>
                                     <div class="form-group">
                                         <label>Province</label>
-                                        <input v-model="form.province" type="text" class="form-control">
+                                        <input disabled v-model="form.province" type="text"
+                                            placeholder="Davao Del Norte" class="form-control">
                                         <has-error :form="form" field="province" />
                                     </div>
                                 </div>
@@ -227,23 +229,15 @@ export default {
                 })
             });
         },
-        // options() {
-        //     return {
-        //         onEachFeature: this.onEachFeatureFunction
-        //     };
-        // },
-        // styleFunction() {
-        //     const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-        //     return () => {
-        //         return {
-        //             weight: 2,
-        //             color: "#ECEFF1",
-        //             opacity: 1,
-        //             fillColor: fillColor,
-        //             fillOpacity: 1
-        //         };
-        //     };
-        // },
+        styleFunction(feature) {
+            return {
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.7,
+                fillOpacity: 0.5,
+                fillColor: feature.properties.fillColor || 'gray'
+            };
+        },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {
                 return () => { };
@@ -270,6 +264,7 @@ export default {
                     html: "It belongs to Barangay <b>" + e.layer.feature.properties.NAME_3 + "</b>",
                     icon: 'success',
                 })
+                this.form.barangay = this.option_barangay.find(barangay => barangay.name === e.layer.feature.properties.NAME_3);
                 this.marker = latLng(lat, lng);
             } else {
                 Swal.fire({
@@ -361,7 +356,7 @@ export default {
     },
     watch: {
         row: function () {
-            // console.log(this.row);
+            console.log(this.row);
             this.form.fill(this.row);
             this.form.type_of_disease = this.row.disease;
             this.form.streetpurok = this.row['street/purok'];

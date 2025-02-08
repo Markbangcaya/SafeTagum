@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Models\Patient;
+use App\Models\Patient_Assessment;
 use App\Models\Tokenized;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -28,11 +29,20 @@ class PatientController extends Controller
     {
         //
         abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
-        $data = Patient::with('Barangay', 'Disease')->latest();
+        $data = Patient::with('Barangay', 'Disease', 'Patient_Assessment')->latest();
 
         if ($request->search) {
-            $data = $data->where('email', 'LIKE', '%' . $request->search . '%');
+            $data = $data->whereHas('Patient_Assessment', function ($query) use ($request) {
+                $query->where('epi_id', 'LIKE', '%' . $request->search . '%');
+            });
         }
+        if ($request->barangay) {
+            $data = $data->where('barangay_id',  $request->barangay);
+        }
+        if ($request->disease) {
+            $data = $data->where('type_of_disease', $request->disease);
+        }
+
         $data = $data->paginate($request->length);
         return response(['data' => $data], 200);
     }
@@ -214,7 +224,41 @@ class PatientController extends Controller
 
         return response(['message' => 'success'], 200);
     }
+    public function assessment(Request $request, $id)
+    {
+        // dd($request);
+        $user = Auth::User();
 
+        $this->validate($request, [
+            'case_id' => 'string',
+            'epi_id' => 'required|string',
+            'id' => 'required|numeric',
+            'date_onset_of_illness' => 'required|date',
+            'health_facility' => 'string',
+            'patient_admitted' => 'date',
+            'case_classification' => 'required|string',
+            'date_of_death' => 'nullable|date',
+            'type_of_disease.id' => 'required|numeric',
+
+        ]);
+        // dd($this->tokenize($request->firstname));
+        $patient = Patient::findOrFail($id);
+        Patient_Assessment::create([
+            'case_id' => $request->case_id,
+            'epi_id' => $request->epi_id,
+            'patient_id' => $patient->id,
+            'type_of_disease' => $request->type_of_disease['id'],
+            'date_onset_of_illness' => $request->date_onset_of_illness,
+            'health_facility' => $request->health_facility,
+            'patient_admitted' => $request->patient_admitted,
+            'case_classification' => $request->case_classification,
+            'date_of_death' => $request->date_of_death,
+
+            'assess_by' => $user->id,
+        ]);
+
+        return response(['message' => 'success'], 200);
+    }
     /**
      * Display the specified resource.
      *

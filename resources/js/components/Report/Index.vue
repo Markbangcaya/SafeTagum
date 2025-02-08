@@ -23,12 +23,12 @@
                             <!-- <div class="card-header">Report Information</div> -->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div id="remove-print" class="col-4">
                                         <div class="form-group">
                                             <label>Type of Disease</label>
                                             <multiselect v-model="form.type_of_disease" :options="option_diseases"
                                                 :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick some" label="name"
+                                                :preserve-search="true" placeholder="Pick Type of Disease" label="name"
                                                 track-by="name" :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="type_of_disease" />
@@ -51,19 +51,11 @@
                                         </div>
                                         <button type="button" class="btn btn-success" @click="report">Create
                                             Report</button>
+                                        <button v-if="this.form.enable == true" type="button"
+                                            class="btn btn-success float-right" @click="printChart"><i
+                                                class="fas fa-print"></i> Print
+                                            Report</button>
                                         <hr>
-                                        <!-- <div class="card">
-                                            <div class="card-body">
-                                                <div class="form-group">
-                                                    <label>Expected Cases in Year</label>
-                                                    <p>{{ this.cases }}</p>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Barangay</label>
-                                                <p>test</p>
-                                                </div> 
-                                            </div>
-                                        </div> -->
                                     </div>
                                     <div class="col-8 border-left">
                                         <label v-if="this.form.enable == true" class="text-center">Reported {{
@@ -95,8 +87,7 @@
                                                         <span class="info-box-text">0-5
                                                             Years Old</span>
                                                         <span class="info-box-number">
-                                                            10
-                                                            <!-- <small>%</small> -->
+                                                            {{ this.age_0_5 }}
                                                         </span>
                                                     </div>
 
@@ -108,7 +99,7 @@
                                                             class="fas fa-child-dress"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">6-10 Years Old</span>
-                                                        <span class="info-box-number">41,410</span>
+                                                        <span class="info-box-number">{{ this.age_6_10 }} </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -119,7 +110,8 @@
                                                             class="fas fa-child"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">11-15 Years Old</span>
-                                                        <span class="info-box-number">760</span>
+                                                        <span class="info-box-number">{{ this.age_11_15 }}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -129,7 +121,8 @@
                                                             class="fas fa-person"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">16 And Above Years Old</span>
-                                                        <span class="info-box-number">2,000</span>
+                                                        <span class="info-box-number">{{ this.age_16_above }}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -141,7 +134,7 @@
                                                             class="fas fa-skull-crossbones"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Death</span>
-                                                        <span class="info-box-number">41,410</span>
+                                                        <span class="info-box-number">{{ this.death }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -151,7 +144,8 @@
                                                             class="fas fa-circle-plus"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Grand Total of Cases</span>
-                                                        <span class="info-box-number">41,410</span>
+                                                        <span class="info-box-number">{{ this.total_cases }}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -165,28 +159,64 @@
                                         <label v-if="this.form.enable == true">Affected by {{
                                             this.form.type_of_disease.name }}
                                             Cases Per Barangay</label>
-                                        <div>
+
+                                        <div class="row">
+                                            <h5 class="mt-4 mb-2">Risk Level Legend</h5>
+                                            <div class="col-3">
+                                                <div class="card bg-danger text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-danger"></span> High Risk
+                                                        <div class="case-count"> More Than 1000 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-warning text-dark">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-warning"></span> Medium Risk
+                                                        <div class="case-count"> 1000 - 500 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-success text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-success"></span> Managed Risk
+                                                        <div class="case-count"> 500 - 0 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-secondary text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-secondary"></span> No Risk
+                                                        <div class="case-count"> 0 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="this.form.enable == true">
                                             <span v-if="loading">Loading...</span>
                                             <label for="checkbox">GeoJSON Visibility</label>
                                             <input id="checkbox" v-model="show" type="checkbox">
                                             <br>
-                                        </div>
-                                        <l-map ref="map" :zoom="zoom" :center="center"
-                                            style="height: 700px; width: 100%">
-                                            <l-tile-layer :url="url" :attribution="attribution" />
-                                            <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
-                                                :options-style="styleFunction" />
-                                            <l-marker v-for="(marker, index) in markers.data" :key="index"
-                                                :lat-lng="[marker.latitude, marker.longitude]">
-                                            </l-marker>
-                                            <!-- <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
+                                            <l-map ref="map" :zoom="zoom" :center="center"
+                                                style="height: 600px; width: 100%">
+                                                <l-tile-layer :url="url" :attribution="attribution" />
+                                                <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
+                                                    :options-style="styleFunction" />
+                                                <l-marker v-for="(marker, index) in markers.data" :key="index"
+                                                    :lat-lng="[marker.latitude, marker.longitude]">
+                                                </l-marker>
+                                                <!-- <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
                                                 :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
                                                 :color="marker.color">
                                                 <l-popup>
                                                     <p>Count :<b>{{ marker.count }}</b></p>
                                                 </l-popup>
                                             </l-circle-marker> -->
-                                        </l-map>
+                                            </l-map>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -197,26 +227,33 @@
         </div>
     </div>
 </template>
+<style scoped>
+@media print {
 
+    /* Example: Hide the button on print */
+    button {
+        display: none;
+    }
+
+    #remove-print {
+        display: none;
+    }
+
+    /* Example: Print-specific font sizes */
+    body {
+        font-size: 14pt;
+    }
+
+    /* Example: Add margins for printing */
+    @page {
+        margin: 2cm 5cm;
+        /* Adjust margins as needed */
+    }
+}
+</style>
 <script>
-// import L from 'leaflet';
-// import { latLng } from "leaflet";
-// import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
 export default {
     components: {
-        // LMap,
-        // LTileLayer,
-        // LGeoJson,
-        // LMarker,
-        // LPopup,
-        // LCircleMarker,
-        // CategoryScale,
-        // LinearScale,
-        // BarElement,
-        // Title,
-        // Tooltip,
-        // Legend,
-        // Bar
     },
     data() {
         return {
@@ -233,7 +270,12 @@ export default {
             option_diseases: [],
             option_barangay: [],
 
-            cases: '',
+            age_0_5: null,
+            age_6_10: null,
+            age_11_15: null,
+            age_16_above: null,
+            death: null,
+            total_cases: null,
 
             //Maps
             loading: false,
@@ -376,19 +418,19 @@ export default {
             }
         }
     },
-    // computed: {
-    //     styleFunction() {
-    //         const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-    //         return feature => ({
-    //             weight: 3,
-    //             color: "#ffffff",
-    //             opacity: 0.5,
-    //             fillColor: fillColor,
-    //             fillOpacity: 0.5
-    //         });
-    //     }
-    // },
     methods: {
+        printChart() {
+            window.print(); // Trigger the browser's print function
+        },
+        styleFunction(feature) {
+            return {
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.7,
+                fillOpacity: 0.5,
+                fillColor: feature.properties.fillColor || 'gray'
+            };
+        },
         report() {
             Swal.fire({
                 titleText: 'Creating Report...',
@@ -415,19 +457,32 @@ export default {
                     //Empty and Cleaning Bar Chart
                     this.barData.labels.push();
                     this.barData.datasets[0].data.push();
+                    this.age_0_5 = 0;
+                    this.age_6_10 = 0;
+                    this.age_11_15 = 0;
+                    this.age_16_above = 0;
+                    this.total_cases = 0;
 
                     for (let i = 0; i < response.data.cases.length; i++) {
                         this.barData.labels.push(response.data.cases[i].barangay.name);
 
                         this.barData.datasets[0].data.push(response.data.cases[i].count_0_5);
+                        this.age_0_5 += Math.round(response.data.cases[i].count_0_5);
 
                         this.barData.datasets[1].data.push(response.data.cases[i].count_6_10);
+                        this.age_6_10 += Math.round(response.data.cases[i].count_6_10);
 
                         this.barData.datasets[2].data.push(response.data.cases[i].count_11_15);
+                        this.age_11_15 += Math.round(response.data.cases[i].count_11_15);
 
                         this.barData.datasets[3].data.push(response.data.cases[i].count_16_above);
+                        this.age_16_above += Math.round(response.data.cases[i].count_16_above);
+
+                        this.barData.datasets[4].data.push(response.data.cases[i].death);
+                        this.death += Math.round(response.data.cases[i].death);
 
                         this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
+                        this.total_cases += Math.round(response.data.cases[i].total_cases);
                     }
 
                     Swal.fire({
@@ -444,16 +499,6 @@ export default {
                 });
             }, 2000); // Adjust the delay in milliseconds as needed
         },
-        // getColor(properties) {
-        //     // Implement your logic to determine the color based on properties
-        //     if (properties.population > 100000) {
-        //         return 'red';
-        //     } else if (properties.population > 50000) {
-        //         return 'yellow';
-        //     } else {
-        //         return 'green';
-        //     }
-        // },
         handleMapClick(e) {
             const { lat, lng } = e.latlng;
             this.form.latitude = lat;
@@ -532,13 +577,13 @@ export default {
                     { "type": "Feature", "properties": { "ID_0": 177, "ISO": "PHL", "NAME_0": "Philippines", "ID_1": 27, "NAME_1": "Davao del Norte", "ID_2": 514, "NAME_2": "Tagum City", "ID_3": 12426, "NAME_3": "Visayan Village", "NL_NAME_3": "", "VARNAME_3": "", "TYPE_3": "Barangay", "ENGTYPE_3": "Village", "PROVINCE": "Davao del Norte", "REGION": "Davao Region (Region XI)" }, "geometry": { "type": "Polygon", "coordinates": [[[125.818069, 7.442250], [125.816368, 7.433450], [125.815887, 7.420320], [125.816971, 7.407660], [125.803833, 7.406520], [125.802322, 7.403690], [125.791496, 7.404630], [125.783310, 7.410430], [125.784233, 7.413400], [125.765373, 7.416120], [125.761833, 7.412320], [125.758110, 7.415570], [125.757133, 7.420610], [125.755363, 7.422590], [125.773903, 7.427240], [125.781097, 7.428600], [125.783218, 7.429060], [125.787857, 7.431260], [125.792084, 7.433210], [125.798714, 7.436150], [125.799026, 7.436280], [125.800392, 7.436240], [125.804932, 7.437110], [125.814819, 7.444780], [125.816452, 7.444060], [125.818069, 7.442250]]] } }
                 ]
             };
-
-            data.features[0].properties.color = "white";
-            data.features[0].properties.fillColor = "red";
-            data.features[0].properties.fillOpacity = 1;
+            // data.features[0].properties.color.push("white");
+            data.features[1].properties.fillColor = "Yellow";
+            data.features[0].properties.fillColor = "Red";
+            // data.features[0].properties.fillOpacity.push(1);
             // this.$forceUpdate();
-            console.log(data.features[0].properties.weight = 3);
-            console.log(data.features[0].properties.opacity = 1);
+            // console.log(data.features[0]);
+            // console.log(data.features[0].properties.opacity = 1);
             this.geojson = data;
             // Use the geojsonData to populate your LGeoJson component
         } catch (error) {
@@ -549,26 +594,6 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
-        // // Replace with your GeoJSON file path or API endpoint
-        // fetch('map (1).geojson')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const map = L.map('map').setView([11.0043, 125.5439], 13);
-        //         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //         }).addTo(map);
-
-        //         L.geoJSON(data).addTo(map);
-        //     });
-        // Example: Save coordinates to backend using Axios
-        // axios.post('/api/save-location', { latitude: this.latitude, longitude: this.longitude })
-        //     .then(response => {
-        //         console.log('Location saved successfully');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving location:', error);
-        //     });
-
     }
 };
 </script>

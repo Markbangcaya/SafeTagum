@@ -23,12 +23,12 @@
                             <!-- <div class="card-header">Forecasting Information</div> -->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div id="remove-print" class="col-4">
                                         <div class="form-group">
                                             <label>Type of Disease</label>
                                             <multiselect v-model="form.type_of_disease" :options="option_diseases"
                                                 :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick some" label="name"
+                                                :preserve-search="true" placeholder="Pick Type of Disease" label="name"
                                                 track-by="name" :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="type_of_disease" />
@@ -38,7 +38,7 @@
                                             <label>Barangay</label>
                                             <multiselect v-model="form.barangay" :options="option_barangay"
                                                 :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick some" label="name"
+                                                :preserve-search="true" placeholder="Pick Barangay" label="name"
                                                 track-by="name" :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="barangay" />
@@ -51,19 +51,11 @@
                                         </div> -->
                                         <button type="button" class="btn btn-success"
                                             @click="forecast">Forecast</button>
+                                        <button v-if="this.form.enable == true" type="button"
+                                            class="btn btn-success float-right" @click="printChart"><i
+                                                class="fas fa-print"></i> Print
+                                            Forecast</button>
                                         <hr>
-                                        <!-- <div class="card">
-                                            <div class="card-body">
-                                                <div class="form-group">
-                                                    <label>Expected Cases in Year</label>
-                                                    <p>{{ this.cases }}</p>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Barangay</label>
-                                                    <p>test</p>
-                                                </div>
-                                            </div>
-                                        </div> -->
                                     </div>
                                     <!-- 
                                     <div v-if="this.form.enable == true" class="col-8" id="data"
@@ -87,38 +79,45 @@
                                                 - {{ this.form.end_morbidity_week }}</span> -->
                                         </label>
                                         <div class="row">
-                                            <div class="col-12 col-sm-6 col-md-4">
+                                            <div class="col-4">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-info elevation-1"><i
                                                             class="fas fa-virus"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">2023 Cases</span>
                                                         <span class="info-box-number">
-                                                            1
+                                                            {{ this.sum2023 }}
                                                         </span>
                                                     </div>
 
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-sm-6 col-md-4">
+                                            <div class="col-4">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-primary elevation-1"><i
                                                             class="fas fa-virus"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">2024 Cases</span>
-                                                        <span class="info-box-number">2</span>
+                                                        <span class="info-box-number">{{ this.sum2024 }}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <!-- <div class="clearfix hidden-xs-up"></div> -->
-                                            <div class="col-12 col-sm-6 col-md-4">
+                                            <div class="col-4">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-success elevation-1"><i
                                                             class="fas fa-percentage"></i></span>
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Percentage Change</span>
-                                                        <span class="info-box-number badge badge-danger">100
+                                                        <span
+                                                            v-if="(((this.sum2024 - this.sum2023) / this.sum2023) * 100) > 0"
+                                                            class="info-box-number badge badge-danger">{{
+                                                                ((this.sum2024 - this.sum2023) / this.sum2023) * 100 }}
                                                             <small>%</small> Increased</span>
+                                                        <span v-else class="info-box-number badge badge-success">{{
+                                                            Math.abs(((this.sum2024 - this.sum2023) / this.sum2023) *
+                                                                100) }}
+                                                            <small>%</small> Decrease</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -139,34 +138,73 @@
                                         <hr>
                                         <label v-if="this.form.enable == true">Previous number of {{
                                             form.type_of_disease.name }} cases in Barangay {{
+                                                this.form.barangay.name }}</label>
+                                        <line-chart v-if="this.form.enable == true" :data="lineData" :options="options"
+                                            style="height: 400px; width: 100%" />
+                                        <hr v-if="this.form.enable == true">
+                                        <label v-if="this.form.enable == true">{{
+                                            form.type_of_disease.name }} Cases in Barangay {{
                                                 this.form.barangay.name }} and the
-                                            Forecasted cases</label>
-                                        <line-chart v-if="this.form.enable == true" ref="lineChart" :data="lineData"
-                                            :options="options" />
-                                        <hr>
+                                            Forecasted Cases with its Thresholds</label>
+                                        <line-chart v-if="this.form.enable == true" :data="linebarData"
+                                            :options="linebaroptions" style="height: 400px; width: 100%" />
+                                        <hr v-if="this.form.enable == true">
                                         <label v-if="this.form.enable == true">Affected
                                             {{ this.form.type_of_disease.name }} cases in Barangay {{
                                                 this.form.barangay.name }} </label>
-                                        <!-- <canvas id="chartCanvas"></canvas> -->
-                                        <!-- <Line id="TrafficToday" :options="options" :data="trafficChartToday" /> -->
-                                        <!-- <TrafficLineToday>Chart could not be loaded</TrafficLineToday> -->
-                                        <div>
+                                        <div class="row">
+                                            <h5 class="mt-4 mb-2">Risk Level Legend</h5>
+                                            <div class="col-3">
+                                                <div class="card bg-danger text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-danger"></span> High Risk
+                                                        <div class="case-count"> More Than 1000 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-warning text-dark">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-warning"></span> Medium Risk
+                                                        <div class="case-count"> 1000 - 500 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-success text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-success"></span> Managed Risk
+                                                        <div class="case-count"> 500 - 0 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div class="card bg-secondary text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-secondary"></span> No Risk
+                                                        <div class="case-count"> 0 Cases</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="this.form.enable == true">
                                             <span v-if="loading">Loading...</span>
                                             <label for="checkbox">GeoJSON Visibility</label>
-                                            <input id="checkbox" v-model="show" type="checkbox">
+                                            <input id="checkbox" v-model="show" type="checkbox" ref="myCheckbox">
                                             <br>
-                                        </div>
-                                        <l-map ref="map" :zoom="zoom" :center="center"
-                                            style="height: 700px; width: 100%">
-                                            <l-tile-layer :url="url" :attribution="attribution" />
-                                            <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick" />
-                                            <l-marker v-for="(marker, index) in markers.data" :key="index"
-                                                :lat-lng="[marker.latitude, marker.longitude]">
-                                                <!-- <l-popup>
+                                            <l-map ref="map" :zoom="zoom" :center="center"
+                                                style="height: 600px; width: 100%">
+                                                <l-tile-layer :url="url" :attribution="attribution" />
+                                                <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
+                                                    :options-style="styleFunction" />
+                                                <l-marker v-for="(marker, index) in markers.data" :key="index"
+                                                    :lat-lng="[marker.latitude, marker.longitude]">
+                                                    <!-- <l-popup>
                                                     <p>Count :<b>{{ marker.count }}</b></p>
                                                 </l-popup> -->
-                                            </l-marker>
-                                        </l-map>
+                                                </l-marker>
+                                            </l-map>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -177,39 +215,33 @@
         </div>
     </div>
 </template>
+<style scoped>
+@media print {
 
+    /* Example: Hide the button on print */
+    button {
+        display: none;
+    }
+
+    #remove-print {
+        display: none;
+    }
+
+    /* Example: Print-specific font sizes */
+    body {
+        font-size: 14pt;
+    }
+
+    /* Example: Add margins for printing */
+    @page {
+        margin: 2cm 5cm;
+        /* Adjust margins as needed */
+    }
+}
+</style>
 <script>
-// import L from 'leaflet';
-// import { latLng } from "leaflet";
-// import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
-// import { Chart } from 'chart.js';
-// import {
-//     Chart as ChartJS,
-//     CategoryScale,
-//     LinearScale,
-//     PointElement,
-//     LineElement,
-//     Title,
-//     Tooltip,
-//     Legend
-// } from 'chart.js'
-// import { Line } from 'vue-chartjs'
-import Chart from 'chart.js/auto';
 export default {
     components: {
-        // LMap,
-        // LTileLayer,
-        // LGeoJson,
-        // LMarker,
-        // LPopup,
-        // LCircleMarker
-        // CategoryScale,
-        // LinearScale,
-        // PointElement,
-        // LineElement,
-        // Title,
-        // Tooltip,
-        // Legend
     },
     data() {
         return {
@@ -222,6 +254,8 @@ export default {
                 end_morbidity_week: '0',
                 enable: false
             }),
+            sum2023: null,
+            sum2024: null,
 
             option_diseases: [],
             option_barangay: [],
@@ -230,7 +264,7 @@ export default {
 
             //Maps
             loading: false,
-            show: true,
+            show: false,
             enableTooltip: true,
             zoom: 12,
             center: [7.448040629446573, 125.80747097125365],
@@ -281,24 +315,6 @@ export default {
                 labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'],
                 datasets: [
                     {
-                        label: 'Epidemic Thresholds',
-                        data: [3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3],
-                        backgroundColor: 'rgba(239, 68, 68, .3)',
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderWidth: 2,
-                        type: 'line',
-                        fill: false
-                    },
-                    {
-                        label: 'Alert Thresholds',
-                        data: [2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 4],
-                        backgroundColor: 'rgba(234, 179, 8, .3)',
-                        borderColor: 'rgb(234, 179, 8)',
-                        borderWidth: 2,
-                        type: 'line',
-                        fill: false
-                    },
-                    {
                         label: '2021',
                         data: [],
                         backgroundColor: 'rgb(112,116,124)',
@@ -331,6 +347,74 @@ export default {
                         backgroundColor: 'rgba(34, 197, 94, .3)',
                         borderColor: 'rgb(34, 197, 94)',
                         borderWidth: 1,
+                        type: 'line',
+                    }
+                ]
+            },
+            linebaroptions: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: false,
+                        text: 'Reported HFMD Cases and Case Fatality Rate by BARANGAY in TAGUM  CITY, MW 1 - 32, (n = 32)',
+                        font: {
+                            size: 16
+                        },
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Morbidity Week',
+                            position: 'bottom'
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        suggestedMax: 10
+                    },
+                },
+                tension: 0.1
+            },
+            linebarData: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'],
+                datasets: [
+                    {
+                        label: 'Epidemic Thresholds',
+                        data: [3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3],
+                        backgroundColor: 'rgba(239, 68, 68, .3)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 2,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: 'Alert Thresholds',
+                        data: [2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 4],
+                        backgroundColor: 'rgba(234, 179, 8, .3)',
+                        borderColor: 'rgb(234, 179, 8)',
+                        borderWidth: 2,
+                        type: 'line',
+                        fill: false
+                    },
+                    {
+                        label: '2024',
+                        data: [],
+                        backgroundColor: 'rgba(34, 197, 94, .3)',
+                        borderColor: 'rgb(34, 197, 94)',
+                        borderWidth: 1,
                         type: 'bar',
                     },
                     {
@@ -345,7 +429,30 @@ export default {
             }
         }
     },
+    watch: {
+        show(newValue) {
+            console.log("Checkbox value changed to:", newValue);
+            // You can react to changes here as well, independently of the button.
+            if (newValue) {
+                // Checkbox is now checked
+            } else {
+                // Checkbox is now unchecked
+            }
+        }
+    },
     methods: {
+        printChart() {
+            window.print(); // Trigger the browser's print function
+        },
+        styleFunction(feature) {
+            return {
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.7,
+                fillOpacity: 0.5,
+                fillColor: feature.properties.fillColor || 'gray'
+            };
+        },
         forecast() {
             Swal.fire({
                 titleText: 'Forecasting the data...',
@@ -369,25 +476,48 @@ export default {
                     // this.lineData.datasets[5].data[11].push(response.data.forcasting);
                     // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
                     // this.$refs.lineChart.chartInstance.update();
+
+                    //line Graph For Forcasting
+                    this.sum2023 = 0;
+                    this.sum2024 = 0;
                     const jsonData = JSON.parse(response.data.forecasting);
                     for (let i = 0; i < jsonData.length; i++) {
                         if (Math.round(jsonData[i].Year) == 2021) {
-                            this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
                         } else if (Math.round(jsonData[i].Year) == 2022) {
-                            this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.lineData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
                         } else if (Math.round(jsonData[i].Year) == 2023) {
-                            this.lineData.datasets[4].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.sum2023 += jsonData[i].Total_cases;
                         } else if (Math.round(jsonData[i].Year) == 2024) {
-                            this.lineData.datasets[5].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            //For forcasting line bar data
+                            this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            this.sum2024 += jsonData[i].Total_cases;
                         } else {
                             const date = new Date(jsonData[i].Date);
                             const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
                             const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
                             const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
                             const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
-                            this.lineData.datasets[6].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                            this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
                         }
                     }
+
+                    //Geoanalysis Map
+                    this.$refs.myCheckbox.checked = false;
+                    this.show = false;
+                    for (let i = 0; i < this.geojson.features.length; i++) {
+                        if (this.geojson.features[i].properties.NAME_3 === this.form.barangay.name) {
+                            this.geojson.features[i].properties.fillColor = "Red";
+                        } else {
+                            this.geojson.features[i].properties.fillColor = "";
+                        }
+                        console.log(this.geojson.features[i].properties.fillColor);
+                    }
+                    this.$refs.myCheckbox.checked = true;
+                    this.show = true;
+                    this.$emit('styleFunction');
 
                     Swal.fire({
                         title: 'Forecast Successfully',
@@ -493,26 +623,6 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
-        // // Replace with your GeoJSON file path or API endpoint
-        // fetch('map (1).geojson')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const map = L.map('map').setView([11.0043, 125.5439], 13);
-        //         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //         }).addTo(map);
-
-        //         L.geoJSON(data).addTo(map);
-        //     });
-        // Example: Save coordinates to backend using Axios
-        // axios.post('/api/save-location', { latitude: this.latitude, longitude: this.longitude })
-        //     .then(response => {
-        //         console.log('Location saved successfully');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving location:', error);
-        //     });
-
     }
 };
 </script>

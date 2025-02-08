@@ -14,7 +14,8 @@ class UpdateLongitudeToDecimal extends Migration
     public function up()
     {
         Schema::table('patients', function (Blueprint $table) {
-            $table->decimal('longitude', 16, 14)->change();
+            // $table->decimal('longitude', 16, 14)->change();
+            //doctrine/dbal error upon migration
         });
     }
 

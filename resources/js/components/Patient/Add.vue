@@ -91,21 +91,23 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Barangay</label>
-                                        <multiselect v-model="form.barangay" :options="option_barangay"
+                                        <multiselect disabled v-model="form.barangay" :options="option_barangay"
                                             :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                            :preserve-search="true" placeholder="Pick some" label="name"
-                                            track-by="na me" :preselect-first="true">
+                                            :preserve-search="true" placeholder="Pick some" label="name" track-by="name"
+                                            :preselect-first="true">
                                         </multiselect>
                                         <has-error :form="form" field="barangay" />
                                     </div>
                                     <div class="form-group">
                                         <label>City</label>
-                                        <input v-model="form.city" type="text" class="form-control">
+                                        <input disabled v-model="form.city" type="text" placeholder="Tagum City"
+                                            class="form-control">
                                         <has-error :form="form" field="city" />
                                     </div>
                                     <div class="form-group">
                                         <label>Province</label>
-                                        <input v-model="form.province" type="text" class="form-control">
+                                        <input disabled v-model="form.province" type="text"
+                                            placeholder="Davao Del Norte" class="form-control">
                                         <has-error :form="form" field="province" />
                                     </div>
                                 </div>
@@ -204,21 +206,16 @@ export default {
             marker: latLng(7.448040629446573, 125.80747097125365),
         }
     },
-    // computed: {
-    //     styleFunction() {
-    //         const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-    //         return () => {
-    //             return {
-    //                 weight: 2,
-    //                 color: "#ECEFF1",
-    //                 opacity: 1,
-    //                 fillColor: fillColor,
-    //                 fillOpacity: 1
-    //             };
-    //         };
-    //     },
-    // },
     methods: {
+        styleFunction(feature) {
+            return {
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.7,
+                fillOpacity: 0.5,
+                fillColor: feature.properties.fillColor || 'gray'
+            };
+        },
         create() {
             this.form.post('/api/patient/create').then(() => {
                 toast.fire({
@@ -264,6 +261,7 @@ export default {
                     html: "It belongs to Barangay <b>" + e.layer.feature.properties.NAME_3 + "</b>",
                     icon: 'success',
                 })
+                this.form.barangay = this.option_barangay.find(barangay => barangay.name === e.layer.feature.properties.NAME_3);
                 this.marker = latLng(lat, lng);
             } else {
                 Swal.fire({
@@ -356,26 +354,6 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
-        // // Replace with your GeoJSON file path or API endpoint
-        // fetch('map (1).geojson')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const map = L.map('map').setView([11.0043, 125.5439], 13);
-        //         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //         }).addTo(map);
-
-        //         L.geoJSON(data).addTo(map);
-        //     });
-        // Example: Save coordinates to backend using Axios
-        // axios.post('/api/save-location', { latitude: this.latitude, longitude: this.longitude })
-        //     .then(response => {
-        //         console.log('Location saved successfully');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving location:', error);
-        //     });
-
     }
 };
 </script>

@@ -11,6 +11,8 @@ class CreateTokenizedsTable extends Migration
      *
      * @return void
      */
+    protected $connection = 'safetagumtokens';
+
     public function up()
     {
         Schema::create('tokenizeds', function (Blueprint $table) {

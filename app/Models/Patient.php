@@ -8,10 +8,11 @@ use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
     protected $guarded = [];
 
     public function barangay()
@@ -22,5 +23,9 @@ class Patient extends Model
     public function disease()
     {
         return $this->belongsTo(Disease::class, 'type_of_disease');
+    }
+    public function patient_assessment()
+    {
+        return $this->hasMany(Patient_Assessment::class);
     }
 }

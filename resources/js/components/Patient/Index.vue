@@ -34,12 +34,22 @@
                                     </div>
                                 </div>
                                 <div class="card-tools">
-                                    <div class="input-group input-group-sm">
-                                        <input v-model="search" type="text" @keyup="getData" name="table_search"
-                                            class="form-control float-right" placeholder="Search" />
+                                    <div class="input-group input-group-sm ">
                                         <div class="input-group-append">
+                                            <multiselect v-model="form.type_of_disease" :options="option_diseases"
+                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
+                                                :preserve-search="true" placeholder="Filter By Disease" label="name"
+                                                track-by="id" :preselect-first="true">
+                                            </multiselect>
+                                            <multiselect v-model="form.barangay" :options="option_barangay"
+                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
+                                                :preserve-search="true" placeholder="Filter By Barangay" label="name"
+                                                track-by="id" :preselect-first="true">
+                                            </multiselect>
+                                            <input v-model="search" type="text" @keyup="getData" name="table_search"
+                                                class="form-control float-right" placeholder="Search by Epi ID" />
                                             <button type="button" class="btn btn-primary" @click="getData">
-                                                <i class="fas fa-search"></i>
+                                                <i class="fas fa-search input-group-append"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -52,7 +62,7 @@
                                         <tr>
                                             <th>Id</th>
                                             <th>Name</th>
-                                            <th>Email</th>
+                                            <th>Epi ID</th>
                                             <th>Birthdate</th>
                                             <th>Gender</th>
                                             <th>Contact Number</th>
@@ -66,13 +76,18 @@
                                             <td>{{ data.id }}</td>
                                             <td><button class="btn btn-warning"
                                                     @click="tokenized(data.id)">Tokenized</button></td>
-                                            <td>{{ data.email }}</td>
+                                            <td v-if="data.patient__assessment[0] != null">{{
+                                                data.patient__assessment[0].epi_id }}</td>
+                                            <td v-else class="text-danger">No Epi ID</td>
                                             <td>{{ data.birthdate }}</td>
                                             <td>{{ data.gender }}</td>
                                             <td>{{ data.contact_number }}</td>
                                             <td>{{ data.disease.name }}</td>
                                             <td>{{ data.barangay.name }}</td>
                                             <td class="text-right">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    @click="openAssessModal(data)" v-if="can('view user')"><i
+                                                        class="fas fa-search-plus"></i> Assessment</button>
                                                 <button type="button" class="btn btn-success btn-sm"
                                                     @click="openAssessModal(data)" v-if="can('edit user')"><i
                                                         class="fas fa-search-plus"></i> Assessment</button>
@@ -84,7 +99,8 @@
                                                         class="fas fa-edit"></i> Edit</button>
                                                 <button type="button" class="btn btn-danger btn-sm"
                                                     @click="remove(data.id)" v-if="can('delete user')"><i
-                                                        class="fas fa-trash-alt"></i> Remove</button>
+                                                        class="fas fa-trash-alt"></i>
+                                                    Remove</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -114,6 +130,13 @@
     </div>
 </template>
 <script>
+// import $ from 'jquery';
+import 'datatables.net';
+// import 'datatables.net-dt/css/jquery.dataTables.min.css';
+import 'datatables.net-buttons';
+import 'datatables.net-buttons/js/dataTables.buttons.min.js';
+import 'datatables.net-buttons/js/buttons.print.min.js';
+
 import addModal from "./Add.vue";
 import EditModal from "./Edit.vue";
 import AssessModal from "./Assessment.vue";
@@ -125,6 +148,8 @@ export default {
     },
     data() {
         return {
+            option_diseases: [],
+            option_barangay: [],
             option_users: [],
             length: 10,
             search: '',
@@ -132,8 +157,11 @@ export default {
             is_searching: true,
             selected_user: [],
             current_page: [],
+
             form: new Form({
                 id: '',
+                barangay: '',
+                type_of_disease: '',
             }),
             error: '',
         }
@@ -159,6 +187,12 @@ export default {
                 clearTimeout(this.timer);
                 this.timer = null;
             }
+            if (this.form.barangay == null) {
+                this.form.barangay = '';
+            }
+            if (this.form.type_of_disease == null) {
+                this.form.type_of_disease = '';
+            }
             this.timer = setTimeout(() => {
                 axios.get(page, {
                     params: {
@@ -166,8 +200,8 @@ export default {
                         length: this.length,
                         time_start: this.time_start,
                         time_end: this.time_end,
-                        day: this.day,
-                        section_id: this.section_id,
+                        barangay: this.form.barangay.id,
+                        disease: this.form.type_of_disease.id,
                     },
                 })
                     .then(response => {
@@ -179,7 +213,7 @@ export default {
                         this.error = error;
                         toast.fire({
                             icon: 'error',
-                            text: error.response.data.message,
+                            text: error,
                         })
                     });
             }, 500);
@@ -274,10 +308,27 @@ export default {
             //         text: 'Something went wrong!',
             //     })
             // });
+        },
+        loadDisease() {
+            axios.get('/api/disease/all')
+                .then(response => {
+                    this.option_diseases = response.data.data;
+                });
+        },
+        loadBarangay() {
+            axios.get('/api/barangay/all')
+                .then(response => {
+                    this.option_barangay = response.data.data;
+                });
         }
     },
     created() {
         this.getData();
     },
+    mounted() {
+        this.loadDisease();
+        this.loadBarangay();
+    }
 }
+
 </script>

@@ -45,6 +45,15 @@ Vue.component('bar', Bar);
 Vue.component('Doughnut', Doughnut);
 Vue.component('line-chart', Line);
 // ---------------------------------------
+// High Chart
+import HighchartsVue from 'highcharts-vue';
+import Highcharts from 'highcharts';
+// import HighchartsMap from 'highcharts/modules/map';
+// HighchartsMap(Highcharts);
+
+// // Register the Highcharts component in Vue
+Vue.use(HighchartsVue);
+//----------------------------------------
 // import Vue from 'vue';
 import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';

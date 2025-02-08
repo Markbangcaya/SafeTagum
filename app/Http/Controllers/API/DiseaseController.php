@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Disease;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DiseaseController extends Controller
 {
@@ -13,9 +14,16 @@ class DiseaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
+        $data = Disease::latest();
+
+        if ($request->search) {
+            $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+        $data = $data->paginate($request->length);
+        return response(['data' => $data], 200);
     }
     public function index_all()
     {
@@ -32,6 +40,17 @@ class DiseaseController extends Controller
     public function store(Request $request)
     {
         //
+        $user = Auth::User();
+
+        $this->validate($request, [
+            'name' => 'required|string'
+        ]);
+
+        Disease::create([
+            'name' => $request->name,
+        ]);
+
+        return response(['message' => 'success'], 200);
     }
 
     /**
@@ -52,9 +71,17 @@ class DiseaseController extends Controller
      * @param  \App\Models\Disease  $disease
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Disease $disease)
+    public function update(Request $request, $id)
     {
         //
+        // abort_if(Gate::denies('edit permission'), 403, 'You do not have the required authorization.');
+        $this->validate($request, [
+            'name' => 'required|string|unique:disease,name,' . $request->id,
+        ]);
+        $disease = Disease::findOrFail($id);
+        $disease->update([
+            'name' => $request->name,
+        ]);
     }
 
     /**
@@ -63,8 +90,11 @@ class DiseaseController extends Controller
      * @param  \App\Models\Disease  $disease
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Disease $disease)
+    public function destroy($id)
     {
         //
+        $disease = Disease::findOrFail($id);
+        $disease->delete();
+        return response(['message' => 'success'], 200);
     }
 }

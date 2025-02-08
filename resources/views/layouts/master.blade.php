@@ -86,6 +86,16 @@
                                 </p>
                             </router-link>
                         </li>
+                        {{-- @can('access user') --}}
+                            <li class="nav-item">
+                                <router-link to="/disease" class="nav-link">
+                                    <i class="nav-icon fas fa-disease"></i>
+                                    <p>
+                                        Disease
+                                    </p>
+                                </router-link>
+                            </li>
+                        {{-- @endcan --}}
                         @can('access user')
                             <li class="nav-item">
                                 <router-link to="/users" class="nav-link">
