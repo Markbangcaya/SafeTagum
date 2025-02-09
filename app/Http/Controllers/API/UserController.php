@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use App\Mail\NewUserCredentials;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -39,21 +43,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $password = Str::random(10);
         $this->validate($request, [
             'name' => 'required|string',
             'email' => 'required|email',
-            'password' => 'required|string',
+            // 'password' => 'required|string',
         ]);
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password,
-            // 'password' => Hash::make($request->password),
+            // 'password' => $request->password,
+            'password' => Hash::make($password),
         ]);
         $user->assignRole($request->role['name']);
         foreach ($request->permissions as $permission) {
             $user->givePermissionTo($permission['name']);
         }
+
+        Mail::to($user->email)->send(new NewUserCredentials($user, $password));
+
         return response(['message' => 'success'], 200);
     }
 
@@ -90,8 +98,8 @@ class UserController extends Controller
         ]);
         // dd($user, $request->password);
         if ($request->password) {
-            $user->password = $request->password;
-            // $user->password = Hash::make($request->password);
+            // $user->password = $request->password;
+            $user->password = Hash::make($request->password);
             $user->save();
         }
         foreach ($user->permissions as $permission) {
@@ -100,6 +108,7 @@ class UserController extends Controller
         foreach ($request->permissions as $permission) {
             $user->givePermissionTo($permission['name']);
         }
+
         return response(['message' => 'success'], 200);
     }
 
