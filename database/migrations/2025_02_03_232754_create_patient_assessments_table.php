@@ -22,7 +22,7 @@ class CreatePatientAssessmentsTable extends Migration
             $table->date('date_onset_of_illness')->nullable();
             $table->string('health_facility', 100)->nullable();
             $table->date('patient_admitted')->nullable();
-            $table->enum('case_classification', ['Suspected', 'Confirmed', 'Recovered'])->nullable();
+            $table->enum('case_classification', ['Suspected', 'Confirmed', 'Probable'])->nullable();
             $table->date('date_of_death')->nullable();
             $table->unsignedBigInteger('assess_by');
             $table->timestamps();

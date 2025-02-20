@@ -76,7 +76,7 @@ class DiseaseController extends Controller
         //
         // abort_if(Gate::denies('edit permission'), 403, 'You do not have the required authorization.');
         $this->validate($request, [
-            'name' => 'required|string|unique:disease,name,' . $request->id,
+            'name' => 'required|string|unique:diseases,name,' . $request->id,
         ]);
         $disease = Disease::findOrFail($id);
         $disease->update([

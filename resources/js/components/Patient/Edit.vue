@@ -71,8 +71,8 @@
                                     <label>Type of Disease</label>
                                     <multiselect v-model="form.type_of_disease" :options="option_diseases"
                                         :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                        :preserve-search="true" placeholder="Pick some" label="name" track-by="name"
-                                        :preselect-first="true">
+                                        :preserve-search="true" placeholder="Pick Type of Disease" label="name"
+                                        track-by="name" :preselect-first="true">
                                     </multiselect>
                                     <has-error :form="form" field="type_of_disease" />
                                 </div>
@@ -84,19 +84,20 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-4">
-                                    <div class="form-group">
+                                    <div v-if="form.barangay" class="form-group">
                                         <label>Street / Purok</label>
-                                        <input v-model="form.streetpurok" type="text" class="form-control">
-                                        <has-error :form="form" field="street/purok" />
+                                        <multiselect v-model="form.streetpurok" :options="filteredStreetPuroks"
+                                            :multiple="false" label="name" track-by="name"
+                                            placeholder="Select Street/Puroks">
+                                        </multiselect>
                                     </div>
                                     <div class="form-group">
                                         <label>Barangay</label>
                                         <multiselect disabled v-model="form.barangay" :options="option_barangay"
                                             :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                            :preserve-search="true" placeholder="Pick some" label="name"
-                                            track-by="na me" :preselect-first="true">
+                                            :preserve-search="true" placeholder="Pick Barangay" label="name"
+                                            track-by="name" :preselect-first="true">
                                         </multiselect>
-                                        <has-error :form="form" field="barangay" />
                                     </div>
                                     <div class="form-group">
                                         <label>City</label>
@@ -112,13 +113,17 @@
                                     </div>
                                 </div>
                                 <div class="col-8 border">
-                                    <div>
+                                    <div class="m-2">
                                         <span v-if="loading">Loading...</span>
                                         <label for="checkbox">GeoJSON Visibility</label>
                                         <input id="checkbox" v-model="show" type="checkbox">
                                         <!-- <label for="checkboxTooltip">Enable tooltip</label>
                                         <input id="checkboxTooltip" v-model="enableTooltip" type="checkbox">
                                         <input v-model="fillColor" type="color"> -->
+                                        <br>
+                                        <button type="button" class="btn btn-info" @click="loadGeoJSON()">Load
+                                            Barangay
+                                            Boundaries</button>
                                         <br>
                                     </div>
                                     <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
@@ -186,16 +191,608 @@ export default {
                 type_of_disease: '',
 
                 //Patient Address
-                streetpurok: '',
-                barangay: '',
+                streetpurok: [],
+                barangay: null,
                 city: '',
                 province: '',
                 latitude: '',
                 longitude: '',
             }),
-
             option_diseases: [],
-            option_barangay: [],
+            option_barangay: [
+                {
+                    id: 1, name: 'Apokon', streetpuroks: [ // Renamed to streetpuroks
+                        { name: 'Purok 1' },
+                        { name: 'Purok 1B' },
+                        { name: 'Purok 1C' },
+                        { name: 'Purok 1D' },
+                        { name: 'Purok 1E' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 2A' },
+                        { name: 'Purok 3A' },
+                        { name: 'Purok 3B' },
+                        { name: 'Purok 3C' },
+                        { name: 'Purok 3D' },
+                        { name: 'Purok 3E' },
+                        { name: 'Purok 3F' },
+                        { name: 'Purok 3G' },
+                        { name: 'Purok 3H' },
+                        { name: 'Purok 4A' },
+                        { name: 'Purok 4B' },
+                        { name: 'Purok 4C' },
+                        { name: 'Purok 4D' },
+                        { name: 'Purok 4E' },
+                        { name: 'Purok 4F' },
+                        { name: 'Purok 4G' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 5A' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 6A' },
+                        { name: 'Purok 6B' },
+                        { name: 'Purok 7' },
+                    ]
+                },
+                {
+                    id: 2, name: 'Bincungan', streetpuroks: [
+                        { name: 'Purok Orchids' },
+                        { name: 'Purok Daisy' },
+                        { name: 'Purok Diamante' },
+                        { name: 'Purok Sampaguita' },
+                        { name: 'Purok Ilang Ilang' },
+                        { name: 'Purok Waling Waling' },
+                        { name: 'Purok Gumamela' },
+                        { name: 'Purok Euphorbia' },
+                        { name: 'Purok Talaba' },
+                        { name: 'Purok Rose' },
+                        { name: 'Purok Sunflower' },
+                        { name: 'Purok Everlasting' },
+                        { name: 'Purok Santan' },
+                        { name: 'Purok Rosal' },
+                        { name: 'Purok Mangga' }
+                    ]
+                },
+                {
+                    id: 3, name: 'Busaon', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 6' },
+                    ]
+                },
+                {
+                    id: 4, name: 'Canocotan', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 1A' },
+                        { name: 'Purok 1B' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 2A' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 3A' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 4A' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 5A' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 6A' }
+                    ]
+                }, {
+                    id: 5, name: 'Cuambogan', streetpuroks: [
+                        { name: 'Mercury' },
+                        { name: 'Humabon' },
+                        { name: 'Sto. Niño' },
+                        { name: 'Pagkakaisa' },
+                        { name: 'Bagani' },
+                        { name: 'Bagani Sacred Heart' },
+                        { name: 'Liwliwa' },
+                        { name: 'Namnama' },
+                        { name: 'Caimito' },
+                        { name: 'Saturn' },
+                        { name: 'Narra' },
+                        { name: 'Maharlika' },
+                        { name: 'Sta. Teresa, Maharlika' }
+                    ]
+                }, {
+                    id: 6, name: 'La Filipina', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 2A' },
+                        { name: 'Purok 2B' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 3A' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 5A' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 7' },
+                        { name: 'Purok 8' },
+                        { name: 'Purok 9' },
+                        { name: 'Purok 10' }
+                    ]
+                }, {
+                    id: 7, name: 'Liboganon', streetpuroks: [
+                        { name: 'PUROK 1 BANGUS' },
+                        { name: 'PUROK 2 SUGPO' },
+                        { name: 'PUROK 3 ALIMANGO' },
+                        { name: 'PUROK 4 LAMBAY' },
+                        { name: 'PUROK 5 TAMBAN' },
+                        { name: 'PUROK 6 HIJO' }
+                    ]
+                }, {
+                    id: 8, name: 'Madaum', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 1-A' },
+                        { name: 'Purok 1A' },
+                        { name: 'Purok 1B' },
+                        { name: 'Purok 1C' },
+                        { name: 'Purok 1D' },
+                        { name: 'Purok 10' },
+                        { name: 'Purok 11' },
+                        { name: 'Purok 12' },
+                        { name: 'Purok 13' },
+                        { name: 'Purok 14' },
+                        { name: 'Purok 15' },
+                        { name: 'Purok 16' },
+                        { name: 'Purok 17' },
+                        { name: 'Purok 18A' },
+                        { name: 'Purok 18B' },
+                        { name: 'Purok 19' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 2-A' },
+                        { name: 'Purok 2A' },
+                        { name: 'Purok 2B' },
+                        { name: 'Purok 20' },
+                        { name: 'Purok 21' },
+                        { name: 'Purok 22' },
+                        { name: 'Purok 23' },
+                        { name: 'Purok 24' },
+                        { name: 'Purok 25' },
+                        { name: 'Purok 26' },
+                        { name: 'Purok 27' },
+                        { name: 'Purok 28A' },
+                        { name: 'Purok 28B' },
+                        { name: 'Purok 28C' },
+                        { name: 'Purok 29' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 3A' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 4-A' },
+                        { name: 'Purok 4A' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 5-A' },
+                        { name: 'Purok 5A' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 6-A' },
+                        { name: 'Purok 6A' },
+                        { name: 'Purok 7' },
+                        { name: 'Purok 8' },
+                        { name: 'Purok 8-A' },
+                        { name: 'Purok 8-B' },
+                        { name: 'Purok 8-C' },
+                        { name: 'Purok 8A' },
+                        { name: 'Purok 8B' },
+                        { name: 'Purok 8C' },
+                        { name: 'Purok 9' }
+                    ]
+                }, {
+                    id: 9, name: 'Magdum', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 1A' },
+                        { name: 'Purok 1B' },
+                        { name: 'Purok 1C' },
+                        { name: 'Purok 1D' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 7' },
+                        { name: 'Purok 8' },
+                        { name: 'Purok 9' },
+                        { name: 'Purok 10' },
+                        { name: 'Purok 11' },
+                        { name: 'Purok 12' },
+                        { name: 'Purok 13' },
+                        { name: 'Purok 14' },
+                        { name: 'Purok 15' },
+                        { name: 'Purok 16' },
+                        { name: 'Purok 17' },
+                        { name: 'Purok 18B' },
+                        { name: 'Purok 19' },
+                        { name: 'Purok 20' },
+                        { name: 'Purok 21' },
+                        { name: 'Purok 22' },
+                        { name: 'Purok 23' },
+                        { name: 'Purok 24' },
+                        { name: 'Purok 25' },
+                        { name: 'Purok 26' },
+                        { name: 'Purok 27' },
+                        { name: 'Purok 28A' },
+                        { name: 'Purok 28B' },
+                        { name: 'Purok 28C' },
+                        { name: 'Purok 29' }
+                    ]
+                }, {
+                    id: 10, name: 'Magugpo East', streetpuroks: [
+                        { name: 'Purok Angelica 1' },
+                        { name: 'Purok Angelica 2' },
+                        { name: 'Purok Barabad' },
+                        { name: 'Purok Catiben' },
+                        { name: 'Purok Cherry Blossom' },
+                        { name: 'Purok Daneco' },
+                        { name: 'Purok Dawnaville' },
+                        { name: 'Purok Doctolero' },
+                        { name: 'Purok Durian' },
+                        { name: 'Purok Ferraren' },
+                        { name: 'Purok Liwayway' },
+                        { name: 'Purok Lorenzo' },
+                        { name: 'Purok maharlika' },
+                        { name: 'Purok Malinawon' },
+                        { name: 'Purok Malinawon Homes' },
+                        { name: 'Purok Maximina' },
+                        { name: 'Purok Melendres' },
+                        { name: 'Purok Mencidor' },
+                        { name: 'Purok Mencidor Village' },
+                        { name: 'Purok Nangka' },
+                        { name: 'Purok Narra' },
+                        { name: 'Purok Popular' },
+                        { name: 'Purok RJP2' },
+                        { name: 'Purok Rambutan' },
+                        { name: 'Purok Rupenta 1' },
+                        { name: 'Purok Rupenta 2' },
+                        { name: 'Purok Talisay 55' },
+                        { name: 'Purok Talisay 56' },
+                        { name: 'Purok Talisay Zafra' },
+                        { name: 'Purok Tipaz 1' },
+                        { name: 'Purok Tipaz 2' }
+                    ]
+                }, {
+                    id: 11, name: 'Magugpo North', streetpuroks: [
+                        { name: 'Delfina' },
+                        { name: 'Durian' },
+                        { name: 'Everlasting' },
+                        { name: 'Poinsettia' },
+                        { name: 'Gumamela' },
+                        { name: 'Santan' },
+                        { name: 'Orchids' },
+                        { name: 'Camia' },
+                        { name: 'Bougainvillea' },
+                        { name: 'Sampaguita' },
+                        { name: 'Diamond 1' },
+                        { name: 'Diamond 2' },
+                        { name: 'Matinabangon' },
+                        { name: 'Suaybaguio A' },
+                        { name: 'Suaybaguio B' },
+                        { name: 'Suaybaguio C' },
+                        { name: 'Talisay' },
+                        { name: 'Pinetree' },
+                        { name: 'Bulaklak 1' },
+                        { name: 'Bulaklak 2' },
+                        { name: 'Bulaklak 3' },
+                        { name: 'Bulaklak 4' },
+                        { name: 'Kalamboan' }
+                    ]
+                }, {
+                    id: 12, name: 'Magugpo Poblacion', streetpuroks: [
+                        { name: 'Arellano' },
+                        { name: 'Kayumangi' },
+                        { name: 'Sampaguita' },
+                        { name: 'Lapu Lapu' },
+                        { name: 'Paraiso' },
+                        { name: 'Orchids' },
+                        { name: 'Sunflower' },
+                        { name: 'Tandang Sora' },
+                        { name: 'Sulgreg' },
+                        { name: 'Malinawon 2' },
+                        { name: 'Calachuchi' },
+                        { name: 'Marilag 1' },
+                        { name: 'Marilag 2' },
+                        { name: 'Tindalo' },
+                        { name: 'Cristo Rey' },
+                        { name: 'Dagohoy' },
+                        { name: 'Talisay' }
+                    ]
+                }, {
+                    id: 13, name: 'Magugpo South', streetpuroks: [
+                        { name: 'Purok PAG-IBIG 1' },
+                        { name: 'Purok PAG-IBIG 2' },
+                        { name: 'Purok SUNFLOWER' },
+                        { name: 'Purok MAALAM' },
+                        { name: 'Purok CERVANTES' },
+                        { name: 'Purok CASTRENCE' },
+                        { name: 'Purok LUZVIMIN' },
+                        { name: 'Purok RAFAEL' },
+                        { name: 'Purok EXODUS' },
+                        { name: 'Purok ALMASIGA' },
+                        { name: 'Purok MARANGAL' },
+                        { name: 'Purok ORANGE VALLEY' },
+                        { name: 'Purok EMIL' },
+                        { name: 'Purok KALAYAAN' },
+                        { name: 'Purok MALINIS' },
+                        { name: 'Purok MALINAWON' },
+                        { name: 'Purok DURIAN-205' },
+                        { name: 'Purok KATUPARAN' },
+                        { name: 'Purok LIWAYWAY' },
+                        { name: 'Purok MAUSWAGON' },
+                        { name: 'Purok PAG-ASA' },
+                        { name: 'Purok VILLAROSAL' }
+                    ]
+                }, {
+                    id: 14, name: 'Magugpo West', streetpuroks: [
+                        { name: 'Bagong Lipunan' },
+                        { name: 'Bayanihan' },
+                        { name: 'Vipatil' },
+                        { name: 'Talisay Seminary' },
+                        { name: 'Waling Waling' },
+                        { name: 'Liwanag' },
+                        { name: 'Panabang' },
+                        { name: 'Kawayan' },
+                        { name: 'De Oro' },
+                        { name: 'Visayas' },
+                        { name: 'Sampaguita' },
+                        { name: 'Gulayan' },
+                        { name: 'Pamulinawen' },
+                        { name: 'Busilak' },
+                        { name: 'Mansanitas' },
+                        { name: 'Kaunlaran' },
+                        { name: 'Pagkakaisa' },
+                        { name: 'Masagana' },
+                        { name: 'Pag Asa' },
+                        { name: 'Durian B' },
+                        { name: 'Cristo Rey Phase 1 A' },
+                        { name: 'Cristo Rey Phase 1 B' },
+                        { name: 'Cristo Rey Phase 2' },
+                        { name: 'Mahusay' },
+                        { name: 'Malipayon' }
+                    ]
+                }, {
+                    id: 15, name: 'Mankilam', streetpuroks: [
+                        { name: 'Garciaville 1' },
+                        { name: 'Garciaville 2' },
+                        { name: 'Garciaville 3' },
+                        { name: 'Villa cacacho 1' },
+                        { name: 'Villa cacacho 2' },
+                        { name: 'Bautista' },
+                        { name: 'Villa Patricia' },
+                        { name: 'Lynville' },
+                        { name: 'Gulayan' },
+                        { name: 'Margarita 1' },
+                        { name: 'Margarita 2' },
+                        { name: 'Aala' },
+                        { name: 'Magsanoc' },
+                        { name: 'Dela cruz' },
+                        { name: 'Abaca' },
+                        { name: 'Banana' },
+                        { name: 'Cabanisas' },
+                        { name: 'Capitol' },
+                        { name: 'Fe Village' },
+                        { name: 'Kalubiran' },
+                        { name: 'Lumboy' },
+                        { name: 'Magkidong' },
+                        { name: 'Magtalisay' },
+                        { name: 'Maligaya' },
+                        { name: 'Mangga' },
+                        { name: 'Orchids' },
+                        { name: 'Papaya' },
+                        { name: 'Pioneer' },
+                        { name: 'Uraya 1&2' },
+                        { name: 'Villa Magsanoc 1&2' },
+                        { name: 'Carig' },
+                        { name: 'Caimito 1' },
+                        { name: 'Caimito 2' },
+                        { name: 'Ilocandia' },
+                        { name: 'Durian' },
+                        { name: 'Greenland' },
+                        { name: 'Garcia 1' },
+                        { name: 'Garcia 2' },
+                        { name: 'Lemonsito 1' },
+                        { name: 'Lemonsito 2' },
+                        { name: 'Lemonsito 3(Brea Homes)' },
+                        { name: 'Maximo' },
+                        { name: 'Union Village 1' },
+                        { name: 'Union Village 2' },
+                        { name: 'Country Homes - 1' },
+                        { name: 'Country Homes - 2' },
+                        { name: 'Galingan 1' },
+                        { name: 'Galingan 2' },
+                        { name: 'Pag-ibig' },
+                        { name: 'Tadena' }
+                    ]
+                }, {
+                    id: 16, name: 'New Balamban', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 4' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 6' },
+                        { name: 'Purok 7' },
+                    ]
+                }, {
+                    id: 17, name: 'Nueva Fuerza', streetpuroks: [
+                        { name: 'Purok 1A' },
+                        { name: 'Purok 1B' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 3' },
+                        { name: 'Purok 4' }
+                    ]
+                }, {
+                    id: 18, name: 'Pagsabangan', streetpuroks: [
+                        { name: 'Purok Alvarida' },
+                        { name: 'Purok Bagong Silang' },
+                        { name: 'Purok Bayanihan' },
+                        { name: 'Purok Farm 3' },
+                        { name: 'Purok Ilvi' },
+                        { name: 'Purok Kalubihan' },
+                        { name: 'Purok Maduao' },
+                        { name: 'Purok Mangga' },
+                        { name: 'Purok Pagkakaisa' },
+                        { name: 'Purok San Isidro' },
+                        { name: 'Purok Sta. Cruz' },
+                        { name: 'Purok Sto. Niño' },
+                        { name: 'Purok Rancho' }
+                    ]
+                }, {
+                    id: 19, name: 'Pandapan', streetpuroks: [
+                        { name: 'Durian' },
+                        { name: 'Lanzones' },
+                        { name: 'Lemon' },
+                        { name: 'Santol' },
+                        { name: 'Nangka' },
+                        { name: 'Mangga' },
+                        { name: 'Marang' }
+                    ]
+                }, {
+                    id: 20, name: 'San Agustin', streetpuroks: [
+                        { name: 'Purok Ilang-Ilang' },
+                        { name: 'Purok Ipil-Ipil' },
+                        { name: 'Purok Waling-Waling' },
+                        { name: 'Purok Dancing Lady' },
+                        { name: 'Purok Rosal' },
+                        { name: 'Purok Gumamela' },
+                        { name: 'Purok Mangga' }
+                    ]
+                }, {
+                    id: 21, name: 'San Isidro', streetpuroks: [
+                        { name: 'Purok 1 Makabayan Village' },
+                        { name: 'Purok 2 Makabayan Village' },
+                        { name: 'Purok 3 Makabayan Village' },
+                        { name: 'Purok 4 Makabayan Village' },
+                        { name: 'Purok 5 Makabayan Village' },
+                        { name: 'Purok Bantacan' },
+                        { name: 'Purok 15 Panaghiusa' },
+                        { name: 'Purok Wakan' },
+                        { name: 'Purok Tulay' },
+                        { name: 'Purok Alambre' },
+                        { name: 'Purok Durian' },
+                        { name: 'Purok Poblacion' },
+                        { name: 'Purok Sinalikway' },
+                        { name: 'Purok Panitan' },
+                        { name: 'Purok Cabadiangan' },
+                        { name: 'Purok Bang-ngag' },
+                        { name: 'Purok Baluno' }
+                    ]
+                }, {
+                    id: 22, name: 'San Miguel', streetpuroks: [
+                        { name: 'Purok 1' },
+                        { name: 'Purok 1a' },
+                        { name: 'Purok 1b' },
+                        { name: 'Purok 2' },
+                        { name: 'Purok 2a Suico compound' },
+                        { name: 'Purok 3a Erlynville Subdivision' },
+                        { name: 'Purok 3b North Eagle 2' },
+                        { name: 'Purok 3c Villaverde Subdivision' },
+                        { name: 'Purok 3d Abatayo/Domingo Compound' },
+                        { name: 'Purok 3East Durian' },
+                        { name: 'Purok 3West Durian' },
+                        { name: 'Purok 4 Bliss' },
+                        { name: 'Purok 5' },
+                        { name: 'Purok 5a' },
+                        { name: 'Purok 5b North Eagle 4' },
+                        { name: 'Purok 6 Barrio Site' },
+                        { name: 'Purok 6a Estabillo Homes' },
+                        { name: 'Purok 7' },
+                        { name: 'Purok 8' },
+                        { name: 'Purok 8a Laureta Homes' },
+                        { name: 'Purok 9' },
+                        { name: 'Purok 10' },
+                        { name: 'Purok 10a' },
+                        { name: 'Purok 11 Tierra Grande' },
+                        { name: 'Purok 11a' },
+                        { name: 'Purok 11b' },
+                        { name: 'Purok 11c' },
+                        { name: 'Purok 12' },
+                        { name: 'Purok 13' },
+                        { name: 'Purok 13a' },
+                        { name: 'Purok 14' }
+                    ]
+                }, {
+                    id: 23, name: 'Visayan Village', streetpuroks: [
+                        { name: 'IPIL -IPIL' },
+                        { name: 'SUNSHINE 2' },
+                        { name: 'CADENA de AMOR' },
+                        { name: 'SAMPAGUITA 1' },
+                        { name: 'SAMPAGUITA 2' },
+                        { name: 'PAG-ASA' },
+                        { name: 'KALIPAY' },
+                        { name: 'PAGLAUM' },
+                        { name: 'SAN ROQUE' },
+                        { name: 'NAZARENO' },
+                        { name: 'DREAMVILLE' },
+                        { name: 'DAHLIA' },
+                        { name: 'ANGELIA HOMES' },
+                        { name: 'PINYA' },
+                        { name: 'MACOPA' },
+                        { name: 'LANDING' },
+                        { name: 'CAPAGNGAN' },
+                        { name: 'JETH VILLAGE' },
+                        { name: 'Buli' },
+                        { name: 'Bunga' },
+                        { name: 'Cogon' },
+                        { name: 'Cafe' },
+                        { name: 'Renzo' },
+                        { name: 'Rambutan' },
+                        { name: 'White Dove' },
+                        { name: 'North Eagle 1' },
+                        { name: 'Cattleya' },
+                        { name: 'Libra' },
+                        { name: 'Aquarius' },
+                        { name: 'Pagmamahal' },
+                        { name: 'Pagkakaisa' },
+                        { name: 'Pagbati' },
+                        { name: 'Pag-Ibig 1' },
+                        { name: 'Everlasting' },
+                        { name: 'Jalandoni' },
+                        { name: 'Kahayag' },
+                        { name: 'Palmera' },
+                        { name: 'Talisay 1' },
+                        { name: 'Talisay 2' },
+                        { name: 'Lanzones' },
+                        { name: 'Calachuchi' },
+                        { name: 'Victorious Homes' },
+                        { name: 'Villa Paraiso' },
+                        { name: 'Cacao' },
+                        { name: 'Narra' },
+                        { name: 'Margarette' },
+                        { name: 'Anahaw' },
+                        { name: 'Anika Homes' },
+                        { name: 'Camella Homes' },
+                        { name: 'Cebole' },
+                        { name: 'Dara Village' },
+                        { name: 'Durian' },
+                        { name: 'Pioneer' },
+                        { name: 'St. Therese' },
+                        { name: 'Timog' },
+                        { name: 'Saging' },
+                        { name: 'Gabayan 1' },
+                        { name: 'Gabayan 2' },
+                        { name: 'Ce Maurillo' },
+                        { name: 'Ilang-Ilang' },
+                        { name: 'Sto. Niño' },
+                        { name: 'Malinawon' },
+                        { name: 'Maharlika' },
+                        { name: 'Waling-Waling-' },
+                        { name: 'Santan' },
+                        { name: 'Mahogany' },
+                        { name: 'Rosal' },
+                        { name: 'Pag-ibig 2' },
+                        { name: 'Sunshine 1' },
+                        { name: 'Bayanihan' },
+                        { name: 'Basakan' },
+                        { name: 'Caimito' },
+                        { name: 'Bayabas' },
+                        { name: 'Orchids' },
+                        { name: 'Gementiza' },
+                        { name: 'Sudion' },
+                        { name: 'Sambag' },
+                        { name: 'Budiongan' },
+                        { name: 'Pahiyum' },
+                        { name: 'Cabilto' },
+                        { name: 'Ne Baysa' },
+                        { name: 'Daisy' }
+                    ]
+                }
+            ],
 
             //Maps
             loading: false,
@@ -257,6 +854,7 @@ export default {
             const { lat, lng } = e.latlng;
             this.form.latitude = lat;
             this.form.longitude = lng;
+            this.form.barangay = null;
 
             if (e.layer.feature.properties.NAME_3 != null) {
                 Swal.fire({
@@ -285,7 +883,12 @@ export default {
                 .then(response => {
                     this.option_barangay = response.data.data;
                 });
-        }
+        },
+        loadGeoJSON() {
+            this.$nextTick(() => { // Ensure the DOM updates before map resize
+                this.$refs.map.mapObject.invalidateSize();
+            });
+        },
     },
     async created() {
         this.loading = true;
@@ -354,38 +957,31 @@ export default {
 
         this.loading = false;
     },
+    computed: {
+        filteredStreetPuroks() { // Renamed to filteredStreetPuroks
+            if (!this.form.barangay) {
+                return [];
+            }
+            return this.form.barangay.streetpuroks || []; // Accessing streetpuroks
+        }
+    },
     watch: {
         row: function () {
-            console.log(this.row);
             this.form.fill(this.row);
             this.form.type_of_disease = this.row.disease;
-            this.form.streetpurok = this.row['street/purok'];
+            this.form.barangay = this.option_barangay.find(barangay => barangay.name === this.row.barangay.name);
+            this.form.streetpurok = this.form.barangay.streetpuroks.find((option) => option.name === this.row['street/purok']);
             this.marker = latLng(this.row.latitude, this.row.longitude);
-        }
+        },
+        'form.barangay'(newVal) {
+            if (!newVal) {
+                this.form.streetpurok = []; // Clear streetpurok selection
+            }
+        },
     },
     mounted() {
         this.loadDisease();
-        this.loadBarangay();
-        // // Replace with your GeoJSON file path or API endpoint
-        // fetch('map (1).geojson')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const map = L.map('map').setView([11.0043, 125.5439], 13);
-        //         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //         }).addTo(map);
-
-        //         L.geoJSON(data).addTo(map);
-        //     });
-        // Example: Save coordinates to backend using Axios
-        // axios.post('/api/save-location', { latitude: this.latitude, longitude: this.longitude })
-        //     .then(response => {
-        //         console.log('Location saved successfully');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving location:', error);
-        //     });
-
+        // this.loadBarangay();
     }
 }
 </script>

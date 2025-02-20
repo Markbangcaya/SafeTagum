@@ -90,22 +90,57 @@ class PatientController extends Controller
         // abort_if(Gate::denies('list permission'), 403, 'You do not have the required authorization.');
         $this->validate($request, [
             'type_of_disease' => 'required',
-            'barangay' => 'required',
+            // 'barangay' => 'required',
             // 'date' => 'required',
         ]);
+        //'data' => $data
+        // $data = Patient::select('latitude', 'longitude')->with('barangay', 'disease')
+        //     ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
+        //     // ->where('patients.barangay_id', $request->barangay['id'])
+        //     ->where('patient_assessments.type_of_disease', $request->type_of_disease['id'])
+        //     ->whereBetween('patient_assessments.date_onset_of_illness', [$request->date["startDate"], $request->date["endDate"]])
+        //     ->get();
 
-        $data = Patient::select('latitude', 'longitude')
-            ->with('barangay', 'disease')
-            ->groupBy('latitude', 'longitude')
-            ->where('patients.barangay_id', $request->barangay['id'])
-            ->where('patients.type_of_disease', $request->type_of_disease['id'])
-            // ->whereBetween('patients.created_at', $request->date)
-            ->get();
+        // $cases = Patient::with('barangay', 'disease', 'patient_assessment')
+        //     ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
+        //     ->where('patients.barangay_id', $request->barangay['id'])
+        //     ->where('patient_assessments.type_of_disease', $request->type_of_disease['id'])
+        //     ->whereBetween('patient_assessments.date_onset_of_illness', [$request->date["startDate"], $request->date["endDate"]])
+        //     ->groupBy('barangay_id')
+        //     ->selectRaw('barangay_id, 
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) as count_0_5,
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) as count_6_10,
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) as count_11_15,
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as count_16_above,
+        //                  SUM(CASE WHEN patient_assessments.date_of_death IS NOT NULL THEN 1 ELSE 0 END) as total_deaths,
+        //                  SUM(CASE WHEN patient_assessments.case_classification = "Confirmed" THEN 1 ELSE 0 END) as count_confirmed,
+        //                  SUM(CASE WHEN patient_assessments.case_classification = "Probable" THEN 1 ELSE 0 END) as count_probable,
+        //                  SUM(CASE WHEN patient_assessments.case_classification = "Suspected" THEN 1 ELSE 0 END) as count_suspected,
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) +
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) +
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) +
+        //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as total_cases')
+        //     ->orderBy('barangay_id', 'asc')
+        //     ->get();
+        $response = null;
+        $diseases = [];
+        $selectedDiseases = $request->type_of_disease;
+        foreach ($request->type_of_disease as $disease) {
+            $diseases[] = [
+                'name' => $disease['name']
+            ];
+        }
 
-        $response = Http::get('http://127.0.0.1:5000/forecast');
+        if (count($selectedDiseases) > 1) {
+            $response = Http::get('http://127.0.0.1:5000/forecastalldisease', ['diseases' => $diseases]);
+        } else {
+            $response = Http::get('http://127.0.0.1:5000/forecast?disease=' . $diseases[0]['name']);
+        }
+
         $forecastData = $response->json();
+        // dd($forecastData);
 
-        return response(['forecasting' => $forecastData, 'data' => $data], 200);
+        return response(['forecasting' => $forecastData], 200);
     }
     public function report(Request $request)
     {
@@ -114,55 +149,34 @@ class PatientController extends Controller
             // 'barangay' => 'required',
             'date' => 'required',
         ]);
+
         $patient = Patient::select('latitude', 'longitude')
-            ->with('barangay', 'disease')
-            // ->groupBy('latitude', 'longitude')
-            // ->where('patients.barangay_id', $request->barangay['id'])
-            ->where('patients.type_of_disease', $request->type_of_disease['id'])
-            ->whereBetween('patients.created_at', [$request->date["startDate"], $request->date["endDate"]])
+            ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
+            ->where('patient_assessments.type_of_disease', $request->type_of_disease['id'])
+            ->whereBetween('patient_assessments.date_onset_of_illness', [$request->date["startDate"], $request->date["endDate"]])
             ->get();
 
-        $cases = Patient::with('barangay', 'disease')
-            ->where('patients.type_of_disease', $request->type_of_disease['id'])
-            ->whereBetween('patients.created_at', [$request->date["startDate"], $request->date["endDate"]])
+        $cases = Patient::with('barangay', 'disease', 'patient_assessment')
+            ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
+            ->where('patient_assessments.type_of_disease', $request->type_of_disease['id'])
+            ->whereBetween('patient_assessments.date_onset_of_illness', [$request->date["startDate"], $request->date["endDate"]])
             ->groupBy('barangay_id')
             ->selectRaw('barangay_id, 
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 
-                            ELSE 0 
-                         END) as count_0_5,
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 
-                            ELSE 0 
-                         END) as count_6_10,
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 
-                            ELSE 0 
-                         END) as count_11_15,
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 
-                            ELSE 0 
-                         END) as count_16_above,
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 
-                            ELSE 0 
-                         END) +
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 
-                            ELSE 0 
-                         END) +
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 
-                            ELSE 0 
-                         END) +
-                         SUM(CASE 
-                            WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 
-                            ELSE 0 
-                         END) as total_cases')
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) as count_0_5,
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) as count_6_10,
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) as count_11_15,
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as count_16_above,
+                         SUM(CASE WHEN patient_assessments.date_of_death IS NOT NULL THEN 1 ELSE 0 END) as total_deaths,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Confirmed" THEN 1 ELSE 0 END) as count_confirmed,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Probable" THEN 1 ELSE 0 END) as count_probable,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Suspected" THEN 1 ELSE 0 END) as count_suspected,
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) +
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) +
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) +
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as total_cases')
             ->orderBy('barangay_id', 'asc')
             ->get();
-        // dd($cases);
-        return response(['data' => $patient, 'cases' => $cases], 200);
+        return response(['data' => $patient, 'cases' => $cases, 'user' => Auth::User()], 200);
     }
     /**
      * Store a newly created resource in storage.
@@ -189,14 +203,13 @@ class PatientController extends Controller
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address
-            'streetpurok' => 'required|string',
+            'streetpurok.name' => 'required|string',
             'barangay.id' => 'required|numeric',
             'city' => 'required|string',
             'province' => 'required|string',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
-        // dd($this->tokenize($request->firstname));
 
         Patient::create([
             'firstname' => $this->tokenize($request->firstname),
@@ -212,7 +225,7 @@ class PatientController extends Controller
             'type_of_disease' => $request->type_of_disease['id'],
 
             //Patient Address
-            'street/purok' => $request->streetpurok,
+            'street/purok' => $request->streetpurok['name'],
             'barangay_id' => $request->barangay['id'],
             'city' => $request->city,
             'province' => $request->province,
@@ -239,7 +252,6 @@ class PatientController extends Controller
             'case_classification' => 'required|string',
             'date_of_death' => 'nullable|date',
             'type_of_disease.id' => 'required|numeric',
-
         ]);
         // dd($this->tokenize($request->firstname));
         $patient = Patient::findOrFail($id);
@@ -256,6 +268,45 @@ class PatientController extends Controller
 
             'assess_by' => $user->id,
         ]);
+
+        return response(['message' => 'success'], 200);
+    }
+    public function updateassessment(Request $request, $id)
+    {
+        $user = Auth::User();
+
+        $this->validate($request, [
+            'case_id' => 'string',
+            'epi_id' => 'required|string',
+            // 'id' => 'required|numeric',
+            'date_onset_of_illness' => 'required|date',
+            'health_facility' => 'string',
+            'patient_admitted' => 'date',
+            'case_classification' => 'required|string',
+            'date_of_death' => 'nullable|date',
+            'type_of_disease.id' => 'required|numeric',
+        ]);
+        $patientassessment = Patient_Assessment::findOrFail($id);
+        $patientassessment->update([
+            'case_id' => $request->case_id,
+            'epi_id' => $request->epi_id,
+            // 'patient_id' => $patient->id,
+            'type_of_disease' => $request->type_of_disease['id'],
+            'date_onset_of_illness' => $request->date_onset_of_illness,
+            'health_facility' => $request->health_facility,
+            'patient_admitted' => $request->patient_admitted,
+            'case_classification' => $request->case_classification,
+            'date_of_death' => $request->date_of_death,
+
+            'assess_by' => $user->id,
+        ]);
+        // dd($user, $request->password);
+        // if ($request->password) {
+        // $user->password = $request->password;
+        // $user->password = Hash::make($request->password);
+
+        // }
+        $patientassessment->save();
 
         return response(['message' => 'success'], 200);
     }
@@ -296,7 +347,7 @@ class PatientController extends Controller
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address
-            'streetpurok' => 'required|string',
+            'streetpurok.name' => 'required|string',
             'barangay.id' => 'required|numeric',
             'city' => 'required|string',
             'province' => 'required|string',
@@ -318,7 +369,7 @@ class PatientController extends Controller
             'type_of_disease' => $request->type_of_disease['id'],
 
             //Patient Address
-            'street/purok' => $request->streetpurok,
+            'street/purok' => $request->streetpurok['name'],
             'barangay_id' => $request->barangay['id'],
             'city' => $request->city,
             'province' => $request->province,

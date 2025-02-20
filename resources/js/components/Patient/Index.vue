@@ -86,14 +86,8 @@
                                             <td>{{ data.barangay.name }}</td>
                                             <td class="text-right">
                                                 <button type="button" class="btn btn-success btn-sm"
-                                                    @click="openAssessModal(data)" v-if="can('view user')"><i
-                                                        class="fas fa-search-plus"></i> Assessment</button>
-                                                <button type="button" class="btn btn-success btn-sm"
                                                     @click="openAssessModal(data)" v-if="can('edit user')"><i
                                                         class="fas fa-search-plus"></i> Assessment</button>
-                                                <!-- <button type="button" class="btn btn-danger btn-sm"
-                                                    @click="openEditModal(data)" v-if="can('edit user')"><i
-                                                        class="fas fa-location-dot"></i> Location</button> -->
                                                 <button type="button" class="btn btn-primary btn-sm"
                                                     @click="openEditModal(data)" v-if="can('edit user')"><i
                                                         class="fas fa-edit"></i> Edit</button>

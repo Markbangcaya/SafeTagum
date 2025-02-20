@@ -26,15 +26,15 @@
                                     <div id="remove-print" class="col-4">
                                         <div class="form-group">
                                             <label>Type of Disease</label>
-                                            <multiselect v-model="form.type_of_disease" :options="option_diseases"
-                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick Type of Disease" label="name"
-                                                track-by="name" :preselect-first="true">
+                                            <multiselect v-model="form.type_of_disease" :disabled="this.form.disabled"
+                                                :options="option_diseases" :multiple="true" :close-on-select="true"
+                                                :clear-on-select="false" :preserve-search="true"
+                                                placeholder="Pick Type of Disease" label="name" track-by="name"
+                                                :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="type_of_disease" />
                                         </div>
-
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                             <label>Barangay</label>
                                             <multiselect v-model="form.barangay" :options="option_barangay"
                                                 :multiple="false" :close-on-select="true" :clear-on-select="false"
@@ -42,16 +42,18 @@
                                                 track-by="name" :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="barangay" />
-                                        </div>
-                                        <!-- <div class="form-group">
+                                        </div> 
+                                        <div class="form-group">
                                             <label>Date Range</label>
                                             <date-range-picker v-model="form.date" style="width: 100%;">
                                             </date-range-picker>
                                             <has-error :form="form" field="date" />
-                                        </div> -->
-                                        <button type="button" class="btn btn-success"
-                                            @click="forecast">Forecast</button>
-                                        <button v-if="this.form.enable == true" type="button"
+                                        </div>-->
+                                        <button v-if="this.form.disabled == !true" type="button" class="btn btn-success"
+                                            @click="forecast">Create Forecast</button>
+                                        <button v-else type="button" class="btn btn-info" @click="refresh"><i
+                                                class="fas fa-refresh"></i> Create New Forecast</button>
+                                        <button v-if="this.form.disabled == true" type="button"
                                             class="btn btn-success float-right" @click="printChart"><i
                                                 class="fas fa-print"></i> Print
                                             Forecast</button>
@@ -61,8 +63,8 @@
                                     <div v-if="this.form.enable == true" class="col-8" id="data"
                                         style="opacity: 0.5; pointer-events: none;"> -->
                                     <div class="col-8 border-left">
-                                        <label v-if="this.form.enable == true" class="text-center">{{
-                                            form.type_of_disease.name }} Cases in Barangay {{ form.barangay.name }}
+                                        <label v-if="this.form.type_of_disease.length == 1" class="text-center">{{
+                                            form.type_of_disease[0].name }} Cases in Tagum City
                                             <!-- ({{
                                                 this.form.date.startDate.toLocaleDateString('en-US', {
                                                     year: 'numeric',
@@ -78,7 +80,7 @@
                                                 this.form.start_morbidity_week }}
                                                 - {{ this.form.end_morbidity_week }}</span> -->
                                         </label>
-                                        <div class="row">
+                                        <div v-if="this.form.multiple_enable == false" class="row">
                                             <div class="col-4">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-info elevation-1"><i
@@ -135,21 +137,29 @@
                                                 2023 x 100
                                             </p>
                                         </div>
-                                        <hr>
-                                        <label v-if="this.form.enable == true">Previous number of {{
-                                            form.type_of_disease.name }} cases in Barangay {{
-                                                this.form.barangay.name }}</label>
-                                        <line-chart v-if="this.form.enable == true" :data="lineData" :options="options"
-                                            style="height: 400px; width: 100%" />
-                                        <hr v-if="this.form.enable == true">
-                                        <label v-if="this.form.enable == true">{{
-                                            form.type_of_disease.name }} Cases in Barangay {{
-                                                this.form.barangay.name }} and the
-                                            Forecasted Cases with its Thresholds</label>
-                                        <line-chart v-if="this.form.enable == true" :data="linebarData"
-                                            :options="linebaroptions" style="height: 400px; width: 100%" />
-                                        <hr v-if="this.form.enable == true">
-                                        <label v-if="this.form.enable == true">Affected
+                                        <div v-if="this.form.enable == true">
+                                            <hr>
+                                            <label>Previous number of {{
+                                                form.type_of_disease[0].name }} cases in Tagum City</label>
+                                            <line-chart :data="lineData" :options="options"
+                                                style="height: 350px; width: 100%" />
+                                            <hr>
+                                            <label>{{
+                                                form.type_of_disease[0].name }} Cases in Tagum City and the
+                                                Forecasted Cases with its Thresholds</label>
+                                            <line-chart :data="linebarData" :options="linebaroptions"
+                                                style="height: 350px; width: 100%" />
+                                            <hr>
+                                        </div>
+                                        <div v-if="this.form.multiple_enable == true">
+                                            <label>Selected Disease in Tagum
+                                                City
+                                                and the
+                                                Forecasted Cases</label>
+                                            <line-chart :data="linebarDatatest" :options="linebaroptionstest"
+                                                style="height: 350px; width: 100%" />
+                                        </div>
+                                        <!-- <label v-if="this.form.enable == true">Affected
                                             {{ this.form.type_of_disease.name }} cases in Barangay {{
                                                 this.form.barangay.name }} </label>
                                         <div class="row">
@@ -199,12 +209,12 @@
                                                     :options-style="styleFunction" />
                                                 <l-marker v-for="(marker, index) in markers.data" :key="index"
                                                     :lat-lng="[marker.latitude, marker.longitude]">
-                                                    <!-- <l-popup>
+                                                    <l-popup>
                                                     <p>Count :<b>{{ marker.count }}</b></p>
-                                                </l-popup> -->
+                                                </l-popup>
                                                 </l-marker>
                                             </l-map>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -252,7 +262,9 @@ export default {
                 date: '',
                 start_morbidity_week: '0',
                 end_morbidity_week: '0',
-                enable: false
+                enable: false,
+                multiple_enable: false,
+                disabled: false
             }),
             sum2023: null,
             sum2024: null,
@@ -260,11 +272,12 @@ export default {
             option_diseases: [],
             option_barangay: [],
 
+            total_cases_barangay: '',
             cases: '',
 
             //Maps
             loading: false,
-            show: false,
+            show: true,
             enableTooltip: true,
             zoom: 12,
             center: [7.448040629446573, 125.80747097125365],
@@ -321,7 +334,8 @@ export default {
                         borderColor: 'rgb(112,116,124)',
                         borderWidth: 1,
                         type: 'line',
-                        fill: false
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: '2022',
@@ -330,7 +344,8 @@ export default {
                         borderColor: 'rgb(12,204,244)',
                         borderWidth: 1,
                         type: 'line',
-                        fill: false
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: '2023',
@@ -339,7 +354,8 @@ export default {
                         borderColor: 'rgb(12,108,252)',
                         borderWidth: 1,
                         type: 'line',
-                        fill: false
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: '2024',
@@ -348,6 +364,8 @@ export default {
                         borderColor: 'rgb(34, 197, 94)',
                         borderWidth: 1,
                         type: 'line',
+                        fill: false,
+                        spanGaps: true,
                     }
                 ]
             },
@@ -393,21 +411,23 @@ export default {
                 datasets: [
                     {
                         label: 'Epidemic Thresholds',
-                        data: [3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3, 4, 5, 6, 3],
+                        data: [],
                         backgroundColor: 'rgba(239, 68, 68, .3)',
                         borderColor: 'rgb(239, 68, 68)',
                         borderWidth: 2,
                         type: 'line',
-                        fill: false
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: 'Alert Thresholds',
-                        data: [2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 3, 4, 2, 3, 3, 4, 2, 3, 2, 3, 4, 2, 4],
+                        data: [],
                         backgroundColor: 'rgba(234, 179, 8, .3)',
                         borderColor: 'rgb(234, 179, 8)',
                         borderWidth: 2,
                         type: 'line',
-                        fill: false
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: '2024',
@@ -416,33 +436,81 @@ export default {
                         borderColor: 'rgb(34, 197, 94)',
                         borderWidth: 1,
                         type: 'bar',
+                        fill: false,
+                        spanGaps: true,
                     },
                     {
                         label: 'Forecasted Data',
                         data: [],
-                        backgroundColor: 'rgba(34, 197, 94, .3)',
-                        borderColor: 'rgb(239, 68, 68)',
+                        backgroundColor: 'rgba(255, 255, 0, 0.4)',
+                        borderColor: 'rgba(255, 255, 0, 0.9)',
                         borderWidth: 1,
                         type: 'bar',
+                        fill: false,
+                        spanGaps: true,
                     },
                 ]
-            }
+            },
+            linebaroptionstest: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    title: {
+                        display: false,
+                        text: 'Reported HFMD Cases and Case Fatality Rate by BARANGAY in TAGUM  CITY, MW 1 - 32, (n = 32)',
+                        font: {
+                            size: 16
+                        },
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Morbidity Week',
+                            position: 'bottom'
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        suggestedMax: 10
+                    },
+                },
+                tension: 0.1
+            },
+            linebarDatatest: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'],
+                datasets: []
+            },
         }
     },
-    watch: {
-        show(newValue) {
-            console.log("Checkbox value changed to:", newValue);
-            // You can react to changes here as well, independently of the button.
-            if (newValue) {
-                // Checkbox is now checked
-            } else {
-                // Checkbox is now unchecked
-            }
-        }
-    },
+    // watch: {
+    //     show(newValue) {
+    //         console.log("Checkbox value changed to:", newValue);
+    //         // You can react to changes here as well, independently of the button.
+    //         if (newValue) {
+    //             // Checkbox is now checked
+    //         } else {
+    //             // Checkbox is now unchecked
+    //         }
+    //     }
+    // },
     methods: {
         printChart() {
             window.print(); // Trigger the browser's print function
+        },
+        refresh() {
+            window.location.reload();
         },
         styleFunction(feature) {
             return {
@@ -464,74 +532,212 @@ export default {
             });
             setTimeout(() => {
                 this.form.post('/api/patient/forecast').then(response => {
-                    // this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
-                    // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
-                    this.form.enable = true;
-                    // const myDiv = document.getElementById("data");
-                    // myDiv.style.opacity = "1";
-                    // myDiv.style.pointerEvents = "auto";
+                    if (this.form.type_of_disease.length == 1) {
+                        // this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
+                        // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
+                        this.form.enable = true;
+                        this.form.disabled = true;
+                        // const myDiv = document.getElementById("data");
+                        // myDiv.style.opacity = "1";
+                        // myDiv.style.pointerEvents = "auto";
 
-                    this.markers = response.data;
-                    // this.cases = response.data.forcasting + ' Expected Cases in Barangay ' + this.form.barangay.name;
-                    // this.lineData.datasets[5].data[11].push(response.data.forcasting);
-                    // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
-                    // this.$refs.lineChart.chartInstance.update();
+                        this.markers = response.data;
+                        // this.cases = response.data.forcasting + ' Expected Cases in Barangay ' + this.form.barangay.name;
+                        // this.lineData.datasets[5].data[11].push(response.data.forcasting);
+                        // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
+                        // this.$refs.lineChart.chartInstance.update();
 
-                    //line Graph For Forcasting
-                    this.sum2023 = 0;
-                    this.sum2024 = 0;
-                    const jsonData = JSON.parse(response.data.forecasting);
-                    for (let i = 0; i < jsonData.length; i++) {
-                        if (Math.round(jsonData[i].Year) == 2021) {
-                            this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                        } else if (Math.round(jsonData[i].Year) == 2022) {
-                            this.lineData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                        } else if (Math.round(jsonData[i].Year) == 2023) {
-                            this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                            this.sum2023 += jsonData[i].Total_cases;
-                        } else if (Math.round(jsonData[i].Year) == 2024) {
-                            this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                            //For forcasting line bar data
-                            this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                            this.sum2024 += jsonData[i].Total_cases;
-                        } else {
-                            const date = new Date(jsonData[i].Date);
-                            const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
-                            const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
-                            const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
-                            const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
-                            this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                        //line Graph For Forcasting
+                        this.sum2023 = 0;
+                        this.sum2024 = 0;
+                        const jsonData = JSON.parse(response.data.forecasting);
+                        for (let i = 0; i < jsonData.length; i++) {
+                            if (Math.round(jsonData[i].Year) == 2021) {
+                                this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            } else if (Math.round(jsonData[i].Year) == 2022) {
+                                this.lineData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                            } else if (Math.round(jsonData[i].Year) == 2023) {
+                                this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                this.sum2023 += jsonData[i].Total_cases;
+                            } else if (Math.round(jsonData[i].Year) == 2024) {
+                                //epidemic_threshold
+                                this.linebarData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].epidemic_threshold);
+                                //alert_threshold
+                                this.linebarData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].alert_threshold);
+
+                                this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                //For forcasting line bar data
+                                this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+
+                                this.sum2024 += jsonData[i].Total_cases;
+                            } else {
+                                const date = new Date(jsonData[i].Date);
+                                const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
+                                const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
+                                const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
+                                const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
+
+                                //epidemic_threshold
+                                this.linebarData.datasets[0].data[weekNumber - 1] = Math.round(jsonData[i].epidemic_threshold);
+                                //alert_threshold
+                                this.linebarData.datasets[1].data[weekNumber - 1] = Math.round(jsonData[i].alert_threshold);
+
+                                this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                            }
                         }
-                    }
+                        // for (let i = 0; i < response.data.cases.length; i++) {
+                        //     this.total_cases_barangay += Math.round(response.data.cases[i].total_cases);
+                        //     for (let j = 0; j < this.geojson.features.length; j++) {
+                        //         const featureName = this.geojson.features[j].properties.NAME_3;
 
-                    //Geoanalysis Map
-                    this.$refs.myCheckbox.checked = false;
-                    this.show = false;
-                    for (let i = 0; i < this.geojson.features.length; i++) {
-                        if (this.geojson.features[i].properties.NAME_3 === this.form.barangay.name) {
-                            this.geojson.features[i].properties.fillColor = "Red";
-                        } else {
-                            this.geojson.features[i].properties.fillColor = "";
+                        //         if (!featureName) {
+                        //             console.log("Feature name (NAME_3) is missing for a feature.");
+                        //             continue; // Skip to the next feature
+                        //         }
+
+                        //         if (featureName.trim().toLowerCase() === response.data.cases[i].barangay.name.trim().toLowerCase()) {
+                        //             if (this.total_cases_barangay > 100 || response.data.cases[i].total_deaths == !null) {
+                        //                 this.geojson.features[j].properties.fillColor = "red";
+                        //             } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
+                        //                 this.geojson.features[j].properties.fillColor = "yellow";
+                        //             } else if (this.total_cases_barangay > 0 && this.total_cases_barangay < 50) {
+                        //                 this.geojson.features[j].properties.fillColor = "green";
+                        //             } else {
+                        //                 this.geojson.features[j].properties.fillColor = "white";
+                        //             }
+                        //             this.total_cases_barangay = 0;
+                        //         }
+                        //     }
+                        // }
+                        //Geoanalysis Map
+                        // this.$refs.myCheckbox.checked = false;
+                        // this.show = false;
+                        // for (let i = 0; i < this.geojson.features.length; i++) {
+                        //     if (this.geojson.features[i].properties.NAME_3 === this.form.barangay.name) {
+                        //         this.geojson.features[i].properties.fillColor = "Red";
+                        //     } else {
+                        //         this.geojson.features[i].properties.fillColor = "";
+                        //     }
+                        //     console.log(this.geojson.features[i].properties.fillColor);
+                        // }
+                        // this.$refs.myCheckbox.checked = true;
+                        // this.show = true;
+                        // this.$emit('styleFunction');
+                        Swal.fire({
+                            title: 'Forecast Successfully',
+                            html: "All data belongs to <b>" + this.form.type_of_disease[0].name + "</b> Case being display",
+                            icon: 'success',
+                        })
+                    } else {
+
+                        // this.linebarDatatest.labels = [];  // Clear existing labels
+                        this.linebarDatatest.datasets = []; // Clear existing datasets
+                        const allDisease = [];
+
+                        for (const disease in response.data.forecasting) {
+                            const diseaseData = JSON.parse(response.data.forecasting[disease]);
+
+                            allDisease.push(disease)
+                            const dataset = {
+                                label: disease,
+                                data: [],
+                                backgroundColor: [], // Provide a default color
+                                borderWidth: 2,
+                                type: 'line',
+                                fill: false,
+                                spanGaps: true,
+                                pointBackgroundColor: [], // Array for point background colors
+                                // pointBorderColor: [] // Array for point border colors
+                            };
+                            // let color = this.getRandomRGBA() || '#000000'; // Default random color
+                            // let borderColor = this.getRandomRGBA() || '#000000';
+                            const color = [
+                                'rgba(255, 99, 132, 1)',   // Red
+                                'rgba(54, 162, 235, 1)',   // Blue
+                                'rgba(255, 206, 86, 1)',   // Yellow
+                                'rgba(75, 192, 192, 1)',   // Teal
+                                'rgba(153, 102, 255, 1)',  // Purple
+                                'rgba(255, 159, 64, 1)',   // Orange
+                                'rgba(255, 99, 132, 0.7)', // Red (lighter)
+                                'rgba(54, 162, 235, 0.7)', // Blue (lighter)
+                                'rgba(255, 206, 86, 0.7)', // Yellow (lighter)
+                                'rgba(75, 192, 192, 0.7)', // Teal (lighter)
+                                'rgba(153, 102, 255, 0.7)',// Purple (lighter)
+                                'rgba(255, 159, 64, 0.7)', // Orange (lighter)
+                                'rgba(255, 0, 0, 1)',      // Pure Red
+                                'rgba(0, 255, 0, 1)',      // Pure Green
+                                'rgba(0, 0, 255, 1)',      // Pure Blue
+                                'rgba(128, 0, 128, 1)',    // Purple
+                                'rgba(192, 192, 192, 1)',  // Silver
+                                'rgba(64, 64, 64, 1)',      // Gray
+                                'rgba(255, 165, 0, 1)',    // Orange
+                                'rgba(0, 128, 0, 1)'       // Green
+                            ];
+                            let forecastedColor = 'rgba(255, 255, 0, 1)'; // red for forecasted
+
+                            diseaseData.forEach((item, index) => {
+                                // let label;
+                                // if (item.Date) {
+                                //     label = new Date(item.Date).toLocaleDateString();
+                                // } else {
+                                //     label = `${item.Morbidity_Week}/${item.Year}`;
+                                // }
+
+                                // if (!this.linebarDatatest.labels.includes(label)) {
+                                //     this.linebarDatatest.labels.push(label);
+                                // }
+                                if (Math.round(item.Year) == 2024) {
+                                    dataset.data[item.Morbidity_Week - 1] = item.Total_cases;
+                                } else if (item.Date != null) {
+                                    const date = new Date(item.Date);
+                                    const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
+                                    const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
+                                    const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
+                                    const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
+
+                                    console.log(weekNumber, item.Forecast);
+                                    dataset.data[weekNumber - 1] = item.Forecast;
+                                    // dataset.backgroundColor[weekNumber - 1] = forecastedColor;
+                                    dataset.pointBackgroundColor[weekNumber - 1] = forecastedColor;
+                                }
+                                dataset.backgroundColor.push(color[index]); // Add color for this point
+                                dataset.pointBackgroundColor.push(color[index]); // Add border color for this point
+                                // dataset.pointBorderColor.push(color);
+                            });
+
+                            this.linebarDatatest.datasets.push(dataset);
                         }
-                        console.log(this.geojson.features[i].properties.fillColor);
+                        const dataset = {
+                            label: 'Forecasted Data',
+                            backgroundColor: 'rgba(255, 255, 0, 1)', // Provide a default color
+                            borderWidth: 2,
+                        };
+                        this.linebarDatatest.datasets.push(dataset);
+                        // this.linebarDatatest.labels.sort(); // Sort labels
+                        console.log(this.linebarDatatest);
+                        this.form.multiple_enable = true;
+                        this.form.disabled = true;
+                        Swal.fire({
+                            title: 'Forecast Successfully',
+                            html: "All data belongs to <b>" + allDisease + "</b> Case being display",
+                            icon: 'success',
+                        })
+                        // end of else
                     }
-                    this.$refs.myCheckbox.checked = true;
-                    this.show = true;
-                    this.$emit('styleFunction');
-
+                }).catch(error => {
                     Swal.fire({
-                        title: 'Forecast Successfully',
-                        html: "All data belongs to Barangay <b>" + this.form.barangay.name + "</b> being display",
-                        icon: 'success',
-                    })
-                }).catch(() => {
-                    Swal.fire({
-                        title: 'Forecast Unsuccessfully',
+                        title: 'Forecast Unsuccessfully' + error,
                         html: "Provide needed information",
                         icon: 'warning',
                     })
                 });
             }, 2000); // Adjust the delay in milliseconds as needed
+        },
+        getRandomRGBA() {
+            const r = Math.floor(Math.random() * 156) + 100; // Ensure a minimum value for brightness
+            const g = Math.floor(Math.random() * 156) + 100;
+            const b = Math.floor(Math.random() * 156) + 100;
+            return `rgba(${r}, ${g}, ${b}, 0.9)`;
         },
         handleMapClick(e) {
             const { lat, lng } = e.latlng;

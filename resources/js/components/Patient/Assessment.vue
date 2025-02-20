@@ -10,64 +10,18 @@
                 <div class="modal-body">
                     <alert-error :form="form"></alert-error>
                     <div class="card">
-                        <div class="card-header">Patient Assessment</div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="form-group col-3">
-                                    <label>Case ID</label>
-                                    <input v-model="form.case_id" type="text" class="form-control">
-                                    <has-error :form="form" field="case_id" />
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Epi ID</label>
-                                    <input v-model="form.epi_id" type="text" class="form-control">
-                                    <has-error :form="form" field="epi_id" />
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Health Facility</label>
-                                    <input v-model="form.health_facility" type="text" class="form-control">
-                                    <has-error :form="form" field="health_facility" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-3">
-                                    <label>Date Onset of illness</label>
-                                    <input v-model="form.date_onset_of_illness" type="date" class="form-control">
-                                    <has-error :form="form" field="date_onset_of_illness" />
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Patient Admitted</label>
-                                    <input v-model="form.patient_admitted" type="date" class="form-control">
-                                    <has-error :form="form" field="patient_admitted" />
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Case Classification</label>
-                                    <select class="form-select" v-model="form.case_classification">
-                                        <option value="Suspected">Suspected</option>
-                                        <option value="Probable">Probable</option>
-                                        <option value="Confirmed">Confirmed</option>
-                                    </select>
-                                    <has-error :form="form" field="case_classification" />
-                                </div>
-                                <div class="form-group col-3">
-                                    <label>Date of Death</label><br>
-                                    <input :disabled="!deathcheckbox" v-model="form.date_of_death" type="date"
-                                        class="form-control">
-                                    <input id="deathcheckbox" v-model="deathcheckbox" type="checkbox">
-                                    <label>Check to Enable</label>
-                                    <has-error :form="form" field="date_of_death" />
-                                </div>
-                            </div>
+                        <div class="card-header">
+                            Patient Monitoring
+                            <button class="btn btn-success btn-sm ml-auto" @click="openAddAssessmentModal"
+                                v-if="can('create user')"><i class="fas fa-user-plus"></i> Add
+                                Assessment</button>
                         </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">Patient Monitoring</div>
                         <div class="card-body">
                             <div class="table-responsive p-0">
                                 <table class="table table-head-fixed text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Case ID</th>
+                                            <!-- <th>Case ID</th> -->
                                             <th>Epi ID</th>
                                             <th>Health Facility</th>
                                             <th>Date Onset of illness</th>
@@ -79,7 +33,7 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(data, index) in option_users" :key="index">
-                                            <td>{{ data.case_id }}</td>
+                                            <!-- <td>{{ data.case_id }}</td> -->
                                             <td v-if="data != null">{{
                                                 data.epi_id }}</td>
                                             <td v-else class="text-danger">No Epi ID</td>
@@ -87,7 +41,13 @@
                                             <td>{{ data.date_onset_of_illness }}</td>
                                             <td>{{ data.patient_admitted }}</td>
                                             <td>{{ data.case_classification }}</td>
-                                            <td>{{ data.date_of_death }}</td>
+                                            <td v-if="data.date_of_death != null">{{ data.date_of_death }}</td>
+                                            <td v-else>Not Applicable</td>
+                                            <td class="text-right">
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    @click="openEditAssessmentModal(data)" v-if="can('edit user')"><i
+                                                        class="fas fa-edit"></i> Edit Assessment</button>
+                                            </td>
                                         </tr>
                                         <tr v-if="option_users.length === 0">
                                             <td colspan="8" class="text-center">No Existing data</td>
@@ -199,13 +159,17 @@
                                     </div>
                                 </div>
                                 <div class="col-8 border">
-                                    <div>
+                                    <div class="m-2">
                                         <span v-if="loading">Loading...</span>
                                         <label for="checkbox">GeoJSON Visibility</label>
                                         <input id="checkbox" v-model="show" type="checkbox">
                                         <!-- <label for="checkboxTooltip">Enable tooltip</label>
                                         <input id="checkboxTooltip" v-model="enableTooltip" type="checkbox">
                                         <input v-model="fillColor" type="color"> -->
+                                        <br>
+                                        <button type="button" class="btn btn-info" @click="loadGeoJSON()">Load
+                                            Barangay
+                                            Boundaries</button>
                                         <br>
                                     </div>
                                     <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
@@ -232,10 +196,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" @click="save">Save</button>
+                    <!-- <button type="button" class="btn btn-primary" @click="save">Save</button> -->
                 </div>
             </div>
         </div>
+        <!-- declare the add modal -->
+        <add-modal :row="selected_user" :page="current_page"></add-modal>
+        <!-- declare the edit modal -->
+        <edit-modal :row="selected_user" :page="current_page"></edit-modal>
     </div>
 </template>
 
@@ -243,13 +211,16 @@
 // import L from 'leaflet';
 import { latLng } from "leaflet";
 // import { LMap, LTileLayer, LMarker, LGeoJson } from "vue2-leaflet";
-
+import addModal from "./AddAssessment.vue";
+import EditModal from "./EditAssessment.vue";
 export default {
     props: {
         row: { required: true },
         page: { required: true },
     },
     components: {
+        addModal,
+        EditModal
         // LMap,
         // LTileLayer,
         // LGeoJson,
@@ -258,15 +229,6 @@ export default {
     data() {
         return {
             form: new Form({
-                case_id: '',
-                epi_id: '',
-                date_onset_of_illness: '',
-                health_facility: '',
-                patient_admitted: '',
-                case_classification: '',
-                date_of_death: '',
-                type_of_disease: '',
-
                 id: '',
                 firstname: '',
                 middlename: '',
@@ -291,6 +253,8 @@ export default {
             option_users: [],
             option_diseases: [],
             option_barangay: [],
+            selected_user: '',
+            current_page: [],
 
             //
             deathcheckbox: false,
@@ -310,36 +274,21 @@ export default {
         }
     },
     methods: {
-        save() {
-            if (this.deathcheckbox == false) {
-                this.form.date_of_death = null; // Clear date if unchecked
-            }
-            this.form.post('/api/patient/assessment/' + this.form.id).then(() => {
-                toast.fire({
-                    icon: 'success',
-                    text: 'Data Saved.',
-                })
-                this.form.reset();
-                //"page" maintain selected page in the parent page
-                this.$emit('getData', this.page);// call method from parent (reload data table)
-                $('#assessment-patient').modal('hide');
-            }).catch(() => {
-                toast.fire({
-                    icon: 'error',
-                    text: 'Something went wrong!',
-                })
-            });
+        openAddAssessmentModal() {
+            this.selected_user = this.form.id;
+            $('#add-assessment').modal('show');
         },
-        styleFunction() {
-            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-            return () => {
-                return {
-                    weight: 2,
-                    color: "#ECEFF1",
-                    opacity: 1,
-                    fillColor: fillColor,
-                    fillOpacity: 1
-                };
+        openEditAssessmentModal(data) {
+            this.selected_user = data;
+            $('#edit-assessment').modal('show');
+        },
+        styleFunction(feature) {
+            return {
+                weight: 3,
+                color: "#ffffff",
+                opacity: 0.7,
+                fillOpacity: 0.5,
+                fillColor: feature.properties.fillColor || 'gray'
             };
         },
         onEachFeatureFunction() {
@@ -388,7 +337,12 @@ export default {
                 .then(response => {
                     this.option_barangay = response.data.data;
                 });
-        }
+        },
+        loadGeoJSON() {
+            this.$nextTick(() => { // Ensure the DOM updates before map resize
+                this.$refs.map.mapObject.invalidateSize();
+            });
+        },
     },
     async created() {
         this.loading = true;
@@ -460,7 +414,6 @@ export default {
     watch: {
         row: function () {
             this.option_users = this.row.patient__assessment;
-            console.log(this.option_users);
             this.form.fill(this.row);
             this.form.type_of_disease = this.row.disease;
             this.form.streetpurok = this.row['street/purok'];
@@ -470,25 +423,6 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
-        // // Replace with your GeoJSON file path or API endpoint
-        // fetch('map (1).geojson')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const map = L.map('map').setView([11.0043, 125.5439], 13);
-        //         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //         }).addTo(map);
-
-        //         L.geoJSON(data).addTo(map);
-        //     });
-        // Example: Save coordinates to backend using Axios
-        // axios.post('/api/save-location', { latitude: this.latitude, longitude: this.longitude })
-        //     .then(response => {
-        //         console.log('Location saved successfully');
-        //     })
-        //     .catch(error => {
-        //         console.error('Error saving location:', error);
-        //     });
     }
 }
 </script>

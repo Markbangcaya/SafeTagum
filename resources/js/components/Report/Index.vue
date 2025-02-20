@@ -27,9 +27,10 @@
                                         <div class="form-group">
                                             <label>Type of Disease</label>
                                             <multiselect v-model="form.type_of_disease" :options="option_diseases"
-                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick Type of Disease" label="name"
-                                                track-by="name" :preselect-first="true">
+                                                :disabled="this.form.enable" :multiple="false" :close-on-select="true"
+                                                :clear-on-select="false" :preserve-search="true"
+                                                placeholder="Pick Type of Disease" label="name" track-by="name"
+                                                :preselect-first="true">
                                             </multiselect>
                                             <has-error :form="form" field="type_of_disease" />
                                         </div>
@@ -45,16 +46,19 @@
                                         </div> -->
                                         <div class="form-group">
                                             <label>Date Range</label>
-                                            <date-range-picker v-model="form.date" style="width: 100%;">
+                                            <date-range-picker :disabled="this.form.enable" v-model="form.date"
+                                                style="width: 100%;">
                                             </date-range-picker>
                                             <has-error :form="form" field="date" />
                                         </div>
-                                        <button type="button" class="btn btn-success" @click="report">Create
+                                        <button v-if="this.form.enable == !true" type="button" class="btn btn-success"
+                                            @click="report">Create
                                             Report</button>
+                                        <button v-else type="button" class="btn btn-info" @click="refresh"><i
+                                                class="fas fa-refresh"></i> Create New Report</button>
                                         <button v-if="this.form.enable == true" type="button"
                                             class="btn btn-success float-right" @click="printChart"><i
-                                                class="fas fa-print"></i> Print
-                                            Report</button>
+                                                class="fas fa-print"></i> Print Report</button>
                                         <hr>
                                     </div>
                                     <div class="col-8 border-left">
@@ -76,6 +80,8 @@
                                                 this.form.start_morbidity_week }}
                                                 - {{ this.form.end_morbidity_week }}</span>
                                         </label>
+                                        <br>
+                                        <br>
                                         <div class="row">
                                             <label v-if="this.form.enable == true">Age Groups Affected by {{
                                                 this.form.type_of_disease.name }}</label>
@@ -150,23 +156,58 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <br>
+                                        <hr>
+                                        <div class="row">
+                                            <label>Case Classifications</label>
+                                            <div class="col-4">
+                                                <div class="card bg-danger text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-danger">Confirmed</span>
+                                                        <div class="case-count fs-2 float-right">{{ this.confirmed
+                                                        }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="card bg-warning text-dark">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-warning">Suspected</span>
+                                                        <div class="case-count fs-2 float-right"> {{ this.suspected
+                                                        }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="card bg-success text-white">
+                                                    <div class="card-body">
+                                                        <span class="legend-color bg-success">Probable</span>
+                                                        <div class="case-count fs-2 float-right">{{ this.probable }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
                                         <hr>
                                         <label v-if="this.form.enable == true">Age Groups Affected by {{
                                             this.form.type_of_disease.name }} Per Barangay</label>
                                         <bar v-if="this.form.enable == true" ref="bar" :data="barData"
                                             :options="options" />
+                                        <br>
                                         <hr>
                                         <label v-if="this.form.enable == true">Affected by {{
                                             this.form.type_of_disease.name }}
                                             Cases Per Barangay</label>
-
                                         <div class="row">
                                             <h5 class="mt-4 mb-2">Risk Level Legend</h5>
                                             <div class="col-3">
                                                 <div class="card bg-danger text-white">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-danger"></span> High Risk
-                                                        <div class="case-count"> More Than 1000 Cases</div>
+                                                        <div class="case-count"> More Than 101 Cases</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -174,7 +215,7 @@
                                                 <div class="card bg-warning text-dark">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-warning"></span> Medium Risk
-                                                        <div class="case-count"> 1000 - 500 Cases</div>
+                                                        <div class="case-count"> 100 - 50 Cases</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,7 +223,7 @@
                                                 <div class="card bg-success text-white">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-success"></span> Managed Risk
-                                                        <div class="case-count"> 500 - 0 Cases</div>
+                                                        <div class="case-count"> 49 - 0 Cases</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -217,6 +258,15 @@
                                             </l-circle-marker> -->
                                             </l-map>
                                         </div>
+                                        <div class="report-info">
+                                            <br>
+                                            <br>
+                                            <h6><strong>Date Printed:</strong> <span id="reportDate">{{ new
+                                                Date().toLocaleDateString() }}</span></h6>
+                                            <br>
+                                            <h6><strong>Printed by:</strong> <span id="reportUser">{{
+                                                this.login_user }}</span></h6>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -228,6 +278,10 @@
     </div>
 </template>
 <style scoped>
+.report-info {
+    display: none;
+}
+
 @media print {
 
     /* Example: Hide the button on print */
@@ -237,6 +291,10 @@
 
     #remove-print {
         display: none;
+    }
+
+    .report-info {
+        display: block;
     }
 
     /* Example: Print-specific font sizes */
@@ -266,16 +324,25 @@ export default {
                 end_morbidity_week: '0',
                 enable: false
             }),
-
+            //
+            login_user: null,
+            //Choices
             option_diseases: [],
             option_barangay: [],
 
+            //Case Classifications
+            suspected: null,
+            probable: null,
+            confirmed: null,
+
+            //
             age_0_5: null,
             age_6_10: null,
             age_11_15: null,
             age_16_above: null,
             death: null,
             total_cases: null,
+            total_cases_barangay: 0,
 
             //Maps
             loading: false,
@@ -422,6 +489,9 @@ export default {
         printChart() {
             window.print(); // Trigger the browser's print function
         },
+        refresh() {
+            window.location.reload();
+        },
         styleFunction(feature) {
             return {
                 weight: 3,
@@ -449,6 +519,7 @@ export default {
                     this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
                     this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
                     this.form.enable = true;
+                    this.login_user = response.data.user.name;
                     // const myDiv = document.getElementById("data");
                     // myDiv.style.opacity = "1";
                     // myDiv.style.pointerEvents = "auto";
@@ -466,6 +537,7 @@ export default {
                     for (let i = 0; i < response.data.cases.length; i++) {
                         this.barData.labels.push(response.data.cases[i].barangay.name);
 
+                        //Age Group
                         this.barData.datasets[0].data.push(response.data.cases[i].count_0_5);
                         this.age_0_5 += Math.round(response.data.cases[i].count_0_5);
 
@@ -478,13 +550,40 @@ export default {
                         this.barData.datasets[3].data.push(response.data.cases[i].count_16_above);
                         this.age_16_above += Math.round(response.data.cases[i].count_16_above);
 
-                        this.barData.datasets[4].data.push(response.data.cases[i].death);
-                        this.death += Math.round(response.data.cases[i].death);
+                        this.barData.datasets[4].data.push(response.data.cases[i].total_deaths);
+                        this.death += Math.round(response.data.cases[i].total_deaths);
 
                         this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
                         this.total_cases += Math.round(response.data.cases[i].total_cases);
-                    }
+                        this.total_cases_barangay += Math.round(response.data.cases[i].total_cases);
 
+                        //Case Classifications
+                        this.confirmed += Math.round(response.data.cases[i].count_confirmed);
+                        this.suspected += Math.round(response.data.cases[i].count_suspected);
+                        this.probable += Math.round(response.data.cases[i].count_probable);
+
+                        for (let j = 0; j < this.geojson.features.length; j++) {
+                            const featureName = this.geojson.features[j].properties.NAME_3;
+
+                            if (!featureName) {
+                                console.log("Feature name (NAME_3) is missing for a feature.");
+                                continue; // Skip to the next feature
+                            }
+
+                            if (featureName.trim().toLowerCase() === response.data.cases[i].barangay.name.trim().toLowerCase()) {
+                                if (this.total_cases_barangay > 100 || response.data.cases[i].total_deaths == !null) {
+                                    this.geojson.features[j].properties.fillColor = "red";
+                                } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
+                                    this.geojson.features[j].properties.fillColor = "yellow";
+                                } else if (this.total_cases_barangay > 0 && this.total_cases_barangay < 50) {
+                                    this.geojson.features[j].properties.fillColor = "green";
+                                } else {
+                                    this.geojson.features[j].properties.fillColor = "white";
+                                }
+                                this.total_cases_barangay = 0;
+                            }
+                        }
+                    }
                     Swal.fire({
                         title: 'Report Successfully',
                         html: "All data belongs to <b>" + this.form.type_of_disease.name + "</b> case being display",
@@ -577,13 +676,6 @@ export default {
                     { "type": "Feature", "properties": { "ID_0": 177, "ISO": "PHL", "NAME_0": "Philippines", "ID_1": 27, "NAME_1": "Davao del Norte", "ID_2": 514, "NAME_2": "Tagum City", "ID_3": 12426, "NAME_3": "Visayan Village", "NL_NAME_3": "", "VARNAME_3": "", "TYPE_3": "Barangay", "ENGTYPE_3": "Village", "PROVINCE": "Davao del Norte", "REGION": "Davao Region (Region XI)" }, "geometry": { "type": "Polygon", "coordinates": [[[125.818069, 7.442250], [125.816368, 7.433450], [125.815887, 7.420320], [125.816971, 7.407660], [125.803833, 7.406520], [125.802322, 7.403690], [125.791496, 7.404630], [125.783310, 7.410430], [125.784233, 7.413400], [125.765373, 7.416120], [125.761833, 7.412320], [125.758110, 7.415570], [125.757133, 7.420610], [125.755363, 7.422590], [125.773903, 7.427240], [125.781097, 7.428600], [125.783218, 7.429060], [125.787857, 7.431260], [125.792084, 7.433210], [125.798714, 7.436150], [125.799026, 7.436280], [125.800392, 7.436240], [125.804932, 7.437110], [125.814819, 7.444780], [125.816452, 7.444060], [125.818069, 7.442250]]] } }
                 ]
             };
-            // data.features[0].properties.color.push("white");
-            data.features[1].properties.fillColor = "Yellow";
-            data.features[0].properties.fillColor = "Red";
-            // data.features[0].properties.fillOpacity.push(1);
-            // this.$forceUpdate();
-            // console.log(data.features[0]);
-            // console.log(data.features[0].properties.opacity = 1);
             this.geojson = data;
             // Use the geojsonData to populate your LGeoJson component
         } catch (error) {
