@@ -23,7 +23,7 @@
                         <input v-model="form.password" type="password" class="form-control">
                         <has-error :form="form" field="password" />
                     </div>
-                    <div class="form-group">
+                    <div v-if="can('edit role')" class="form-group">
                         <label>Role</label>
                         <multiselect v-model="form.roles" :options="option_roles" :multiple="false"
                             :close-on-select="true" :clear-on-select="false" :preserve-search="true"
@@ -33,7 +33,7 @@
                         <has-error :form="form" field="roles" />
 
                     </div>
-                    <div class="form-group">
+                    <div v-if="can('edit permission')" class="form-group">
                         <label>Permission</label>
                         <multiselect v-model="form.permissions" :options="option_permissions" :multiple="true"
                             :close-on-select="false" :clear-on-select="false" :preserve-search="true"

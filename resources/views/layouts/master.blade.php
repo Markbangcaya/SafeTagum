@@ -40,7 +40,7 @@
               </ul>
         </nav>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="/Dashboard" class="brand-link">
+            <a href="/patient" class="brand-link">
                 <img src="/images/City Health Office Logo.png" alt="AdminLTE Logo" class="brand-image"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
@@ -78,6 +78,7 @@
                                 </p>
                             </router-link>
                         </li>
+                        @can('access role')
                         <li class="nav-item">
                             <router-link to="/Report" class="nav-link">
                                 <i class="nav-icon fas fa-file-lines"></i>
@@ -86,7 +87,8 @@
                                 </p>
                             </router-link>
                         </li>
-                        {{-- @can('access user') --}}
+                        @endcan
+                        @can('access role')
                             <li class="nav-item">
                                 <router-link to="/disease" class="nav-link">
                                     <i class="nav-icon fas fa-disease"></i>
@@ -95,8 +97,8 @@
                                     </p>
                                 </router-link>
                             </li>
-                        {{-- @endcan --}}
-                        @can('access user')
+                        @endcan
+                        @can('access role')
                             <li class="nav-item">
                                 <router-link to="/users" class="nav-link">
                                     <i class="nav-icon fas fa-users"></i>
@@ -106,6 +108,14 @@
                                 </router-link>
                             </li>
                         @endcan
+                        <li class="nav-item">
+                            <router-link to="/profile" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>
+                                    Profile
+                                </p>
+                            </router-link>
+                        </li>
                         {{-- @can('access permission')
                             <li class="nav-item">
                                 <router-link to="/permission" class="nav-link">
@@ -126,7 +136,7 @@
                                 </router-link>
                             </li>
                         @endcan
-                        @can('access registrar')
+                        {{-- @can('access registrar')
                             <li class="nav-item">
                                 <router-link to="/registrar" class="nav-link">
                                     <i class="nav-icon fas fa-user-tag"></i>
@@ -145,7 +155,7 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
+                        @endcan --}}
                         <li class="nav-item">
                             <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
@@ -167,7 +177,7 @@
             <router-view></router-view>
         </div>
         <footer class="main-footer">
-            <strong>&copy; 2024 SafeTagum</strong> All rights reserved.
+            <strong>&copy; 2025 SafeTagum</strong> All rights reserved.
         </footer>
     </div>
     @auth

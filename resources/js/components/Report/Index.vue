@@ -525,6 +525,7 @@ export default {
                     // myDiv.style.pointerEvents = "auto";
                     // console.log(response.data);
                     this.markers = response.data;
+
                     //Empty and Cleaning Bar Chart
                     this.barData.labels.push();
                     this.barData.datasets[0].data.push();
@@ -532,7 +533,13 @@ export default {
                     this.age_6_10 = 0;
                     this.age_11_15 = 0;
                     this.age_16_above = 0;
+                    this.death = 0
                     this.total_cases = 0;
+
+                    //Case Classifications
+                    this.confirmed = 0;
+                    this.suspected = 0;
+                    this.probable = 0;
 
                     for (let i = 0; i < response.data.cases.length; i++) {
                         this.barData.labels.push(response.data.cases[i].barangay.name);

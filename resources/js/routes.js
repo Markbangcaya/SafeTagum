@@ -7,39 +7,55 @@ const routes = [
         name: 'not-found',
         component: require('./components/NotFound.vue').default
     },
+    //---------------------------------------------------------DASHBOARD
     {
         path: '/Dashboard',
         name: 'Dashboard',
         component: require('./components/Dashboard.vue').default
     },
+    //---------------------------------------------------------END DASHBOARD
+    //---------------------------------------------------------PATIENT
     {
         path: '/Patient',
         name: 'Patient',
         component: require('./components/Patient/Index.vue').default,
     },
+    //---------------------------------------------------------END PATIENT
+    //---------------------------------------------------------FORECAST
     {
         path: '/Forecast',
         name: 'Forecast',
         component: require('./components/Forecast/Index.vue').default
     },
+    //---------------------------------------------------------END FORECAST
+    //---------------------------------------------------------REPORT
     {
         path: '/Report',
         name: 'Report',
         component: require('./components/Report/Index.vue').default
     },
-    //---------------------------------------------------------USER
+    //---------------------------------------------------------END REPORT
+    //---------------------------------------------------------DISEASE
     {
         path: '/disease',
         name: 'disease',
         component: require('./components/Disease/IndexDisease.vue').default,
         props: true,
     },
-    //---------------------------------------------------------END USER
+    //---------------------------------------------------------END DISEASE
     //---------------------------------------------------------USER
     {
         path: '/users',
         name: 'users',
         component: require('./components/Users/IndexUser.vue').default,
+        props: true,
+    },
+    //---------------------------------------------------------END USER
+    //---------------------------------------------------------USER
+    {
+        path: '/profile',
+        name: 'profile',
+        component: require('./components/Profile/IndexProfile.vue').default,
         props: true,
     },
     //---------------------------------------------------------END USER

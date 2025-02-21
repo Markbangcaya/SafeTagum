@@ -71,9 +71,12 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        //
+        // abort_if(Gate::denies('edit user'), 403, 'You do not have the required authorization.');
+        $data = User::with('roles', 'permissions')->where('id', Auth::user()->id)->get();
+
+        return response(['data' => $data], 200);
     }
 
     /**
