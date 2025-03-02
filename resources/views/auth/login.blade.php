@@ -14,7 +14,7 @@
             </h1>
             <p style="color: hsl(217, 10%, 50.8%)">
               SafeTagum is a comprehensive system designed to enhance disease surveillance, prevention, and control in Tagum City. 
-              Leveraging cutting-edge technologies like geo-analysis, forecasting, tokenization, and blockchain, 
+              Leveraging cutting-edge technologies like geo-analysis, forecasting and tokenization, 
               It offers a robust platform for real-time data collection, analysis, and dissemination.
             </p>
           </div>

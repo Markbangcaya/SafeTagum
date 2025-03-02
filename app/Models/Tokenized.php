@@ -13,6 +13,15 @@ class Tokenized extends Model
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $connection = 'safetagumtokens';
+    protected $table = 'tokenizeds';
     protected $guard_name = 'api';
     protected $guarded = [];
+    const created_at = 'tokenized_created_at'; // Important: Specify the new created_at column name
+    const updated_at = 'tokenized_updated_at';
+    const id = 'tokenized_id'; // Important: Specify the new created_at column name
+
+    public function patient()
+    {
+        return $this->hasMany(Patient::class, 'token');
+    }
 }

@@ -48,7 +48,7 @@
                                                 track-by="id" :preselect-first="true">
                                             </multiselect>
                                             <input v-model="search" type="text" @keyup="getData" name="table_search"
-                                                class="form-control float-right" placeholder="Search by Epi ID" />
+                                                class="form-control float-right" placeholder="Search Lastname/Epi ID" />
                                             <button type="button" class="btn btn-primary" @click="getData">
                                                 <i class="fas fa-search input-group-append"></i>
                                             </button>
@@ -202,7 +202,7 @@ export default {
                     .then(response => {
                         if (response.data.data) {
                             this.option_users = response.data.data;
-                            // console.log(this.option_users);
+                            console.log(this.option_users);
                         }
                     }).catch(error => {
                         this.error = error;

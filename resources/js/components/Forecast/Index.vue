@@ -86,9 +86,9 @@
                                                     <span class="info-box-icon bg-info elevation-1"><i
                                                             class="fas fa-virus"></i></span>
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">2023 Cases</span>
+                                                        <span class="info-box-text">2024 Cases</span>
                                                         <span class="info-box-number">
-                                                            {{ this.sum2023 }}
+                                                            {{ this.sum2024 }}
                                                         </span>
                                                     </div>
 
@@ -99,8 +99,8 @@
                                                     <span class="info-box-icon bg-primary elevation-1"><i
                                                             class="fas fa-virus"></i></span>
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">2024 Cases</span>
-                                                        <span class="info-box-number">{{ this.sum2024 }}</span>
+                                                        <span class="info-box-text">2025 Cases</span>
+                                                        <span class="info-box-number">{{ this.sum2025 }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -112,12 +112,12 @@
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Percentage Change</span>
                                                         <span
-                                                            v-if="(((this.sum2024 - this.sum2023) / this.sum2023) * 100) > 0"
+                                                            v-if="(((this.sum2025 - this.sum2024) / this.sum2024) * 100) > 0"
                                                             class="info-box-number badge badge-danger">{{
-                                                                ((this.sum2024 - this.sum2023) / this.sum2023) * 100 }}
+                                                                ((this.sum2025 - this.sum2024) / this.sum2024) * 100 }}
                                                             <small>%</small> Increased</span>
                                                         <span v-else class="info-box-number badge badge-success">{{
-                                                            Math.abs(((this.sum2024 - this.sum2023) / this.sum2023) *
+                                                            Math.abs(((this.sum2025 - this.sum2024) / this.sum2024) *
                                                                 100) }}
                                                             <small>%</small> Decrease</span>
                                                     </div>
@@ -133,8 +133,8 @@
                                                     </div>
                                                 </div>
                                             </div> -->
-                                            <p>* PERCENT CHANGE = Difference between the 2024 and 2023 cases / cases
-                                                2023 x 100
+                                            <p>* PERCENT CHANGE = Difference between the 2025 and 2024 cases / cases
+                                                2024 x 100
                                             </p>
                                         </div>
                                         <div v-if="this.form.enable == true">
@@ -156,7 +156,7 @@
                                                 City
                                                 and the
                                                 Forecasted Cases</label>
-                                            <line-chart :data="linebarDatatest" :options="linebaroptionstest"
+                                            <line-chart :data="linebarDataforecast" :options="linebaroptionsforecast"
                                                 style="height: 350px; width: 100%" />
                                         </div>
                                         <!-- <label v-if="this.form.enable == true">Affected
@@ -266,14 +266,37 @@ export default {
                 multiple_enable: false,
                 disabled: false
             }),
-            sum2023: null,
             sum2024: null,
+            sum2025: null,
 
             option_diseases: [],
             option_barangay: [],
 
             total_cases_barangay: '',
             cases: '',
+
+            color: [
+                'rgba(255, 99, 132, 1)',   // Red
+                'rgba(54, 162, 235, 1)',   // Blue
+                'rgba(255, 206, 86, 1)',   // Yellow
+                'rgba(75, 192, 192, 1)',   // Teal
+                'rgba(153, 102, 255, 1)',  // Purple
+                'rgba(255, 159, 64, 1)',   // Orange
+                'rgba(255, 99, 132, 0.7)', // Red (lighter)
+                'rgba(54, 162, 235, 0.7)', // Blue (lighter)
+                'rgba(255, 206, 86, 0.7)', // Yellow (lighter)
+                'rgba(75, 192, 192, 0.7)', // Teal (lighter)
+                'rgba(153, 102, 255, 0.7)',// Purple (lighter)
+                'rgba(255, 159, 64, 0.7)', // Orange (lighter)
+                'rgba(255, 0, 0, 1)',      // Pure Red
+                'rgba(0, 255, 0, 1)',      // Pure Green
+                'rgba(0, 0, 255, 1)',      // Pure Blue
+                'rgba(128, 0, 128, 1)',    // Purple
+                'rgba(192, 192, 192, 1)',  // Silver
+                'rgba(64, 64, 64, 1)',      // Gray
+                'rgba(255, 165, 0, 1)',    // Orange
+                'rgba(0, 128, 0, 1)'       // Green
+            ],
 
             //Maps
             loading: false,
@@ -319,7 +342,12 @@ export default {
                     y: {
                         stacked: false,
                         beginAtZero: true,
-                        suggestedMax: 10
+                        suggestedMax: 10,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases',
+                            position: 'bottom'
+                        }
                     },
                 },
                 tension: 0.1
@@ -360,8 +388,8 @@ export default {
                     {
                         label: '2024',
                         data: [],
-                        backgroundColor: 'rgba(34, 197, 94, .3)',
-                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(153, 102, 255, .3)',
+                        borderColor: 'rgb(153, 102, 255)',
                         borderWidth: 1,
                         type: 'line',
                         fill: false,
@@ -401,7 +429,12 @@ export default {
                     y: {
                         stacked: false,
                         beginAtZero: true,
-                        suggestedMax: 10
+                        suggestedMax: 10,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases',
+                            position: 'bottom'
+                        }
                     },
                 },
                 tension: 0.1
@@ -430,7 +463,7 @@ export default {
                         spanGaps: true,
                     },
                     {
-                        label: '2024',
+                        label: '2025',
                         data: [],
                         backgroundColor: 'rgba(34, 197, 94, .3)',
                         borderColor: 'rgb(34, 197, 94)',
@@ -451,7 +484,7 @@ export default {
                     },
                 ]
             },
-            linebaroptionstest: {
+            linebaroptionsforecast: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
@@ -483,12 +516,17 @@ export default {
                     y: {
                         stacked: false,
                         beginAtZero: true,
-                        suggestedMax: 10
+                        suggestedMax: 10,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases',
+                            position: 'bottom'
+                        }
                     },
                 },
                 tension: 0.1
             },
-            linebarDatatest: {
+            linebarDataforecast: {
                 labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53'],
                 datasets: []
             },
@@ -548,8 +586,8 @@ export default {
                         // this.$refs.lineChart.chartInstance.update();
 
                         //line Graph For Forcasting
-                        this.sum2023 = 0;
                         this.sum2024 = 0;
+                        this.sum2025 = 0;
                         const jsonData = JSON.parse(response.data.forecasting);
                         for (let i = 0; i < jsonData.length; i++) {
                             if (Math.round(jsonData[i].Year) == 2021) {
@@ -560,6 +598,9 @@ export default {
                                 this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
                                 this.sum2023 += jsonData[i].Total_cases;
                             } else if (Math.round(jsonData[i].Year) == 2024) {
+                                this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                this.sum2024 += jsonData[i].Total_cases;
+                            } else if (Math.round(jsonData[i].Year) == 2025) {
                                 //epidemic_threshold
                                 this.linebarData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].epidemic_threshold);
                                 //alert_threshold
@@ -569,7 +610,7 @@ export default {
                                 //For forcasting line bar data
                                 this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
 
-                                this.sum2024 += jsonData[i].Total_cases;
+                                this.sum2025 += jsonData[i].Total_cases;
                             } else {
                                 const date = new Date(jsonData[i].Date);
                                 const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
@@ -631,8 +672,9 @@ export default {
                     } else {
 
                         // this.linebarDatatest.labels = [];  // Clear existing labels
-                        this.linebarDatatest.datasets = []; // Clear existing datasets
+                        this.linebarDataforecast.datasets = []; // Clear existing datasets
                         const allDisease = [];
+                        let index = 0;
 
                         for (const disease in response.data.forecasting) {
                             const diseaseData = JSON.parse(response.data.forecasting[disease]);
@@ -649,44 +691,10 @@ export default {
                                 pointBackgroundColor: [], // Array for point background colors
                                 // pointBorderColor: [] // Array for point border colors
                             };
-                            // let color = this.getRandomRGBA() || '#000000'; // Default random color
-                            // let borderColor = this.getRandomRGBA() || '#000000';
-                            const color = [
-                                'rgba(255, 99, 132, 1)',   // Red
-                                'rgba(54, 162, 235, 1)',   // Blue
-                                'rgba(255, 206, 86, 1)',   // Yellow
-                                'rgba(75, 192, 192, 1)',   // Teal
-                                'rgba(153, 102, 255, 1)',  // Purple
-                                'rgba(255, 159, 64, 1)',   // Orange
-                                'rgba(255, 99, 132, 0.7)', // Red (lighter)
-                                'rgba(54, 162, 235, 0.7)', // Blue (lighter)
-                                'rgba(255, 206, 86, 0.7)', // Yellow (lighter)
-                                'rgba(75, 192, 192, 0.7)', // Teal (lighter)
-                                'rgba(153, 102, 255, 0.7)',// Purple (lighter)
-                                'rgba(255, 159, 64, 0.7)', // Orange (lighter)
-                                'rgba(255, 0, 0, 1)',      // Pure Red
-                                'rgba(0, 255, 0, 1)',      // Pure Green
-                                'rgba(0, 0, 255, 1)',      // Pure Blue
-                                'rgba(128, 0, 128, 1)',    // Purple
-                                'rgba(192, 192, 192, 1)',  // Silver
-                                'rgba(64, 64, 64, 1)',      // Gray
-                                'rgba(255, 165, 0, 1)',    // Orange
-                                'rgba(0, 128, 0, 1)'       // Green
-                            ];
-                            let forecastedColor = 'rgba(255, 255, 0, 1)'; // red for forecasted
 
-                            diseaseData.forEach((item, index) => {
-                                // let label;
-                                // if (item.Date) {
-                                //     label = new Date(item.Date).toLocaleDateString();
-                                // } else {
-                                //     label = `${item.Morbidity_Week}/${item.Year}`;
-                                // }
-
-                                // if (!this.linebarDatatest.labels.includes(label)) {
-                                //     this.linebarDatatest.labels.push(label);
-                                // }
-                                if (Math.round(item.Year) == 2024) {
+                            let forecastedColor = 'rgba(255, 255, 0, 1)'; // yellow for forecasted
+                            diseaseData.forEach((item) => {
+                                if (Math.round(item.Year) == 2025) {
                                     dataset.data[item.Morbidity_Week - 1] = item.Total_cases;
                                 } else if (item.Date != null) {
                                     const date = new Date(item.Date);
@@ -695,28 +703,27 @@ export default {
                                     const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
                                     const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
 
-                                    console.log(weekNumber, item.Forecast);
                                     dataset.data[weekNumber - 1] = item.Forecast;
                                     // dataset.backgroundColor[weekNumber - 1] = forecastedColor;
                                     dataset.pointBackgroundColor[weekNumber - 1] = forecastedColor;
                                 }
-                                dataset.backgroundColor.push(color[index]); // Add color for this point
-                                dataset.pointBackgroundColor.push(color[index]); // Add border color for this point
+                                dataset.backgroundColor.push(this.color[index]); // Add color for this point
+                                dataset.pointBackgroundColor.push(this.color[index]); // Add border color for this point
                                 // dataset.pointBorderColor.push(color);
                             });
-
-                            this.linebarDatatest.datasets.push(dataset);
+                            this.linebarDataforecast.datasets.push(dataset);
+                            index++;
                         }
                         const dataset = {
                             label: 'Forecasted Data',
                             backgroundColor: 'rgba(255, 255, 0, 1)', // Provide a default color
                             borderWidth: 2,
                         };
-                        this.linebarDatatest.datasets.push(dataset);
+                        this.linebarDataforecast.datasets.push(dataset);
                         // this.linebarDatatest.labels.sort(); // Sort labels
-                        console.log(this.linebarDatatest);
                         this.form.multiple_enable = true;
                         this.form.disabled = true;
+
                         Swal.fire({
                             title: 'Forecast Successfully',
                             html: "All data belongs to <b>" + allDisease + "</b> Case being display",

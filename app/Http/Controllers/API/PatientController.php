@@ -17,6 +17,7 @@ use Phpml\Regression\LeastSquares;
 use Phpml\Regression\ARIMA;
 use Phpml\CrossValidation\CrossValidation;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 class PatientController extends Controller
 {
@@ -29,13 +30,23 @@ class PatientController extends Controller
     {
         //
         abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
-        $data = Patient::with('Barangay', 'Disease', 'Patient_Assessment')->latest();
+        $data = Patient::with('Barangay', 'Disease', 'Patient_Assessment')
+            ->select('patients.*', 'tokenizeds.token', 'tokenizeds.originaldata')
+            ->leftjoin('safetagumtokens.tokenizeds', 'patients.lastname', '=', 'tokenizeds.token')
+            ->latest();
 
         if ($request->search) {
-            $data = $data->whereHas('Patient_Assessment', function ($query) use ($request) {
-                $query->where('epi_id', 'LIKE', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+
+            $data = $data->where(function ($query) use ($searchTerm) {
+                $query->where('lastname', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhereHas('Patient_Assessment', function ($query) use ($searchTerm) {
+                        $query->where('epi_id', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhere('tokenizeds.originaldata', 'LIKE', '%' . $searchTerm . '%'); // Search in tokenizeds.originaldata
             });
         }
+        // dd($data->latest());
         if ($request->barangay) {
             $data = $data->where('barangay_id',  $request->barangay);
         }
@@ -44,6 +55,9 @@ class PatientController extends Controller
         }
 
         $data = $data->paginate($request->length);
+
+        // dd($data);
+
         return response(['data' => $data], 200);
     }
     private function detokenize($data)
@@ -122,25 +136,47 @@ class PatientController extends Controller
         //                  SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as total_cases')
         //     ->orderBy('barangay_id', 'asc')
         //     ->get();
+
         $response = null;
-        $diseases = [];
-        $selectedDiseases = $request->type_of_disease;
-        foreach ($request->type_of_disease as $disease) {
-            $diseases[] = [
-                'name' => $disease['name']
-            ];
-        }
 
-        if (count($selectedDiseases) > 1) {
-            $response = Http::get('http://127.0.0.1:5000/forecastalldisease', ['diseases' => $diseases]);
+        if (count($request->type_of_disease) > 1) {
+            $formattedData = [];
+            foreach ($request->type_of_disease as $disease) {
+                $formattedData[$disease['name']] = $this->getDiseaseData($disease);
+            }
+            $response = Http::post('http://127.0.0.1:5000/forecastalldisease', ['diseases' => $formattedData]);
         } else {
-            $response = Http::get('http://127.0.0.1:5000/forecast?disease=' . $diseases[0]['name']);
+            $response = Http::post('http://127.0.0.1:5000/forecast', [
+                'data' => $this->getDiseaseData($request->type_of_disease[0]), // Send the formatted data
+                'disease' => $request->type_of_disease[0]['name']
+            ]);
         }
-
         $forecastData = $response->json();
-        // dd($forecastData);
 
         return response(['forecasting' => $forecastData], 200);
+    }
+    private function getDiseaseData($disease)
+    {
+        $formattedData = [];
+        $data = Patient::select('patient_assessments.date_onset_of_illness')->with('barangay', 'disease')
+            ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
+            // ->where('patients.barangay_id', $request->barangay['id'])
+            ->where('patient_assessments.type_of_disease', $disease['id'])
+            ->whereBetween('patient_assessments.date_onset_of_illness', ["2024-12-31T16:00:00.000Z", "2025-12-31T03:59:59.999Z"])
+            ->get();
+
+
+        foreach ($data as $item) {
+            $dateOnset = Carbon::parse($item->date_onset_of_illness); // Use Carbon for date manipulation
+            $year = $dateOnset->year;
+            $weekNumber = $dateOnset->weekOfYear; // Carbon's weekOfYear gives you the ISO week number
+
+            $formattedData[] = [
+                'Year' => $year,
+                'Morbidity_Week' => $weekNumber,
+            ];
+        }
+        return $formattedData;
     }
     public function report(Request $request)
     {

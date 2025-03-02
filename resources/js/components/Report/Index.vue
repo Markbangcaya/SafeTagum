@@ -192,6 +192,48 @@
                                         </div>
                                         <br>
                                         <hr>
+                                        <div class="row">
+                                            <label>Number of Cases Per Barangay</label>
+                                            <div class="table-responsive">
+                                                <table class="table table-primary text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <th rowspan="2" class="text-center">Barangay</th>
+                                                            <th colspan="4" class="text-center">Age Groups</th>
+                                                            <th rowspan="2">Death</th>
+                                                            <th rowspan="2">Grand Total of Cases</th>
+                                                            <th colspan="3" class="text-center">Case Classification</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <!-- <th scope="col">Barangay</th> -->
+                                                            <th scope="col">0-5 Years Old</th>
+                                                            <th scope="col">6-10 Years Old</th>
+                                                            <th scope="col">11-15 Years Old</th>
+                                                            <th scope="col">16 and Above Years Old</th>
+                                                            <th scope="col">Confirmed</th>
+                                                            <th scope="col">Suspected</th>
+                                                            <th scope="col">Probable</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="caseData in cases" :key="caseData.barangay.name">
+                                                            <td scope="row">{{ caseData.barangay.name }}</td>
+                                                            <td>{{ caseData.count_0_5 }}</td>
+                                                            <td>{{ caseData.count_6_10 }}</td>
+                                                            <td>{{ caseData.count_11_15 }}</td>
+                                                            <td>{{ caseData.count_16_above }}</td>
+                                                            <td>{{ caseData.total_deaths }}</td>
+                                                            <td>{{ caseData.total_cases }}</td>
+                                                            <td>{{ caseData.count_confirmed }}</td>
+                                                            <td>{{ caseData.count_suspected }}</td>
+                                                            <td>{{ caseData.count_probable }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <hr>
                                         <label v-if="this.form.enable == true">Age Groups Affected by {{
                                             this.form.type_of_disease.name }} Per Barangay</label>
                                         <bar v-if="this.form.enable == true" ref="bar" :data="barData"
@@ -326,6 +368,7 @@ export default {
             }),
             //
             login_user: null,
+            cases: null,
             //Choices
             option_diseases: [],
             option_barangay: [],
@@ -464,23 +507,13 @@ export default {
                         borderColor: 'rgb(239, 68, 68)',
                         borderWidth: 1
                     },
-                    {
-                        label: 'Grand Total of Cases',
-                        data: [],
-                        backgroundColor: 'rgba(34, 197, 94, .3)',
-                        borderColor: 'rgb(34, 197, 94)',
-                        borderWidth: 1
-                    },
                     // {
-                    //     label: 'Total',
-                    //     data: sumData,//props.monthlyVendorDetectionsBarChartData.data,
-                    //     backgroundColor: 'rgba(168, 85, 247, .3)',
-                    //     borderColor: 'rgb(168, 85, 247)',
-                    //     stack: 'combined',
-                    //     type: 'line',
-                    //     pointRadius: 10,
-                    //     pointHitRadius: 12
-                    // }
+                    //     label: 'Grand Total of Cases',
+                    //     data: [],
+                    //     backgroundColor: 'rgba(34, 197, 94, .3)',
+                    //     borderColor: 'rgb(34, 197, 94)',
+                    //     borderWidth: 1
+                    // },
                 ]
             }
         }
@@ -520,6 +553,7 @@ export default {
                     this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
                     this.form.enable = true;
                     this.login_user = response.data.user.name;
+                    this.cases = response.data.cases;
                     // const myDiv = document.getElementById("data");
                     // myDiv.style.opacity = "1";
                     // myDiv.style.pointerEvents = "auto";
@@ -560,7 +594,7 @@ export default {
                         this.barData.datasets[4].data.push(response.data.cases[i].total_deaths);
                         this.death += Math.round(response.data.cases[i].total_deaths);
 
-                        this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
+                        // this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
                         this.total_cases += Math.round(response.data.cases[i].total_cases);
                         this.total_cases_barangay += Math.round(response.data.cases[i].total_cases);
 
@@ -578,7 +612,7 @@ export default {
                             }
 
                             if (featureName.trim().toLowerCase() === response.data.cases[i].barangay.name.trim().toLowerCase()) {
-                                if (this.total_cases_barangay > 100 || response.data.cases[i].total_deaths == !null) {
+                                if (this.total_cases_barangay > 100) {
                                     this.geojson.features[j].properties.fillColor = "red";
                                 } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
                                     this.geojson.features[j].properties.fillColor = "yellow";
@@ -587,6 +621,10 @@ export default {
                                 } else {
                                     this.geojson.features[j].properties.fillColor = "white";
                                 }
+                                if (response.data.cases[i].total_deaths > 0) {
+                                    this.geojson.features[j].properties.fillColor = "red";
+                                }
+
                                 this.total_cases_barangay = 0;
                             }
                         }

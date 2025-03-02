@@ -28,4 +28,8 @@ class Patient extends Model
     {
         return $this->hasMany(Patient_Assessment::class);
     }
+    public function tokenized()
+    {
+        return $this->belongsTo(Tokenized::class, 'lastname');
+    }
 }
