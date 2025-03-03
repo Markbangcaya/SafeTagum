@@ -6,7 +6,7 @@
 
 3.  cp .env.example .env
 
-4.  change DB_DATABASE=agrishop in .env
+4.  change DB_DATABASE=safetagum in .env
 
 5.  php artisan key:generate
 
@@ -14,7 +14,7 @@
 
 7.  php artisan db:seed PermissionsDemoSeeder
 
-8.  create database name agrishop
+8.  create database name safetagum
 
 9.  php artisan passport:install
 
