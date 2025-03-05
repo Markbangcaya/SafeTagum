@@ -31,6 +31,7 @@ return new class extends Migration
     public function up()
     {
         $this->schema->create('oauth_access_tokens', function (Blueprint $table) {
+            $table->id(); // Add an auto-incrementing primary key
             $table->string('id', 100)->primary();
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->unsignedBigInteger('client_id');

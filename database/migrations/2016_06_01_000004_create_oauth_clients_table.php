@@ -41,6 +41,7 @@ return new class extends Migration
     public function up()
     {
         $this->schema->create('oauth_clients', function (Blueprint $table) {
+            $table->id(); // Add an auto-incrementing primary key
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('name');
