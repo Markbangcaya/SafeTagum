@@ -22,49 +22,34 @@
                         <div class="card">
                             <!-- <div class="card-header">Report Information</div> -->
                             <div class="card-body">
-                                <div class="row">
-                                    <div id="remove-print" class="col-4">
-                                        <div class="form-group">
-                                            <label>Type of Disease</label>
-                                            <multiselect v-model="form.type_of_disease" :options="option_diseases"
-                                                :disabled="this.form.enable" :multiple="false" :close-on-select="true"
-                                                :clear-on-select="false" :preserve-search="true"
-                                                placeholder="Pick Type of Disease" label="name" track-by="name"
-                                                :preselect-first="true">
-                                            </multiselect>
-                                            <has-error :form="form" field="type_of_disease" />
-                                        </div>
-
-                                        <!-- <div class="form-group">
-                                            <label>Barangay</label>
-                                            <multiselect v-model="form.barangay" :options="option_barangay"
-                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick some" label="name"
-                                                track-by="name" :preselect-first="true">
-                                            </multiselect>
-                                            <has-error :form="form" field="barangay" />
-                                        </div> -->
-                                        <div class="form-group">
-                                            <label>Date Range</label>
-                                            <date-range-picker :disabled="this.form.enable" v-model="form.date"
-                                                style="width: 100%;">
-                                            </date-range-picker>
-                                            <has-error :form="form" field="date" />
-                                        </div>
-                                        <button v-if="this.form.enable == !true" type="button" class="btn btn-success"
-                                            @click="report">Create
-                                            Report</button>
-                                        <button v-else type="button" class="btn btn-info" @click="refresh"><i
-                                                class="fas fa-refresh"></i> Create New Report</button>
-                                        <button v-if="this.form.enable == true" type="button"
-                                            class="btn btn-success float-right" @click="printChart"><i
-                                                class="fas fa-print"></i> Print Report</button>
-                                        <hr>
+                                <div id="remove-print" class="row">
+                                    <div class="form-group col-12 col-md-3">
+                                        <label>Type of Disease</label>
+                                        <multiselect v-model="form.type_of_disease" :options="option_diseases"
+                                            :multiple="false" :close-on-select="true" :clear-on-select="false"
+                                            :preserve-search="true" placeholder="Pick Type of Disease" label="name"
+                                            track-by="name" :preselect-first="true">
+                                        </multiselect>
+                                        <has-error :form="form" field="type_of_disease" />
                                     </div>
-                                    <div class="col-8 border-left">
+                                    <div class="form-group col-12 col-md-3">
+                                        <label>Date Range</label>
+                                        <date-range-picker v-model="form.date" style="width: 100%;">
+                                        </date-range-picker>
+                                        <has-error :form="form" field="date" />
+                                    </div>
+                                    <div
+                                        class="form-group col-8 col-md-4 d-flex align-items-center justify-content-end">
+                                        <button v-if="this.form.enable == true" type="button" class="btn btn-success"
+                                            @click="printChart"><i class="fas fa-print"></i> Print Report</button>
+                                    </div>
+                                </div>
+                                <br>
+                                <hr>
+                                <div class="row justify-content-center">
+                                    <div class="col-12 text-center">
                                         <label v-if="this.form.enable == true" class="text-center">Reported {{
-                                            form.type_of_disease.name }} Cases and
-                                            Case Fatality Rate by Barangay in Tagum City,
+                                            form.type_of_disease.name }} Cases by Barangay in Tagum City,
                                             ({{
                                                 this.form.date.startDate.toLocaleDateString('en-US', {
                                                     year: 'numeric',
@@ -75,13 +60,16 @@
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric'
-                                            }) }}), 2023 vs 2024
+                                            }) }})
                                             <span class="badge badge-danger"> As of Morbidity Week {{
                                                 this.form.start_morbidity_week }}
                                                 - {{ this.form.end_morbidity_week }}</span>
                                         </label>
-                                        <br>
-                                        <br>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-8">
                                         <div class="row">
                                             <label v-if="this.form.enable == true">Age Groups Affected by {{
                                                 this.form.type_of_disease.name }}</label>
@@ -134,7 +122,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-12 col-sm-6 col-md-3">
+                                            <div class="col-6">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-danger elevation-1"><i
                                                             class="fas fa-skull-crossbones"></i></span>
@@ -144,7 +132,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-sm-6 col-md-3">
+                                            <div class="col-6">
                                                 <div class="info-box mb-3">
                                                     <span class="info-box-icon bg-success elevation-1"><i
                                                             class="fas fa-circle-plus"></i></span>
@@ -156,31 +144,31 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <br>
-                                        <hr>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Case Classifications</label>
                                         <div class="row">
-                                            <label>Case Classifications</label>
-                                            <div class="col-4">
+                                            <div class="col-12">
                                                 <div class="card bg-danger text-white">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-danger">Confirmed</span>
                                                         <div class="case-count fs-2 float-right">{{ this.confirmed
-                                                        }}
+                                                            }}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-12">
                                                 <div class="card bg-warning text-dark">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-warning">Suspected</span>
                                                         <div class="case-count fs-2 float-right"> {{ this.suspected
-                                                        }}
+                                                            }}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-12">
                                                 <div class="card bg-success text-white">
                                                     <div class="card-body">
                                                         <span class="legend-color bg-success">Probable</span>
@@ -190,107 +178,84 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <br>
-                                        <hr>
-                                        <div class="row">
-                                            <label>Number of Cases Per Barangay</label>
-                                            <div class="table-responsive">
-                                                <table class="table table-primary text-center">
-                                                    <thead>
-                                                        <tr>
-                                                            <th rowspan="2" class="text-center">Barangay</th>
-                                                            <th colspan="4" class="text-center">Age Groups</th>
-                                                            <th rowspan="2">Death</th>
-                                                            <th rowspan="2">Grand Total of Cases</th>
-                                                            <th colspan="3" class="text-center">Case Classification</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <!-- <th scope="col">Barangay</th> -->
-                                                            <th scope="col">0-5 Years Old</th>
-                                                            <th scope="col">6-10 Years Old</th>
-                                                            <th scope="col">11-15 Years Old</th>
-                                                            <th scope="col">16 and Above Years Old</th>
-                                                            <th scope="col">Confirmed</th>
-                                                            <th scope="col">Suspected</th>
-                                                            <th scope="col">Probable</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr v-for="caseData in cases" :key="caseData.barangay.name">
-                                                            <td scope="row">{{ caseData.barangay.name }}</td>
-                                                            <td>{{ caseData.count_0_5 }}</td>
-                                                            <td>{{ caseData.count_6_10 }}</td>
-                                                            <td>{{ caseData.count_11_15 }}</td>
-                                                            <td>{{ caseData.count_16_above }}</td>
-                                                            <td>{{ caseData.total_deaths }}</td>
-                                                            <td>{{ caseData.total_cases }}</td>
-                                                            <td>{{ caseData.count_confirmed }}</td>
-                                                            <td>{{ caseData.count_suspected }}</td>
-                                                            <td>{{ caseData.count_probable }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <hr>
-                                        <label v-if="this.form.enable == true">Age Groups Affected by {{
+                                    </div>
+                                </div>
+                                <br>
+                                <hr>
+                                <div class="row">
+                                    <label>Number of Cases Per Barangay</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-primary text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2" class="text-center">Barangay</th>
+                                                    <th colspan="4" class="text-center">Age Groups</th>
+                                                    <th rowspan="2">Death</th>
+                                                    <th rowspan="2">Grand Total of Cases</th>
+                                                    <th colspan="3" class="text-center">Case Classification</th>
+                                                </tr>
+                                                <tr>
+                                                    <!-- <th scope="col">Barangay</th> -->
+                                                    <th scope="col">0-5 Years Old</th>
+                                                    <th scope="col">6-10 Years Old</th>
+                                                    <th scope="col">11-15 Years Old</th>
+                                                    <th scope="col">16 and Above Years Old</th>
+                                                    <th scope="col">Confirmed</th>
+                                                    <th scope="col">Suspected</th>
+                                                    <th scope="col">Probable</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="cases.length === 0">
+                                                    <td colspan="10">No data available</td>
+                                                </tr>
+                                                <tr v-for="caseData in cases" :key="caseData.barangay.name">
+                                                    <td scope="row">{{ caseData.barangay.name }}</td>
+                                                    <td>{{ caseData.count_0_5 }}</td>
+                                                    <td>{{ caseData.count_6_10 }}</td>
+                                                    <td>{{ caseData.count_11_15 }}</td>
+                                                    <td>{{ caseData.count_16_above }}</td>
+                                                    <td>{{ caseData.total_deaths }}</td>
+                                                    <td>{{ caseData.total_cases }}</td>
+                                                    <td>{{ caseData.count_confirmed }}</td>
+                                                    <td>{{ caseData.count_suspected }}</td>
+                                                    <td>{{ caseData.count_probable }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <br>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label>Age Groups Affected by {{
                                             this.form.type_of_disease.name }} Per Barangay</label>
-                                        <bar v-if="this.form.enable == true" ref="bar" :data="barData"
-                                            :options="options" />
-                                        <br>
-                                        <hr>
+                                        <bar v-if="showChart" ref="bar" :data="barData" :options="options" />
+                                    </div>
+                                    <div class="col-6">
                                         <label v-if="this.form.enable == true">Affected by {{
                                             this.form.type_of_disease.name }}
                                             Cases Per Barangay</label>
-                                        <div class="row">
-                                            <h5 class="mt-4 mb-2">Risk Level Legend</h5>
-                                            <div class="col-3">
-                                                <div class="card bg-danger text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-danger"></span> High Risk
-                                                        <div class="case-count"> More Than 101 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-warning text-dark">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-warning"></span> Medium Risk
-                                                        <div class="case-count"> 100 - 50 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-success text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-success"></span> Managed Risk
-                                                        <div class="case-count"> 49 - 0 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-secondary text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-secondary"></span> No Risk
-                                                        <div class="case-count"> 0 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div v-if="this.form.enable == true">
+                                        <div>
                                             <span v-if="loading">Loading...</span>
                                             <label for="checkbox">GeoJSON Visibility</label>
                                             <input id="checkbox" v-model="show" type="checkbox">
                                             <br>
-                                            <l-map ref="map" :zoom="zoom" :center="center"
+                                            <l-map v-if="showChart" ref="map" :zoom="zoom" :center="center"
                                                 style="height: 600px; width: 100%">
-                                                <l-tile-layer :url="url" :attribution="attribution" />
-                                                <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
-                                                    :options-style="styleFunction" />
+                                                <l-tile-layer :url="url" />
+                                                <l-geo-json v-if="show" :geojson="geojson" @mouseover="handleMapClick"
+                                                    :options-style="styleFunction">
+                                                    <l-popup :content="popupContent" />
+                                                </l-geo-json>
                                                 <l-marker v-for="(marker, index) in markers.data" :key="index"
                                                     :lat-lng="[marker.latitude, marker.longitude]">
                                                 </l-marker>
+                                                <l-control :position="'bottomleft'" class="custom-control-watermark">
+                                                    <img src="/images/legend.png" alt="Legend Image" width="500"
+                                                        height="50">
+                                                </l-control>
                                                 <!-- <l-circle-marker v-for="(marker, index) in markers.data" :key="index"
                                                 :lat-lng="[marker.latitude, marker.longitude]" :radius="marker.radius"
                                                 :color="marker.color">
@@ -300,16 +265,16 @@
                                             </l-circle-marker> -->
                                             </l-map>
                                         </div>
-                                        <div class="report-info">
-                                            <br>
-                                            <br>
-                                            <h6><strong>Date Printed:</strong> <span id="reportDate">{{ new
-                                                Date().toLocaleDateString() }}</span></h6>
-                                            <br>
-                                            <h6><strong>Printed by:</strong> <span id="reportUser">{{
-                                                this.login_user }}</span></h6>
-                                        </div>
                                     </div>
+                                </div>
+                                <div class="report-info">
+                                    <br>
+                                    <br>
+                                    <h6><strong>Date Printed:</strong> <span id="reportDate">{{ new
+                                        Date().toLocaleDateString() }}</span></h6>
+                                    <br>
+                                    <h6><strong>Printed by:</strong> <span id="reportUser">{{
+                                        this.login_user }}</span></h6>
                                 </div>
                             </div>
                         </div>
@@ -317,6 +282,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </template>
 <style scoped>
@@ -361,7 +327,10 @@ export default {
                 type_of_disease: '',
                 //Patient Address
                 barangay: '',
-                date: '',
+                date: {
+                    startDate: new Date(2025, 0, 1),
+                    endDate: new Date(2025, 11, 31)
+                },
                 start_morbidity_week: '0',
                 end_morbidity_week: '0',
                 enable: false
@@ -369,6 +338,9 @@ export default {
             //
             login_user: null,
             cases: null,
+            showChart: true,
+            chartKey: 0,
+
             //Choices
             option_diseases: [],
             option_barangay: [],
@@ -395,10 +367,11 @@ export default {
             center: [7.448040629446573, 125.80747097125365],
             geojson: null,
             markers: [],
+            popupContent: '',
             fillColor: "#e4ce7f",
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            // attribution:
+            //     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             props: {
                 monthlyVendorDetectionsBarChartData: {
                     type: Object,
@@ -522,9 +495,6 @@ export default {
         printChart() {
             window.print(); // Trigger the browser's print function
         },
-        refresh() {
-            window.location.reload();
-        },
         styleFunction(feature) {
             return {
                 weight: 3,
@@ -535,142 +505,127 @@ export default {
             };
         },
         report() {
-            Swal.fire({
-                titleText: 'Creating Report...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
+            this.form.post('/api/patient/report').then(response => {
+                this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
+                this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
+                this.form.enable = true;
+                this.login_user = response.data.user.name;
+                this.cases = response.data.cases;
+                // this.markers = response.data;
+                // Swal.fire({
+                //     title: 'Report Successfully',
+                //     html: "All data belongs to <b>" + this.form.type_of_disease.name + "</b> case being display",
+                //     icon: 'success',
+                // })
+            }).catch(() => {
+                Swal.fire({
+                    title: 'Report Unsuccessfully',
+                    html: "Provide needed information",
+                    icon: 'warning',
+                })
+            });
+        },
+        handleMapClick(event) {
+            // Get the clicked GeoJSON feature
+            const clickedFeature = event.layer.feature;
+
+            // Check if the feature has barangay information
+            if (clickedFeature.properties && clickedFeature.properties.NAME_3) {
+                // Find the case data for the clicked barangay
+                const caseData = this.cases.find(c => c.barangay.name.trim().toLowerCase() === clickedFeature.properties.NAME_3.trim().toLowerCase());
+
+                // Display the barangay name and total cases in a popup
+                if (caseData) {
+                    this.popupContent = `Barangay: ${clickedFeature.properties.NAME_3}<br>Total Cases: ${caseData.total_cases}<br>Total Death: ${caseData.total_deaths}`;
+                } else {
+                    this.popupContent = `Barangay: ${clickedFeature.properties.NAME_3}<br>Total Cases: 0<br>Total Death: 0`;
+                }
+            } else {
+                this.popupContent = 'No barangay information available.';
+            }
+            event.layer.bindPopup(this.popupContent).openPopup();
+        },
+        updateChart(newCases) {
+            // Reset the chart data
+            this.barData.labels = [];
+            this.barData.datasets.forEach(dataset => {
+                dataset.data = [];
+            });
+
+            // Reset the age groups and case classifications
+            this.age_0_5 = 0;
+            this.age_6_10 = 0;
+            this.age_11_15 = 0;
+            this.age_16_above = 0;
+            this.death = 0;
+            this.total_cases = 0;
+            this.confirmed = 0;
+            this.suspected = 0;
+            this.probable = 0;
+            this.geojson = this.resetgeojson();
+
+            // Update the chart data with the new cases
+            newCases.forEach(caseData => {
+                this.barData.labels.push(caseData.barangay.name);
+
+                // Age Group
+                this.barData.datasets[0].data.push(caseData.count_0_5);
+                this.age_0_5 += Math.round(caseData.count_0_5);
+
+                this.barData.datasets[1].data.push(caseData.count_6_10);
+                this.age_6_10 += Math.round(caseData.count_6_10);
+
+                this.barData.datasets[2].data.push(caseData.count_11_15);
+                this.age_11_15 += Math.round(caseData.count_11_15);
+
+                this.barData.datasets[3].data.push(caseData.count_16_above);
+                this.age_16_above += Math.round(caseData.count_16_above);
+
+                this.barData.datasets[4].data.push(caseData.total_deaths);
+                this.death += Math.round(caseData.total_deaths);
+
+                // Total Cases
+                this.total_cases += Math.round(caseData.total_cases);
+                this.total_cases_barangay += Math.round(caseData.total_cases);
+
+                // Case Classifications
+                this.confirmed += Math.round(caseData.count_confirmed);
+                this.suspected += Math.round(caseData.count_suspected);
+                this.probable += Math.round(caseData.count_probable);
+
+                for (let j = 0; j < this.geojson.features.length; j++) {
+                    const featureName = this.geojson.features[j].properties.NAME_3;
+
+                    if (!featureName) {
+                        console.log("Feature name (NAME_3) is missing for a feature.");
+                        continue; // Skip to the next feature
+                    }
+
+                    if (featureName.trim().toLowerCase() === caseData.barangay.name.trim().toLowerCase()) {
+                        if (this.total_cases_barangay > 100) {
+                            this.geojson.features[j].properties.fillColor = "red";
+                        } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
+                            this.geojson.features[j].properties.fillColor = "yellow";
+                        } else if (this.total_cases_barangay > 0 && this.total_cases_barangay < 50) {
+                            this.geojson.features[j].properties.fillColor = "green";
+                        } else {
+                            this.geojson.features[j].properties.fillColor = "gray";
+                        }
+                        if (caseData.total_deaths > 0) {
+                            this.geojson.features[j].properties.fillColor = "red";
+                        }
+
+                        this.total_cases_barangay = 0;
+                    }
                 }
             });
-            setTimeout(() => {
-                // this.styleFunction();
-                // this.LineFunction();
-                // console.log(this.geojson.features[0].properties);
-
-                this.form.post('/api/patient/report').then(response => {
-                    this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
-                    this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
-                    this.form.enable = true;
-                    this.login_user = response.data.user.name;
-                    this.cases = response.data.cases;
-                    // const myDiv = document.getElementById("data");
-                    // myDiv.style.opacity = "1";
-                    // myDiv.style.pointerEvents = "auto";
-                    // console.log(response.data);
-                    this.markers = response.data;
-
-                    //Empty and Cleaning Bar Chart
-                    this.barData.labels.push();
-                    this.barData.datasets[0].data.push();
-                    this.age_0_5 = 0;
-                    this.age_6_10 = 0;
-                    this.age_11_15 = 0;
-                    this.age_16_above = 0;
-                    this.death = 0
-                    this.total_cases = 0;
-
-                    //Case Classifications
-                    this.confirmed = 0;
-                    this.suspected = 0;
-                    this.probable = 0;
-
-                    for (let i = 0; i < response.data.cases.length; i++) {
-                        this.barData.labels.push(response.data.cases[i].barangay.name);
-
-                        //Age Group
-                        this.barData.datasets[0].data.push(response.data.cases[i].count_0_5);
-                        this.age_0_5 += Math.round(response.data.cases[i].count_0_5);
-
-                        this.barData.datasets[1].data.push(response.data.cases[i].count_6_10);
-                        this.age_6_10 += Math.round(response.data.cases[i].count_6_10);
-
-                        this.barData.datasets[2].data.push(response.data.cases[i].count_11_15);
-                        this.age_11_15 += Math.round(response.data.cases[i].count_11_15);
-
-                        this.barData.datasets[3].data.push(response.data.cases[i].count_16_above);
-                        this.age_16_above += Math.round(response.data.cases[i].count_16_above);
-
-                        this.barData.datasets[4].data.push(response.data.cases[i].total_deaths);
-                        this.death += Math.round(response.data.cases[i].total_deaths);
-
-                        // this.barData.datasets[5].data.push(response.data.cases[i].total_cases);
-                        this.total_cases += Math.round(response.data.cases[i].total_cases);
-                        this.total_cases_barangay += Math.round(response.data.cases[i].total_cases);
-
-                        //Case Classifications
-                        this.confirmed += Math.round(response.data.cases[i].count_confirmed);
-                        this.suspected += Math.round(response.data.cases[i].count_suspected);
-                        this.probable += Math.round(response.data.cases[i].count_probable);
-
-                        for (let j = 0; j < this.geojson.features.length; j++) {
-                            const featureName = this.geojson.features[j].properties.NAME_3;
-
-                            if (!featureName) {
-                                console.log("Feature name (NAME_3) is missing for a feature.");
-                                continue; // Skip to the next feature
-                            }
-
-                            if (featureName.trim().toLowerCase() === response.data.cases[i].barangay.name.trim().toLowerCase()) {
-                                if (this.total_cases_barangay > 100) {
-                                    this.geojson.features[j].properties.fillColor = "red";
-                                } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
-                                    this.geojson.features[j].properties.fillColor = "yellow";
-                                } else if (this.total_cases_barangay > 0 && this.total_cases_barangay < 50) {
-                                    this.geojson.features[j].properties.fillColor = "green";
-                                } else {
-                                    this.geojson.features[j].properties.fillColor = "white";
-                                }
-                                if (response.data.cases[i].total_deaths > 0) {
-                                    this.geojson.features[j].properties.fillColor = "red";
-                                }
-
-                                this.total_cases_barangay = 0;
-                            }
-                        }
-                    }
-                    Swal.fire({
-                        title: 'Report Successfully',
-                        html: "All data belongs to <b>" + this.form.type_of_disease.name + "</b> case being display",
-                        icon: 'success',
-                    })
-                }).catch(() => {
-                    Swal.fire({
-                        title: 'Report Unsuccessfully',
-                        html: "Provide needed information",
-                        icon: 'warning',
-                    })
-                });
-            }, 2000); // Adjust the delay in milliseconds as needed
+            // Force chart update
+            this.showChart = false;
+            this.$nextTick(() => {
+                this.showChart = true;
+            });
         },
-        handleMapClick(e) {
-            const { lat, lng } = e.latlng;
-            this.form.latitude = lat;
-            this.form.longitude = lng;
-
-            console.log("latitude: " + this.form.latitude + " " + "longitude: " + this.form.longitude)
-        },
-        loadDisease() {
-            axios.get('/api/disease/all')
-                .then(response => {
-                    this.option_diseases = response.data.data;
-                });
-        },
-        loadBarangay() {
-            axios.get('/api/barangay/all')
-                .then(response => {
-                    this.option_barangay = response.data.data;
-                });
-        }
-    },
-    async created() {
-        this.loading = true;
-        try {
-            // const response = await fetch("./Barangays.json");
-            // if (!response.ok) {
-            //     throw new Error(`Network response was not ok: ${response.statusText}`);
-            // }
-            // const data = await response.json();
+        resetgeojson() {
             const data = {
                 "type": "FeatureCollection",
                 "features": [
@@ -721,7 +676,54 @@ export default {
                     { "type": "Feature", "properties": { "ID_0": 177, "ISO": "PHL", "NAME_0": "Philippines", "ID_1": 27, "NAME_1": "Davao del Norte", "ID_2": 514, "NAME_2": "Tagum City", "ID_3": 12426, "NAME_3": "Visayan Village", "NL_NAME_3": "", "VARNAME_3": "", "TYPE_3": "Barangay", "ENGTYPE_3": "Village", "PROVINCE": "Davao del Norte", "REGION": "Davao Region (Region XI)" }, "geometry": { "type": "Polygon", "coordinates": [[[125.818069, 7.442250], [125.816368, 7.433450], [125.815887, 7.420320], [125.816971, 7.407660], [125.803833, 7.406520], [125.802322, 7.403690], [125.791496, 7.404630], [125.783310, 7.410430], [125.784233, 7.413400], [125.765373, 7.416120], [125.761833, 7.412320], [125.758110, 7.415570], [125.757133, 7.420610], [125.755363, 7.422590], [125.773903, 7.427240], [125.781097, 7.428600], [125.783218, 7.429060], [125.787857, 7.431260], [125.792084, 7.433210], [125.798714, 7.436150], [125.799026, 7.436280], [125.800392, 7.436240], [125.804932, 7.437110], [125.814819, 7.444780], [125.816452, 7.444060], [125.818069, 7.442250]]] } }
                 ]
             };
-            this.geojson = data;
+            return data;
+        },
+        loadDisease() {
+            axios.get('/api/disease/all')
+                .then(response => {
+                    this.option_diseases = response.data.data;
+                    if (this.option_diseases.length > 0) {
+                        this.form.type_of_disease = this.option_diseases[0]; // Set the default value to the first option
+                    }
+                });
+        },
+        loadBarangay() {
+            axios.get('/api/barangay/all')
+                .then(response => {
+                    this.option_barangay = response.data.data;
+                });
+        }
+    },
+    watch: {
+        'form.type_of_disease': {
+            handler() {
+                this.report();
+            },
+            deep: true
+        },
+        'form.date': {
+            handler() {
+                this.report();
+            },
+            deep: true
+        },
+        cases: {
+            handler(newCases) {
+                this.updateChart(newCases);
+            },
+            deep: true
+        }
+    },
+    async created() {
+        this.loading = true;
+        try {
+            // const response = await fetch("./Barangays.json");
+            // if (!response.ok) {
+            //     throw new Error(`Network response was not ok: ${ response.statusText } `);
+            // }
+            // const data = await response.json();
+
+            this.geojson = this.resetgeojson();
             // Use the geojsonData to populate your LGeoJson component
         } catch (error) {
             console.error('Error fetching GeoJSON data:', error);

@@ -23,15 +23,18 @@
                             <div class="card-header p-3">
                                 <h3 class="card-title"> </h3>
                                 <div class="card-tools float-left">
-                                    <div class="input-group input-group-sm">
-                                        <select v-model="length" @change="getData" class="form-control form-control-sm">
+                                    <div class="input-group">
+                                        <select v-model="length" @change="getData" class="form-control">
                                             <option value="10">10</option>
                                             <option value="25">25</option>
                                             <option value="30">30</option>
                                         </select>
-                                        <button class="btn btn-success btn-sm ml-auto" @click="openAddModal"
+                                        <button class="btn btn-success ml-auto" @click="openAddModal"
                                             v-if="can('show user')"><i class="fas fa-user-plus"></i>
                                             Add</button>
+                                        <button type="button" class="btn btn-secondary" @click="exportToExcel">
+                                            <i class="fas fa-file-export"></i> Export
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="card-tools">
@@ -73,7 +76,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(data, index) in option_users.data" :key="index">
+                                        <tr v-if="loading">
+                                            <td colspan="9" class="text-center">
+                                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                                            </td>
+                                        </tr>
+                                        <tr v-else v-for="(data, index) in option_users.data" :key="index">
                                             <td>{{ data.id }}</td>
                                             <td><button class="btn btn-warning"
                                                     @click="tokenized(data.id)">Tokenized</button></td>
@@ -126,12 +134,13 @@
 </template>
 <script>
 // import $ from 'jquery';
-import 'datatables.net';
-// import 'datatables.net-dt/css/jquery.dataTables.min.css';
-import 'datatables.net-buttons';
-import 'datatables.net-buttons/js/dataTables.buttons.min.js';
-import 'datatables.net-buttons/js/buttons.print.min.js';
+// import 'datatables.net';
+// // import 'datatables.net-dt/css/jquery.dataTables.min.css';
+// import 'datatables.net-buttons';
+// import 'datatables.net-buttons/js/dataTables.buttons.min.js';
+// import 'datatables.net-buttons/js/buttons.print.min.js';
 
+import * as XLSX from 'xlsx';
 import addModal from "./Add.vue";
 import EditModal from "./Edit.vue";
 import AssessModal from "./Assessment.vue";
@@ -152,6 +161,7 @@ export default {
             is_searching: true,
             selected_user: [],
             current_page: [],
+            loading: false, // Add loading state
 
             form: new Form({
                 id: '',
@@ -178,6 +188,7 @@ export default {
                 page = '/api/patient/list/?page=1';
             }
             this.current_page = page;
+            this.loading = true;
             if (this.timer) {
                 clearTimeout(this.timer);
                 this.timer = null;
@@ -202,10 +213,11 @@ export default {
                     .then(response => {
                         if (response.data.data) {
                             this.option_users = response.data.data;
-                            console.log(this.option_users);
+                            this.loading = false;
                         }
                     }).catch(error => {
                         this.error = error;
+                        this.loading = false;
                         toast.fire({
                             icon: 'error',
                             text: error,
@@ -235,7 +247,6 @@ export default {
                         })
                 }
             }).catch(() => {
-
                 toast.fire({
                     icon: 'error',
                     text: 'Something went wrong!',
@@ -265,7 +276,6 @@ export default {
                         // Swal.close();
                     })
                     .catch(error => {
-                        console.error(error);
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -315,6 +325,61 @@ export default {
                 .then(response => {
                     this.option_barangay = response.data.data;
                 });
+        },
+        exportToExcel() {
+            try {
+                if (!this.option_users.data || this.option_users.data.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Data',
+                        text: 'There is no data to export.',
+                    });
+                    return;
+                }
+
+                const dataToExport = this.option_users.data.map(user => ({
+                    Id: user.id,
+                    // Firstname: user.firstname,
+                    // Middlename: user.middlename,
+                    // Lastname: user.lastname,
+                    'Epi ID': user.patient__assessment[0] ? user.patient__assessment[0].epi_id : 'No Epi ID',
+                    Gender: user.gender,
+                    Birthdate: user.birthdate,
+                    'Contact Number': user.contact_number,
+                    Email: user.email,
+                    'Civil Status': user.civil_status,
+                    Nationality: user.nationality,
+                    Occupation: user.occupation,
+                    'Street/Purok': user['street/purok'],
+                    Barangay: user.barangay.name,
+                    City: user.city,
+                    Province: user.province,
+                    'Type of Disease': user.disease.name,
+                    // 'Date of Onset': user.date_of_onset,
+                    // Latitude: user.latitude,
+                    // Longitude: user.longitude,
+                    // 'Last Modified By': user.last_modified_by,
+                }));
+                // console.log(dataToExport); // Add this line to check the data being exported
+
+                const ws = XLSX.utils.json_to_sheet(dataToExport);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Patients');
+                XLSX.writeFile(wb, 'Patients.xlsx');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Export Successful',
+                    text: 'The data has been successfully exported to Patients.xlsx.',
+                });
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Export Failed',
+                    text: 'An error occurred while exporting the data.',
+                });
+            }
         }
     },
     created() {

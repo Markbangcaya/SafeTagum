@@ -55,7 +55,7 @@ import Highcharts from 'highcharts';
 Vue.use(HighchartsVue);
 //----------------------------------------
 // import Vue from 'vue';
-import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LGeoJson, LPopup, LCircleMarker, LTooltip, LControl } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
 
 Vue.component('l-map', LMap);
@@ -64,6 +64,8 @@ Vue.component('l-marker', LMarker);
 Vue.component('l-geo-json', LGeoJson);
 Vue.component('l-popup', LPopup);
 Vue.component('l-circle-marker', LCircleMarker);
+Vue.component('l-tooltip', LTooltip);
+Vue.component('l-control', LControl);
 
 import { Icon, latLng } from 'leaflet';
 Vue.use(latLng)

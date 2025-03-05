@@ -20,7 +20,6 @@
                 <div class="row justify-content-center">
                     <div class="col-12">
                         <div class="card">
-                            <!-- <div class="card-header">Forecasting Information</div> -->
                             <div class="card-body">
                                 <div class="row">
                                     <div id="remove-print" class="col-4">
@@ -34,21 +33,6 @@
                                             </multiselect>
                                             <has-error :form="form" field="type_of_disease" />
                                         </div>
-                                        <!-- <div class="form-group">
-                                            <label>Barangay</label>
-                                            <multiselect v-model="form.barangay" :options="option_barangay"
-                                                :multiple="false" :close-on-select="true" :clear-on-select="false"
-                                                :preserve-search="true" placeholder="Pick Barangay" label="name"
-                                                track-by="name" :preselect-first="true">
-                                            </multiselect>
-                                            <has-error :form="form" field="barangay" />
-                                        </div> 
-                                        <div class="form-group">
-                                            <label>Date Range</label>
-                                            <date-range-picker v-model="form.date" style="width: 100%;">
-                                            </date-range-picker>
-                                            <has-error :form="form" field="date" />
-                                        </div>-->
                                         <button v-if="this.form.disabled == !true" type="button" class="btn btn-success"
                                             @click="forecast">Create Forecast</button>
                                         <button v-else type="button" class="btn btn-info" @click="refresh"><i
@@ -159,62 +143,6 @@
                                             <line-chart :data="linebarDataforecast" :options="linebaroptionsforecast"
                                                 style="height: 350px; width: 100%" />
                                         </div>
-                                        <!-- <label v-if="this.form.enable == true">Affected
-                                            {{ this.form.type_of_disease.name }} cases in Barangay {{
-                                                this.form.barangay.name }} </label>
-                                        <div class="row">
-                                            <h5 class="mt-4 mb-2">Risk Level Legend</h5>
-                                            <div class="col-3">
-                                                <div class="card bg-danger text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-danger"></span> High Risk
-                                                        <div class="case-count"> More Than 1000 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-warning text-dark">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-warning"></span> Medium Risk
-                                                        <div class="case-count"> 1000 - 500 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-success text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-success"></span> Managed Risk
-                                                        <div class="case-count"> 500 - 0 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="card bg-secondary text-white">
-                                                    <div class="card-body">
-                                                        <span class="legend-color bg-secondary"></span> No Risk
-                                                        <div class="case-count"> 0 Cases</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div v-if="this.form.enable == true">
-                                            <span v-if="loading">Loading...</span>
-                                            <label for="checkbox">GeoJSON Visibility</label>
-                                            <input id="checkbox" v-model="show" type="checkbox" ref="myCheckbox">
-                                            <br>
-                                            <l-map ref="map" :zoom="zoom" :center="center"
-                                                style="height: 600px; width: 100%">
-                                                <l-tile-layer :url="url" :attribution="attribution" />
-                                                <l-geo-json v-if="show" :geojson="geojson" @click="handleMapClick"
-                                                    :options-style="styleFunction" />
-                                                <l-marker v-for="(marker, index) in markers.data" :key="index"
-                                                    :lat-lng="[marker.latitude, marker.longitude]">
-                                                    <l-popup>
-                                                    <p>Count :<b>{{ marker.count }}</b></p>
-                                                </l-popup>
-                                                </l-marker>
-                                            </l-map>
-                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -532,17 +460,6 @@ export default {
             },
         }
     },
-    // watch: {
-    //     show(newValue) {
-    //         console.log("Checkbox value changed to:", newValue);
-    //         // You can react to changes here as well, independently of the button.
-    //         if (newValue) {
-    //             // Checkbox is now checked
-    //         } else {
-    //             // Checkbox is now unchecked
-    //         }
-    //     }
-    // },
     methods: {
         printChart() {
             window.print(); // Trigger the browser's print function
@@ -561,7 +478,7 @@ export default {
         },
         forecast() {
             Swal.fire({
-                titleText: 'Forecasting the data...',
+                titleText: 'Forecasting the data using ARIMA model',
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 willOpen: () => {
@@ -575,15 +492,7 @@ export default {
                         // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
                         this.form.enable = true;
                         this.form.disabled = true;
-                        // const myDiv = document.getElementById("data");
-                        // myDiv.style.opacity = "1";
-                        // myDiv.style.pointerEvents = "auto";
-
-                        this.markers = response.data;
-                        // this.cases = response.data.forcasting + ' Expected Cases in Barangay ' + this.form.barangay.name;
-                        // this.lineData.datasets[5].data[11].push(response.data.forcasting);
-                        // this.lineData.datasets[5].data.splice(11, 1, response.data.forcasting);
-                        // this.$refs.lineChart.chartInstance.update();
+                        // this.markers = response.data;
 
                         //line Graph For Forcasting
                         this.sum2024 = 0;
@@ -626,44 +535,6 @@ export default {
                                 this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
                             }
                         }
-                        // for (let i = 0; i < response.data.cases.length; i++) {
-                        //     this.total_cases_barangay += Math.round(response.data.cases[i].total_cases);
-                        //     for (let j = 0; j < this.geojson.features.length; j++) {
-                        //         const featureName = this.geojson.features[j].properties.NAME_3;
-
-                        //         if (!featureName) {
-                        //             console.log("Feature name (NAME_3) is missing for a feature.");
-                        //             continue; // Skip to the next feature
-                        //         }
-
-                        //         if (featureName.trim().toLowerCase() === response.data.cases[i].barangay.name.trim().toLowerCase()) {
-                        //             if (this.total_cases_barangay > 100 || response.data.cases[i].total_deaths == !null) {
-                        //                 this.geojson.features[j].properties.fillColor = "red";
-                        //             } else if (this.total_cases_barangay >= 50 && this.total_cases_barangay <= 100) {
-                        //                 this.geojson.features[j].properties.fillColor = "yellow";
-                        //             } else if (this.total_cases_barangay > 0 && this.total_cases_barangay < 50) {
-                        //                 this.geojson.features[j].properties.fillColor = "green";
-                        //             } else {
-                        //                 this.geojson.features[j].properties.fillColor = "white";
-                        //             }
-                        //             this.total_cases_barangay = 0;
-                        //         }
-                        //     }
-                        // }
-                        //Geoanalysis Map
-                        // this.$refs.myCheckbox.checked = false;
-                        // this.show = false;
-                        // for (let i = 0; i < this.geojson.features.length; i++) {
-                        //     if (this.geojson.features[i].properties.NAME_3 === this.form.barangay.name) {
-                        //         this.geojson.features[i].properties.fillColor = "Red";
-                        //     } else {
-                        //         this.geojson.features[i].properties.fillColor = "";
-                        //     }
-                        //     console.log(this.geojson.features[i].properties.fillColor);
-                        // }
-                        // this.$refs.myCheckbox.checked = true;
-                        // this.show = true;
-                        // this.$emit('styleFunction');
                         Swal.fire({
                             title: 'Forecast Successfully',
                             html: "All data belongs to <b>" + this.form.type_of_disease[0].name + "</b> Case being display",
@@ -738,7 +609,7 @@ export default {
                         icon: 'warning',
                     })
                 });
-            }, 2000); // Adjust the delay in milliseconds as needed
+            }, 500); // Adjust the delay in milliseconds as needed
         },
         getRandomRGBA() {
             const r = Math.floor(Math.random() * 156) + 100; // Ensure a minimum value for brightness
