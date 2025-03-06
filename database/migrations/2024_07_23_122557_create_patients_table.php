@@ -27,8 +27,8 @@ class CreatePatientsTable extends Migration
             $table->string('email')->unique();
 
             $table->string('street/purok');
-            $table->decimal('latitude', 16, 14);
-            $table->decimal('longitude', 16, 14);
+            $table->decimal('latitude', 10, 7);
+            $table->decimal('longitude', 10, 7);
             $table->unsignedBigInteger('barangay_id');
             $table->string('city');
             $table->string('province');
