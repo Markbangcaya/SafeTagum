@@ -36,3 +36,20 @@
 
 Optional
 php artisan storage:link for image storage to public
+
+## Ploi Deployment script
+```
+cd /home/ploi/bangcs.usecaptura.pro
+git pull origin master
+composer install --no-interaction --prefer-dist --optimize-autoloader
+echo "" | sudo -S service php8.2-fpm reload
+
+echo "🚀 Application deployed!"
+
+php artisan route:cache
+php artisan view:clear
+php artisan migrate --force
+
+npm install
+npm run production
+```
