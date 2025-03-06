@@ -43,7 +43,7 @@ class CreatePatientsTable extends Migration
             $table->foreign('type_of_disease')->references('id')->on('diseases');
             $table->foreign('last_modified_by')->references('id')->on('users');
 
-            $table->index(['barangay', 'type_of_disease', 'last_modified_by']);
+            $table->index(['barangay_id', 'type_of_disease', 'last_modified_by']);
         });
     }
 
