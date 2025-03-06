@@ -144,9 +144,15 @@ class PatientController extends Controller
             foreach ($request->type_of_disease as $disease) {
                 $formattedData[$disease['name']] = $this->getDiseaseData($disease);
             }
-            $response = Http::post('http://127.0.0.1:5000/forecastalldisease', ['diseases' => $formattedData]);
+            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000/forecastalldisease');
+            $endpoint = '/forecastalldisease';
+            $fullUrl = $baseUrl . $endpoint;
+            $response = Http::post($fullUrl, ['diseases' => $formattedData]);
         } else {
-            $response = Http::post('http://127.0.0.1:5000/forecast', [
+            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000/forecast');
+            $endpoint = '/forecast';
+            $fullUrl = $baseUrl . $endpoint;
+            $response = Http::post($fullUrl, [
                 'data' => $this->getDiseaseData($request->type_of_disease[0]), // Send the formatted data
                 'disease' => $request->type_of_disease[0]['name']
             ]);
