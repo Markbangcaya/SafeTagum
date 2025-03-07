@@ -48,6 +48,7 @@ echo "🚀 Application deployed!"
 
 php artisan route:cache
 php artisan view:clear
+php artisan config:clear
 php artisan migrate --force
 
 npm install
