@@ -236,12 +236,12 @@ class PatientController extends Controller
             'lastname' => 'required|string',
             'birthdate' => 'required|date',
             'gender' => 'required|string',
-            'occupation' => 'string',
-            'civil_status' => 'string',
-            'nationality' => 'string',
+            'occupation' => 'nullable|string',
+            'civil_status' => 'nullable|string',
+            'nationality' => 'nullable|string',
             'contact_number' => 'required|numeric',
             // 'email' => 'required|email|unique:email',
-            'email' => 'email',
+            'email' => 'nullable|email',
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address
@@ -290,12 +290,12 @@ class PatientController extends Controller
         $user = Auth::User();
 
         $this->validate($request, [
-            'case_id' => 'string',
+            'case_id' => 'nullable|string',
             'epi_id' => 'required|string',
             'id' => 'required|numeric',
             'date_onset_of_illness' => 'required|date',
-            'health_facility' => 'string',
-            'patient_admitted' => 'date',
+            'health_facility' => 'nullable|string',
+            'patient_admitted' => 'nullable|date',
             'case_classification' => 'required|string',
             'date_of_death' => 'nullable|date',
             'type_of_disease.id' => 'required|numeric',
@@ -323,12 +323,12 @@ class PatientController extends Controller
         $user = Auth::User();
 
         $this->validate($request, [
-            'case_id' => 'string',
+            'case_id' => 'nullable|string',
             'epi_id' => 'required|string',
             // 'id' => 'required|numeric',
             'date_onset_of_illness' => 'required|date',
-            'health_facility' => 'string',
-            'patient_admitted' => 'date',
+            'health_facility' => 'nullable|string',
+            'patient_admitted' => 'nullable|date',
             'case_classification' => 'required|string',
             'date_of_death' => 'nullable|date',
             'type_of_disease.id' => 'required|numeric',
@@ -385,12 +385,12 @@ class PatientController extends Controller
             'lastname' => 'required|string',
             'birthdate' => 'required|date',
             'gender' => 'required|string',
-            'occupation' => 'string',
-            'civil_status' => 'string',
-            'nationality' => 'string',
+            'occupation' => 'nullable|string',
+            'civil_status' => 'nullable|string',
+            'nationality' => 'nullable|string',
             'contact_number' => 'required|numeric',
             // 'email' => 'required|email|unique:email',
-            'email' => 'email',
+            'email' => 'nullable|email',
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address
