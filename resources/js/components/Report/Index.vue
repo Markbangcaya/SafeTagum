@@ -337,7 +337,7 @@ export default {
             }),
             //
             login_user: null,
-            cases: null,
+            cases: [],
             showChart: true,
             chartKey: 0,
 

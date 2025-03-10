@@ -282,7 +282,6 @@ class PatientController extends Controller
     public function assessment(Request $request, $id)
     {
         $patient = Patient::with('Patient_Assessment')->findOrFail($id);
-        dd($patient);
         return response(['data' => $patient], 200);
     }
     public function addassessment(Request $request, $id)

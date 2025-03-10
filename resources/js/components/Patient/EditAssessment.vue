@@ -111,9 +111,7 @@ export default {
                     text: 'Data Saved.',
                 })
                 this.form.reset();
-                //"page" maintain selected page in the parent page
-                // this.$emit('getData', this.page);// call method from parent (reload data table)
-                window.location.reload();
+                this.$emit('data-updated'); // Emit event when data is added
                 $('#edit-assessment').modal('hide');
             }).catch(() => {
                 toast.fire({

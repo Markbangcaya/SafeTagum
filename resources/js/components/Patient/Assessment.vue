@@ -197,9 +197,9 @@
             </div>
         </div>
         <!-- declare the add modal -->
-        <add-modal :row="selected_user" :page="current_page"></add-modal>
+        <add-modal :row="selected_user" :page="current_page" @data-updated="fetchUpdatedData"></add-modal>
         <!-- declare the edit modal -->
-        <edit-modal :row="selected_user" :page="current_page"></edit-modal>
+        <edit-modal :row="selected_user" :page="current_page" @data-updated="fetchUpdatedData"></edit-modal>
     </div>
 </template>
 
@@ -318,6 +318,15 @@ export default {
             this.$nextTick(() => { // Ensure the DOM updates before map resize
                 this.$refs.map.mapObject.invalidateSize();
             });
+        },
+        async fetchUpdatedData() {
+            try {
+                const response = await axios.get(`/api/patient/assessment/${this.form.id}`);
+                this.option_users = response.data.data.patient__assessment;
+                console.log(this.option_users);
+            } catch (error) {
+                console.error('Error fetching updated data:', error);
+            }
         },
     },
     async created() {
