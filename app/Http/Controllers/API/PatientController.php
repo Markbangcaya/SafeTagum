@@ -236,12 +236,12 @@ class PatientController extends Controller
             'lastname' => 'required|string',
             'birthdate' => 'required|date',
             'gender' => 'required|string',
-            'occupation' => 'required|string',
-            'civil_status' => 'required|string',
-            'nationality' => 'required|string',
+            'occupation' => 'string',
+            'civil_status' => 'string',
+            'nationality' => 'string',
             'contact_number' => 'required|numeric',
             // 'email' => 'required|email|unique:email',
-            'email' => 'required|email',
+            'email' => 'email',
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address
@@ -280,6 +280,12 @@ class PatientController extends Controller
         return response(['message' => 'success'], 200);
     }
     public function assessment(Request $request, $id)
+    {
+        $patient = Patient::with('Patient_Assessment')->findOrFail($id);
+        dd($patient);
+        return response(['data' => $patient], 200);
+    }
+    public function addassessment(Request $request, $id)
     {
         // dd($request);
         $user = Auth::User();
@@ -380,12 +386,12 @@ class PatientController extends Controller
             'lastname' => 'required|string',
             'birthdate' => 'required|date',
             'gender' => 'required|string',
-            'occupation' => 'required|string',
-            'civil_status' => 'required|string',
-            'nationality' => 'required|string',
+            'occupation' => 'string',
+            'civil_status' => 'string',
+            'nationality' => 'string',
             'contact_number' => 'required|numeric',
             // 'email' => 'required|email|unique:email',
-            'email' => 'required|email',
+            'email' => 'email',
             'type_of_disease.id' => 'required|numeric',
 
             //Patient Address

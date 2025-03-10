@@ -167,10 +167,6 @@
                                         <input id="checkboxTooltip" v-model="enableTooltip" type="checkbox">
                                         <input v-model="fillColor" type="color"> -->
                                         <br>
-                                        <button type="button" class="btn btn-info" @click="loadGeoJSON()">Load
-                                            Barangay
-                                            Boundaries</button>
-                                        <br>
                                     </div>
                                     <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
                                         <l-tile-layer :url="url" :attribution="attribution" />
@@ -306,26 +302,6 @@ export default {
                 );
             };
         },
-        // handleMapClick(e) {
-        //     const { lat, lng } = e.latlng;
-        //     this.form.latitude = lat;
-        //     this.form.longitude = lng;
-
-        //     if (e.layer.feature.properties.NAME_3 != null) {
-        //         Swal.fire({
-        //             title: 'Tagging Successfully',
-        //             html: "It belongs to Barangay <b>" + e.layer.feature.properties.NAME_3 + "</b>",
-        //             icon: 'success',
-        //         })
-        //         this.marker = latLng(lat, lng);
-        //     } else {
-        //         Swal.fire({
-        //             title: 'Tagging Unsuccessfully',
-        //             html: "The system only get within Tagum City",
-        //             icon: 'error',
-        //         })
-        //     }
-        // },
         loadDisease() {
             axios.get('/api/disease/all')
                 .then(response => {
@@ -347,11 +323,6 @@ export default {
     async created() {
         this.loading = true;
         try {
-            // const response = await fetch("./Barangays.json");
-            // if (!response.ok) {
-            //     throw new Error(`Network response was not ok: ${response.statusText}`);
-            // }
-            // const data = await response.json();
             const data = {
                 "type": "FeatureCollection",
                 "features": [
@@ -423,6 +394,10 @@ export default {
     mounted() {
         this.loadDisease();
         this.loadBarangay();
+
+        $('#assessment-patient').on('shown.bs.modal', () => {
+            this.loadGeoJSON();
+        });
     }
 }
 </script>

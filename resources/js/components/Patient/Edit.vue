@@ -121,10 +121,6 @@
                                         <input id="checkboxTooltip" v-model="enableTooltip" type="checkbox">
                                         <input v-model="fillColor" type="color"> -->
                                         <br>
-                                        <button type="button" class="btn btn-info" @click="loadGeoJSON()">Load
-                                            Barangay
-                                            Boundaries</button>
-                                        <br>
                                     </div>
                                     <l-map ref="map" :zoom="zoom" :center="center" style="height: 400px; width: 100%">
                                         <l-tile-layer :url="url" :attribution="attribution" />
@@ -893,11 +889,6 @@ export default {
     async created() {
         this.loading = true;
         try {
-            // const response = await fetch("./Barangays.json");
-            // if (!response.ok) {
-            //     throw new Error(`Network response was not ok: ${response.statusText}`);
-            // }
-            // const data = await response.json();
             const data = {
                 "type": "FeatureCollection",
                 "features": [
@@ -982,6 +973,9 @@ export default {
     mounted() {
         this.loadDisease();
         // this.loadBarangay();
+        $('#edit-patient').on('shown.bs.modal', () => {
+            this.loadGeoJSON();
+        });
     }
 }
 </script>

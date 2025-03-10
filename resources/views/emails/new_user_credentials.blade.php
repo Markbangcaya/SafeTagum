@@ -99,11 +99,8 @@
 
         <!-- Footer Section -->
         <div class="footer">
-            <p>For any inquiries, feel free to <a href="mailto:faithtimogan@gmail.com">contact support</a>.</p>
-
             <p>SafeTagum:Notifiable Disease Information System</p>
         </div>
     </div>
 </body>
 </html>
-

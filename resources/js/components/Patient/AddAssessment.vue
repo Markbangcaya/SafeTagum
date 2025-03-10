@@ -105,7 +105,7 @@ export default {
             if (this.deathcheckbox == false) {
                 this.form.date_of_death = null; // Clear date if unchecked
             }
-            this.form.post('/api/patient/assessment/' + this.form.id).then(() => {
+            this.form.post('/api/patient/addassessment/' + this.form.id).then(() => {
                 toast.fire({
                     icon: 'success',
                     text: 'Data Saved.',
@@ -113,6 +113,7 @@ export default {
                 this.form.reset();
                 //"page" maintain selected page in the parent page
                 this.$emit('getData', this.page);// call method from parent (reload data table)
+                window.location.reload();
                 $('#add-assessment').modal('hide');
             }).catch(() => {
                 toast.fire({

@@ -20,11 +20,11 @@ class CreatePatientsTable extends Migration
             $table->string('lastname');
             $table->date('birthdate');
             $table->string('gender');
-            $table->string('occupation');
-            $table->string('civil_status', 10);
-            $table->string('nationality', 30);
+            $table->string('occupation')->nullable();
+            $table->string('civil_status', 10)->nullable();
+            $table->string('nationality', 30)->nullable();
             $table->string('contact_number', 15);
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
 
             $table->string('street/purok');
             $table->decimal('latitude', 10, 7);
