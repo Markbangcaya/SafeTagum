@@ -815,6 +815,8 @@ export default {
                     text: 'Data Saved.',
                 })
                 this.form.reset();
+                this.$emit('getData');// call method from parent
+                $('#add-patient').modal('hide');
             }).catch(() => {
                 toast.fire({
                     icon: 'error',

@@ -13,7 +13,7 @@
                         <div class="card-header">
                             Patient Monitoring
                             <button class="btn btn-success btn-sm ml-auto" @click="openAddAssessmentModal"
-                                v-if="can('create user')"><i class="fas fa-user-plus"></i> Add
+                                v-if="can('show user')"><i class="fas fa-user-plus"></i> Add
                                 Assessment</button>
                         </div>
                         <div class="card-body">
@@ -45,7 +45,7 @@
                                             <td v-else>Not Applicable</td>
                                             <td class="text-right">
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                    @click="openEditAssessmentModal(data)" v-if="can('edit user')"><i
+                                                    @click="openEditAssessmentModal(data)" v-if="can('show user')"><i
                                                         class="fas fa-edit"></i> Edit Assessment</button>
                                             </td>
                                         </tr>
@@ -91,21 +91,21 @@
                                     </b-form-radio-group>
                                     <has-error :form="form" field="gender" />
                                 </div>
-                                <!-- <div class="form-group col-3">
+                                <div class="form-group col-3">
                                     <label>Occupation</label>
                                     <input v-model="form.occupation" type="text" class="form-control">
                                     <has-error :form="form" field="occupation" />
-                                </div> -->
+                                </div>
                                 <div class="form-group col-3">
                                     <label>Civil Status</label>
                                     <input v-model="form.civil_status" type="text" class="form-control">
                                     <has-error :form="form" field="civil_status" />
                                 </div>
-                                <!-- <div class="form-group col-3">
+                                <div class="form-group col-3">
                                     <label>Nationality</label>
                                     <input v-model="form.nationality" type="text" class="form-control">
                                     <has-error :form="form" field="nationality" />
-                                </div> -->
+                                </div>
                                 <div class="form-group col-3">
                                     <label>Contact Number</label>
                                     <input v-model="form.contact_number" type="text" class="form-control">
