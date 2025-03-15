@@ -90,7 +90,9 @@
                                             <td v-else class="text-danger">No Epi ID</td>
                                             <td>{{ data.birthdate }}</td>
                                             <td>{{ data.gender }}</td>
-                                            <td>{{ data.contact_number }}</td>
+                                            <td v-if="data.contact_number != null && data.contact_number != 0">{{
+                                                data.contact_number }}</td>
+                                            <td v-else class="text-danger">No Contact Number</td>
                                             <td>{{ data.disease.name }}</td>
                                             <td>{{ data.barangay.name }}</td>
                                             <td class="text-right">
@@ -236,11 +238,11 @@ export default {
                 confirmButtonText: 'Yes, delete it!',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.delete('/api/user/delete/' + id)
+                    axios.delete('/api/patient/delete/' + id)
                         .then(response => {
                             Swal.fire(
                                 'Deleted!',
-                                'Your file has been deleted.',
+                                'The data has been deleted.',
                                 'success'
                             )
                             this.getData();

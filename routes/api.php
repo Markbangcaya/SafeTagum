@@ -33,9 +33,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('list', [App\Http\Controllers\API\PatientController::class, 'index']);
         Route::post('create', [App\Http\Controllers\API\PatientController::class, 'store']);
         Route::put('update/{id}', [App\Http\Controllers\API\PatientController::class, 'update']);
+        Route::delete('delete/{id}', [App\Http\Controllers\API\PatientController::class, 'destroy']);
         Route::get('assessment/{id}', [App\Http\Controllers\API\PatientController::class, 'assessment']);
         Route::post('addassessment/{id}', [App\Http\Controllers\API\PatientController::class, 'addassessment']);
         Route::post('updateassessment/{id}', [App\Http\Controllers\API\PatientController::class, 'updateassessment']);
+        Route::delete('deleteassessment/{id}', [App\Http\Controllers\API\PatientController::class, 'deleteassessment']);
         Route::post('forecast', [App\Http\Controllers\API\PatientController::class, 'forecast']);
         Route::get('detokenized/{id}', [App\Http\Controllers\API\PatientController::class, 'detokenized']);
         Route::post('report', [App\Http\Controllers\API\PatientController::class, 'report']);

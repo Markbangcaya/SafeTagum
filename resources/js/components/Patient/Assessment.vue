@@ -46,7 +46,11 @@
                                             <td class="text-right">
                                                 <button type="button" class="btn btn-primary btn-sm"
                                                     @click="openEditAssessmentModal(data)" v-if="can('show user')"><i
-                                                        class="fas fa-edit"></i> Edit Assessment</button>
+                                                        class="fas fa-edit"></i> Edit</button>
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                    @click="remove(data.id)" v-if="can('show user')"><i
+                                                        class="fas fa-trash-alt"></i>
+                                                    Remove</button>
                                             </td>
                                         </tr>
                                         <tr v-if="option_users.length === 0">
@@ -286,6 +290,34 @@ export default {
                 fillOpacity: 0.5,
                 fillColor: feature.properties.fillColor || 'gray'
             };
+        },
+        remove(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete('/api/patient/deleteassessment/' + id)
+                        .then(response => {
+                            Swal.fire(
+                                'Deleted!',
+                                'The data has been deleted.',
+                                'success'
+                            )
+                            this.fetchUpdatedData();
+                        })
+                }
+            }).catch(() => {
+                toast.fire({
+                    icon: 'error',
+                    text: 'Something went wrong!',
+                })
+            });
         },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {

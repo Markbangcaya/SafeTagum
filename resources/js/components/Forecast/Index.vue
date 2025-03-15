@@ -487,126 +487,134 @@ export default {
             });
             setTimeout(() => {
                 this.form.post('/api/patient/forecast').then(response => {
-                    if (this.form.type_of_disease.length == 1) {
-                        // this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
-                        // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
-                        this.form.enable = true;
-                        this.form.disabled = true;
-                        // this.markers = response.data;
+                    try {
+                        if (this.form.type_of_disease.length == 1) {
+                            // this.form.start_morbidity_week = Math.ceil((this.form.date.startDate - new Date(this.form.date.startDate.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24) / 7);
+                            // this.form.end_morbidity_week = Math.ceil((this.form.date.endDate - this.form.date.startDate) / (1000 * 60 * 60 * 24) / 7);
+                            this.form.enable = true;
+                            this.form.disabled = true;
+                            // this.markers = response.data;
 
-                        //line Graph For Forcasting
-                        this.sum2024 = 0;
-                        this.sum2025 = 0;
-                        const jsonData = JSON.parse(response.data.forecasting);
-                        for (let i = 0; i < jsonData.length; i++) {
-                            if (Math.round(jsonData[i].Year) == 2021) {
-                                this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                            } else if (Math.round(jsonData[i].Year) == 2022) {
-                                this.lineData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                            } else if (Math.round(jsonData[i].Year) == 2023) {
-                                this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                                this.sum2023 += jsonData[i].Total_cases;
-                            } else if (Math.round(jsonData[i].Year) == 2024) {
-                                this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                                this.sum2024 += jsonData[i].Total_cases;
-                            } else if (Math.round(jsonData[i].Year) == 2025) {
-                                //epidemic_threshold
-                                this.linebarData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].epidemic_threshold);
-                                //alert_threshold
-                                this.linebarData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].alert_threshold);
+                            //line Graph For Forcasting
+                            this.sum2024 = 0;
+                            this.sum2025 = 0;
+                            const jsonData = JSON.parse(response.data.forecasting);
+                            for (let i = 0; i < jsonData.length; i++) {
+                                if (Math.round(jsonData[i].Year) == 2021) {
+                                    this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                } else if (Math.round(jsonData[i].Year) == 2022) {
+                                    this.lineData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                } else if (Math.round(jsonData[i].Year) == 2023) {
+                                    this.lineData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                    this.sum2023 += jsonData[i].Total_cases;
+                                } else if (Math.round(jsonData[i].Year) == 2024) {
+                                    this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                    this.sum2024 += jsonData[i].Total_cases;
+                                } else if (Math.round(jsonData[i].Year) == 2025) {
+                                    //epidemic_threshold
+                                    this.linebarData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].epidemic_threshold);
+                                    //alert_threshold
+                                    this.linebarData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].alert_threshold);
 
-                                this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                                //For forcasting line bar data
-                                this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                    this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
+                                    //For forcasting line bar data
+                                    this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
 
-                                this.sum2025 += jsonData[i].Total_cases;
-                            } else {
-                                const date = new Date(jsonData[i].Date);
-                                const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
-                                const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
-                                const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
-                                const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
-
-                                //epidemic_threshold
-                                this.linebarData.datasets[0].data[weekNumber - 1] = Math.round(jsonData[i].epidemic_threshold);
-                                //alert_threshold
-                                this.linebarData.datasets[1].data[weekNumber - 1] = Math.round(jsonData[i].alert_threshold);
-
-                                this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
-                            }
-                        }
-                        Swal.fire({
-                            title: 'Forecast Successfully',
-                            html: "All data belongs to <b>" + this.form.type_of_disease[0].name + "</b> Case being display",
-                            icon: 'success',
-                        })
-                    } else {
-
-                        // this.linebarDatatest.labels = [];  // Clear existing labels
-                        this.linebarDataforecast.datasets = []; // Clear existing datasets
-                        const allDisease = [];
-                        let index = 0;
-
-                        for (const disease in response.data.forecasting) {
-                            const diseaseData = JSON.parse(response.data.forecasting[disease]);
-
-                            allDisease.push(disease)
-                            const dataset = {
-                                label: disease,
-                                data: [],
-                                backgroundColor: [], // Provide a default color
-                                borderWidth: 2,
-                                type: 'line',
-                                fill: false,
-                                spanGaps: true,
-                                pointBackgroundColor: [], // Array for point background colors
-                                // pointBorderColor: [] // Array for point border colors
-                            };
-
-                            let forecastedColor = 'rgba(255, 255, 0, 1)'; // yellow for forecasted
-                            diseaseData.forEach((item) => {
-                                if (Math.round(item.Year) == 2025) {
-                                    dataset.data[item.Morbidity_Week - 1] = item.Total_cases;
-                                } else if (item.Date != null) {
-                                    const date = new Date(item.Date);
+                                    this.sum2025 += jsonData[i].Total_cases;
+                                } else {
+                                    const date = new Date(jsonData[i].Date);
                                     const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
                                     const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
                                     const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
                                     const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
 
-                                    dataset.data[weekNumber - 1] = item.Forecast;
-                                    // dataset.backgroundColor[weekNumber - 1] = forecastedColor;
-                                    dataset.pointBackgroundColor[weekNumber - 1] = forecastedColor;
-                                }
-                                dataset.backgroundColor.push(this.color[index]); // Add color for this point
-                                dataset.pointBackgroundColor.push(this.color[index]); // Add border color for this point
-                                // dataset.pointBorderColor.push(color);
-                            });
-                            this.linebarDataforecast.datasets.push(dataset);
-                            index++;
-                        }
-                        const dataset = {
-                            label: 'Forecasted Data',
-                            backgroundColor: 'rgba(255, 255, 0, 1)', // Provide a default color
-                            borderWidth: 2,
-                        };
-                        this.linebarDataforecast.datasets.push(dataset);
-                        // this.linebarDatatest.labels.sort(); // Sort labels
-                        this.form.multiple_enable = true;
-                        this.form.disabled = true;
+                                    //epidemic_threshold
+                                    this.linebarData.datasets[0].data[weekNumber - 1] = Math.round(jsonData[i].epidemic_threshold);
+                                    //alert_threshold
+                                    this.linebarData.datasets[1].data[weekNumber - 1] = Math.round(jsonData[i].alert_threshold);
 
+                                    this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                                }
+                            }
+                            Swal.fire({
+                                title: 'Forecast Successfully',
+                                html: "All data belongs to <b>" + this.form.type_of_disease[0].name + "</b> Case being display",
+                                icon: 'success',
+                            })
+                        } else {
+
+                            // this.linebarDatatest.labels = [];  // Clear existing labels
+                            this.linebarDataforecast.datasets = []; // Clear existing datasets
+                            const allDisease = [];
+                            let index = 0;
+
+                            for (const disease in response.data.forecasting) {
+                                const diseaseData = JSON.parse(response.data.forecasting[disease]);
+
+                                allDisease.push(disease)
+                                const dataset = {
+                                    label: disease,
+                                    data: [],
+                                    backgroundColor: [], // Provide a default color
+                                    borderWidth: 2,
+                                    type: 'line',
+                                    fill: false,
+                                    spanGaps: true,
+                                    pointBackgroundColor: [], // Array for point background colors
+                                    // pointBorderColor: [] // Array for point border colors
+                                };
+
+                                let forecastedColor = 'rgba(255, 255, 0, 1)'; // yellow for forecasted
+                                diseaseData.forEach((item) => {
+                                    if (Math.round(item.Year) == 2025) {
+                                        dataset.data[item.Morbidity_Week - 1] = item.Total_cases;
+                                    } else if (item.Date != null) {
+                                        const date = new Date(item.Date);
+                                        const pstDate = new Date(date.getTime() + (new Date().getTimezoneOffset() + 8 * 60) * 60000);
+                                        const firstDayOfYear = new Date(pstDate.getFullYear(), 0, 1);
+                                        const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
+                                        const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
+
+                                        dataset.data[weekNumber - 1] = item.Forecast;
+                                        // dataset.backgroundColor[weekNumber - 1] = forecastedColor;
+                                        dataset.pointBackgroundColor[weekNumber - 1] = forecastedColor;
+                                    }
+                                    dataset.backgroundColor.push(this.color[index]); // Add color for this point
+                                    dataset.pointBackgroundColor.push(this.color[index]); // Add border color for this point
+                                    // dataset.pointBorderColor.push(color);
+                                });
+                                this.linebarDataforecast.datasets.push(dataset);
+                                index++;
+                            }
+                            const dataset = {
+                                label: 'Forecasted Data',
+                                backgroundColor: 'rgba(255, 255, 0, 1)', // Provide a default color
+                                borderWidth: 2,
+                            };
+                            this.linebarDataforecast.datasets.push(dataset);
+                            // this.linebarDatatest.labels.sort(); // Sort labels
+                            this.form.multiple_enable = true;
+                            this.form.disabled = true;
+
+                            Swal.fire({
+                                title: 'Forecast Successfully',
+                                html: "All data belongs to <b>" + allDisease + "</b> Case being display",
+                                icon: 'success',
+                            })
+                            // end of else
+                        }
+                    } catch (error) {
                         Swal.fire({
-                            title: 'Forecast Successfully',
-                            html: "All data belongs to <b>" + allDisease + "</b> Case being display",
-                            icon: 'success',
-                        })
-                        // end of else
+                            title: 'Forecast Unsuccessful',
+                            text: 'No Data Available',
+                            icon: 'warning',
+                        });
                     }
                 }).catch(error => {
                     Swal.fire({
-                        title: 'Forecast Unsuccessfully' + error,
-                        html: "Provide needed information",
-                        icon: 'warning',
+                        title: 'Forecast Unsuccessful',
+                        html: "Check the Connection For Forecasting Model",
+                        icon: 'error',
                     })
                 });
             }, 500); // Adjust the delay in milliseconds as needed

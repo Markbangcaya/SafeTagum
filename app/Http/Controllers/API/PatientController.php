@@ -144,12 +144,12 @@ class PatientController extends Controller
             foreach ($request->type_of_disease as $disease) {
                 $formattedData[$disease['name']] = $this->getDiseaseData($disease);
             }
-            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000/forecastalldisease');
+            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000');
             $endpoint = '/forecastalldisease';
             $fullUrl = $baseUrl . $endpoint;
             $response = Http::post($fullUrl, ['diseases' => $formattedData]);
         } else {
-            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000/forecast');
+            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000');
             $endpoint = '/forecast';
             $fullUrl = $baseUrl . $endpoint;
             $response = Http::post($fullUrl, [
@@ -169,6 +169,7 @@ class PatientController extends Controller
             // ->where('patients.barangay_id', $request->barangay['id'])
             ->where('patient_assessments.type_of_disease', $disease['id'])
             ->whereBetween('patient_assessments.date_onset_of_illness', ["2024-12-31T16:00:00.000Z", "2025-12-31T03:59:59.999Z"])
+            ->whereNull('patient_assessments.deleted_at')
             ->get();
 
 
@@ -202,6 +203,7 @@ class PatientController extends Controller
             ->join('patient_assessments', 'patient_assessments.patient_id', '=', 'patients.id')
             ->where('patient_assessments.type_of_disease', $request->type_of_disease['id'])
             ->whereBetween('patient_assessments.date_onset_of_illness', [$request->date["startDate"], $request->date["endDate"]])
+            ->whereNull('patient_assessments.deleted_at')
             ->groupBy('barangay_id')
             ->selectRaw('barangay_id, 
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) as count_0_5,
@@ -252,6 +254,19 @@ class PatientController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
+
+        // Check if the patient already exists in the tokenized table
+        $existingTokenized = Tokenized::where(function ($query) use ($request) {
+            $query->where('originaldata', 'LIKE', '%' . $request->firstname . '%');
+        })->get();
+
+        foreach ($existingTokenized as $tokenized) {
+            $patient = Patient::select('birthdate')->where('firstname', $tokenized->token)->first();
+
+            if ($patient && $patient->birthdate === $request->birthdate) {
+                return response(['message' => 'Patient already exists'], 409);
+            }
+        }
 
         Patient::create([
             'firstname' => $this->tokenize($request->firstname),
@@ -357,6 +372,13 @@ class PatientController extends Controller
 
         return response(['message' => 'success'], 200);
     }
+    public function deleteassessment($id)
+    {
+        //
+        $Patient_Assessment = Patient_Assessment::findOrFail($id);
+        $Patient_Assessment->delete();
+        return response(['message' => 'success'], 200);
+    }
     /**
      * Display the specified resource.
      *
@@ -442,8 +464,11 @@ class PatientController extends Controller
      * @param  \App\Models\Patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Patient $patient)
+    public function destroy($id)
     {
         //
+        $patient = Patient::findOrFail($id);
+        $patient->delete();
+        return response(['message' => 'success'], 200);
     }
 }
