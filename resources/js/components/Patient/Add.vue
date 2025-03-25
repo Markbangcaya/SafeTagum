@@ -783,6 +783,7 @@ export default {
                     ]
                 }
             ],
+            option_puroks: [],
 
             //Maps
             loading: false,
@@ -872,6 +873,16 @@ export default {
                     this.option_barangay = response.data.data;
                 });
         },
+        loadPuroks() {
+            if (this.form.barangay) {
+                axios.get(`/api/barangay/${this.form.barangay.id}`)
+                    .then(response => {
+                        this.option_puroks = response.data;
+                    });
+            } else {
+                this.option_puroks = [];
+            }
+        },
         loadGeoJSON() {
             this.$nextTick(() => { // Ensure the DOM updates before map resize
                 this.$refs.map.mapObject.invalidateSize();
@@ -942,15 +953,13 @@ export default {
     },
     computed: {
         filteredStreetPuroks() { // Renamed to filteredStreetPuroks
-            if (!this.form.barangay) {
-                return [];
-            }
-            return this.form.barangay.streetpuroks || []; // Accessing streetpuroks
+            return this.option_puroks;
         }
     }, watch: {
         'form.barangay'(newVal) {
-            if (!newVal) {
-                this.form.streetpurok = []; // Clear streetpurok selection
+            this.form.streetpurok = ''; // Clear streetpurok selection
+            if (newVal) {
+                this.loadPuroks(); // Load puroks when barangay is selected
             }
         }
     },

@@ -90,6 +90,26 @@
                         @endcan
                         @can('access role')
                             <li class="nav-item">
+                                <router-link to="/purok" class="nav-link">
+                                    <i class="nav-icon fas fa-tree-city"></i>
+                                    <p>
+                                        Purok
+                                    </p>
+                                </router-link>
+                            </li>
+                        @endcan
+                        @can('access role')
+                            <li class="nav-item">
+                                <router-link to="/barangay" class="nav-link">
+                                    <i class="nav-icon fas fa-city"></i>
+                                    <p>
+                                        Barangay
+                                    </p>
+                                </router-link>
+                            </li>
+                        @endcan
+                        @can('access role')
+                            <li class="nav-item">
                                 <router-link to="/disease" class="nav-link">
                                     <i class="nav-icon fas fa-disease"></i>
                                     <p>

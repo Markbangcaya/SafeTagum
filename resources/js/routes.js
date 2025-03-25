@@ -35,6 +35,22 @@ const routes = [
         component: require('./components/Report/Index.vue').default
     },
     //---------------------------------------------------------END REPORT
+    //---------------------------------------------------------PUROK
+    {
+        path: '/purok',
+        name: 'purok',
+        component: require('./components/Purok/IndexPurok.vue').default,
+        props: true,
+    },
+    //---------------------------------------------------------END PUROK
+    //---------------------------------------------------------BARANGAY
+    {
+        path: '/barangay',
+        name: 'barangay',
+        component: require('./components/Barangay/IndexBarangay.vue').default,
+        props: true,
+    },
+    //---------------------------------------------------------END BARANGAY
     //---------------------------------------------------------DISEASE
     {
         path: '/disease',

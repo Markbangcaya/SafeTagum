@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Barangay;
 use App\Models\Purok;
+use App\Models\Barangay;
 use Illuminate\Http\Request;
 
-class BarangayController extends Controller
+class PurokController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,26 +16,24 @@ class BarangayController extends Controller
      */
     public function index(Request $request)
     {
-        //
         // abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
-        $data = barangay::latest();
+        $data = Purok::with('Barangay')->latest();
 
         if ($request->search) {
             $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
         }
+        if ($request->barangay) {
+            $data = $data->where('barangay_id',  $request->barangay);
+        }
         $data = $data->paginate($request->length);
+
         return response(['data' => $data], 200);
-    }
-    public function getPuroksByBarangay(Barangay $barangay)
-    {
-        $data = purok::where('barangay_id', $barangay->id)->get();
-        return response()->json($data);
     }
 
     public function index_all()
     {
-        $data = Barangay::all();
-        // $data = Barangay::select('*')->except('geometry')->get();
+        $data = Purok::all();
+
         return response(['data' => $data], 200);
     }
     /**
@@ -47,11 +45,13 @@ class BarangayController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string'
+            'name' => 'required|string',
+            'barangay.id' => 'required|numeric',
         ]);
 
-        Barangay::create([
+        Purok::create([
             'name' => $request->name,
+            'barangay_id' => $request->barangay['id'],
         ]);
 
         return response(['message' => 'success'], 200);
@@ -60,10 +60,10 @@ class BarangayController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Barangay  $barangay
+     * @param  \App\Models\Purok  $purok
      * @return \Illuminate\Http\Response
      */
-    public function show(Barangay $barangay)
+    public function show(Purok $purok)
     {
         //
     }
@@ -72,17 +72,18 @@ class BarangayController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Barangay  $barangay
+     * @param  \App\Models\Purok  $purok
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         // abort_if(Gate::denies('edit permission'), 403, 'You do not have the required authorization.');
         $this->validate($request, [
-            'name' => 'required|string|unique:barangays,name,' . $request->id,
+            'name' => 'required|string|unique:puroks,name,' . $request->id,
         ]);
-        $barangay = Barangay::findOrFail($id);
-        $barangay->update([
+        $purok = Purok::findOrFail($id);
+
+        $purok->update([
             'name' => $request->name,
         ]);
     }
@@ -90,13 +91,13 @@ class BarangayController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Barangay  $barangay
+     * @param  \App\Models\Purok  $purok
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $disease = barangay::findOrFail($id);
-        $disease->delete();
+        $purok = Purok::findOrFail($id);
+        $purok->delete();
 
         return response(['message' => 'success'], 200);
     }
