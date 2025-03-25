@@ -19,6 +19,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'disease'], function () {
+        Route::get('all', [App\Http\Controllers\API\DiseaseController::class, 'index_all']);
+        Route::get('list', [App\Http\Controllers\API\DiseaseController::class, 'index']);
+        Route::post('create', [App\Http\Controllers\API\DiseaseController::class, 'store']);
+        Route::put('update/{id}', [App\Http\Controllers\API\DiseaseController::class, 'update']);
+        Route::delete('delete/{id}', [App\Http\Controllers\API\DiseaseController::class, 'destroy']);
+    });
+    Route::group(['prefix' => 'barangay'], function () {
+        Route::get('all', [App\Http\Controllers\API\BarangayController::class, 'index_all']);
+    });
     Route::group(['prefix' => 'patient'], function () {
         Route::get('list', [App\Http\Controllers\API\PatientController::class, 'index']);
         Route::post('create', [App\Http\Controllers\API\PatientController::class, 'store']);
@@ -31,28 +41,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('forecast', [App\Http\Controllers\API\PatientController::class, 'forecast']);
         Route::get('detokenized/{id}', [App\Http\Controllers\API\PatientController::class, 'detokenized']);
         Route::post('report', [App\Http\Controllers\API\PatientController::class, 'report']);
-    });
-    Route::group(['prefix' => 'purok'], function () {
-        Route::get('all', [App\Http\Controllers\API\PurokController::class, 'index_all']);
-        Route::get('list', [App\Http\Controllers\API\PurokController::class, 'index']);
-        Route::post('create', [App\Http\Controllers\API\PurokController::class, 'store']);
-        Route::put('update/{id}', [App\Http\Controllers\API\PurokController::class, 'update']);
-        Route::delete('delete/{id}', [App\Http\Controllers\API\PurokController::class, 'destroy']);
-    });
-    Route::group(['prefix' => 'barangay'], function () {
-        Route::get('all', [App\Http\Controllers\API\BarangayController::class, 'index_all']);
-        Route::get('list', [App\Http\Controllers\API\BarangayController::class, 'index']);
-        Route::post('create', [App\Http\Controllers\API\BarangayController::class, 'store']);
-        Route::put('update/{id}', [App\Http\Controllers\API\BarangayController::class, 'update']);
-        Route::delete('delete/{id}', [App\Http\Controllers\API\BarangayController::class, 'destroy']);
-        Route::get('{barangay}', [App\Http\Controllers\API\BarangayController::class, 'getPuroksByBarangay']);
-    });
-    Route::group(['prefix' => 'disease'], function () {
-        Route::get('all', [App\Http\Controllers\API\DiseaseController::class, 'index_all']);
-        Route::get('list', [App\Http\Controllers\API\DiseaseController::class, 'index']);
-        Route::post('create', [App\Http\Controllers\API\DiseaseController::class, 'store']);
-        Route::put('update/{id}', [App\Http\Controllers\API\DiseaseController::class, 'update']);
-        Route::delete('delete/{id}', [App\Http\Controllers\API\DiseaseController::class, 'destroy']);
     });
     Route::group(['prefix' => 'user'], function () {
         Route::get('list', [App\Http\Controllers\API\UserController::class, 'index']);

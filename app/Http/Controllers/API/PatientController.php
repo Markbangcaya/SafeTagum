@@ -211,16 +211,14 @@ class PatientController extends Controller
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) as count_11_15,
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as count_16_above,
                          SUM(CASE WHEN patient_assessments.date_of_death IS NOT NULL THEN 1 ELSE 0 END) as total_deaths,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Confirmed" THEN 1 ELSE 0 END) as count_confirmed,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Probable" THEN 1 ELSE 0 END) as count_probable,
+                         SUM(CASE WHEN patient_assessments.case_classification = "Suspected" THEN 1 ELSE 0 END) as count_suspected,
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) +
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) +
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) +
-                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as total_cases,
-                         SUM(CASE WHEN gender = "Male" THEN 1 ELSE 0 END) as count_male,
-                         SUM(CASE WHEN gender = "Female" THEN 1 ELSE 0 END) as count_female,
-                         SUM(CASE WHEN patient_assessments.case_classification = "Confirmed" THEN 1 ELSE 0 END) as count_confirmed,
-                         SUM(CASE WHEN patient_assessments.case_classification = "Probable" THEN 1 ELSE 0 END) as count_probable,
-                         SUM(CASE WHEN patient_assessments.case_classification = "Suspected" THEN 1 ELSE 0 END) as count_suspected')
-            ->orderBy('total_cases', 'desc')
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as total_cases')
+            ->orderBy('barangay_id', 'asc')
             ->get();
         return response(['data' => $patient, 'cases' => $cases, 'user' => Auth::User()], 200);
     }

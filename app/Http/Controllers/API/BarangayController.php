@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Barangay;
-use App\Models\Purok;
 use Illuminate\Http\Request;
 
 class BarangayController extends Controller
@@ -14,24 +13,10 @@ class BarangayController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         //
-        // abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
-        $data = barangay::latest();
-
-        if ($request->search) {
-            $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
-        }
-        $data = $data->paginate($request->length);
-        return response(['data' => $data], 200);
     }
-    public function getPuroksByBarangay(Barangay $barangay)
-    {
-        $data = purok::where('barangay_id', $barangay->id)->get();
-        return response()->json($data);
-    }
-
     public function index_all()
     {
         $data = Barangay::all();
@@ -46,15 +31,7 @@ class BarangayController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string'
-        ]);
-
-        Barangay::create([
-            'name' => $request->name,
-        ]);
-
-        return response(['message' => 'success'], 200);
+        //
     }
 
     /**
@@ -75,16 +52,9 @@ class BarangayController extends Controller
      * @param  \App\Models\Barangay  $barangay
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Barangay $barangay)
     {
-        // abort_if(Gate::denies('edit permission'), 403, 'You do not have the required authorization.');
-        $this->validate($request, [
-            'name' => 'required|string|unique:barangays,name,' . $request->id,
-        ]);
-        $barangay = Barangay::findOrFail($id);
-        $barangay->update([
-            'name' => $request->name,
-        ]);
+        //
     }
 
     /**
@@ -93,11 +63,8 @@ class BarangayController extends Controller
      * @param  \App\Models\Barangay  $barangay
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Barangay $barangay)
     {
-        $disease = barangay::findOrFail($id);
-        $disease->delete();
-
-        return response(['message' => 'success'], 200);
+        //
     }
 }

@@ -20,8 +20,4 @@ class Barangay extends Model
     {
         return $this->hasMany(Patient::class,);
     }
-    public function puroks()
-    {
-        return $this->hasMany(Purok::class);
-    }
 }

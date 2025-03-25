@@ -144,31 +144,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <label v-if="this.form.enable == true">Gender Affected by {{
-                                                this.form.type_of_disease.name }}</label>
-                                            <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="info-box mb-3">
-                                                    <span class="info-box-icon bg-primary elevation-1"><i
-                                                            class="fas fa-person"></i></span>
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Male</span>
-                                                        <span class="info-box-number">{{ this.male }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-sm-6 col-md-6">
-                                                <div class="info-box mb-3">
-                                                    <span class="info-box-icon bg-secondary elevation-1"><i
-                                                            class="fas fa-person-dress"></i></span>
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Female</span>
-                                                        <span class="info-box-number">{{ this.female }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="col-4">
                                         <label>Case Classifications</label>
@@ -176,8 +151,8 @@
                                             <div class="col-12">
                                                 <div class="card bg-danger text-white">
                                                     <div class="card-body">
-                                                        <span class="legend-color fs-4 bg-danger">Confirmed</span>
-                                                        <div class="case-count fs-1 float-right">{{ this.confirmed
+                                                        <span class="legend-color bg-danger">Confirmed</span>
+                                                        <div class="case-count fs-2 float-right">{{ this.confirmed
                                                         }}
                                                         </div>
                                                     </div>
@@ -186,8 +161,8 @@
                                             <div class="col-12">
                                                 <div class="card bg-warning text-dark">
                                                     <div class="card-body">
-                                                        <span class="legend-color fs-4 bg-warning">Suspected</span>
-                                                        <div class="case-count fs-1 float-right"> {{ this.suspected
+                                                        <span class="legend-color bg-warning">Suspected</span>
+                                                        <div class="case-count fs-2 float-right"> {{ this.suspected
                                                         }}
                                                         </div>
                                                     </div>
@@ -196,8 +171,8 @@
                                             <div class="col-12">
                                                 <div class="card bg-success text-white">
                                                     <div class="card-body">
-                                                        <span class="legend-color fs-4 bg-success">Probable</span>
-                                                        <div class="case-count fs-1 float-right">{{ this.probable }}
+                                                        <span class="legend-color bg-success">Probable</span>
+                                                        <div class="case-count fs-2 float-right">{{ this.probable }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -213,69 +188,38 @@
                                         <table class="table table-primary text-center">
                                             <thead>
                                                 <tr>
-                                                    <th rowspan="2" class="text-center">Top Cases</th>
                                                     <th rowspan="2" class="text-center">Barangay</th>
                                                     <th colspan="4" class="text-center">Age Groups</th>
-                                                    <th rowspan="2" class="bg-danger text-white" style=" opacity: 0.8">
-                                                        Death</th>
-                                                    <th rowspan="2" class="bg-success text-white" style=" opacity: 0.8">
-                                                        Grand Total of Cases
-                                                    </th>
-                                                    <th rowspan="2" class="bg-primary text-white" style=" opacity: 0.8">
-                                                        Male</th>
-                                                    <th rowspan="2" class="bg-secondary text-white"
-                                                        style=" opacity: 0.8">Female</th>
+                                                    <th rowspan="2">Death</th>
+                                                    <th rowspan="2">Grand Total of Cases</th>
                                                     <th colspan="3" class="text-center">Case Classification</th>
                                                 </tr>
                                                 <tr>
                                                     <!-- <th scope="col">Barangay</th> -->
-                                                    <th scope="col" class="bg-info text-dark" style=" opacity: 0.8">0-5
-                                                        Years Old</th>
-                                                    <th scope="col" class="bg-primary text-white" style=" opacity: 0.8">
-                                                        6-10 Years Old</th>
-                                                    <th scope="col" class="bg-warning text-dark" style=" opacity: 0.8">
-                                                        11-15 Years Old</th>
-                                                    <th scope="col" class="bg-secondary text-white"
-                                                        style=" opacity: 0.8">16 and Above Years
-                                                        Old</th>
-                                                    <th scope="col" class="bg-danger text-white" style=" opacity: 0.8">
-                                                        Confirmed</th>
-                                                    <th scope="col" class="bg-warning text-dark" style=" opacity: 0.8">
-                                                        Suspected</th>
-                                                    <th scope="col" class="bg-success text-white" style=" opacity: 0.8">
-                                                        Probable</th>
+                                                    <th scope="col">0-5 Years Old</th>
+                                                    <th scope="col">6-10 Years Old</th>
+                                                    <th scope="col">11-15 Years Old</th>
+                                                    <th scope="col">16 and Above Years Old</th>
+                                                    <th scope="col">Confirmed</th>
+                                                    <th scope="col">Suspected</th>
+                                                    <th scope="col">Probable</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-if="cases.length === 0">
-                                                    <td colspan="13">No data available</td>
+                                                    <td colspan="10">No data available</td>
                                                 </tr>
-                                                <tr v-for="(caseData, index) in cases" :key="caseData.barangay.name">
-                                                    <td scope="row">{{ index + 1 }}</td>
+                                                <tr v-for="caseData in cases" :key="caseData.barangay.name">
                                                     <td scope="row">{{ caseData.barangay.name }}</td>
-                                                    <td class="bg-info text-dark" style=" opacity: 0.8">{{
-                                                        caseData.count_0_5 }}</td>
-                                                    <td class="bg-primary text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_6_10 }}</td>
-                                                    <td class="bg-warning text-dark" style=" opacity: 0.8">{{
-                                                        caseData.count_11_15 }}</td>
-                                                    <td class="bg-secondary text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_16_above }}
-                                                    </td>
-                                                    <td class="bg-danger text-white" style=" opacity: 0.8">{{
-                                                        caseData.total_deaths }}</td>
-                                                    <td class="bg-success text-white" style=" opacity: 0.8">{{
-                                                        caseData.total_cases }}</td>
-                                                    <td class="bg-primary text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_male }}</td>
-                                                    <td class="bg-secondary text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_female }}</td>
-                                                    <td class="bg-danger text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_confirmed }}</td>
-                                                    <td class="bg-warning text-dark" style=" opacity: 0.8">{{
-                                                        caseData.count_suspected }}</td>
-                                                    <td class="bg-success text-white" style=" opacity: 0.8">{{
-                                                        caseData.count_probable }}</td>
+                                                    <td>{{ caseData.count_0_5 }}</td>
+                                                    <td>{{ caseData.count_6_10 }}</td>
+                                                    <td>{{ caseData.count_11_15 }}</td>
+                                                    <td>{{ caseData.count_16_above }}</td>
+                                                    <td>{{ caseData.total_deaths }}</td>
+                                                    <td>{{ caseData.total_cases }}</td>
+                                                    <td>{{ caseData.count_confirmed }}</td>
+                                                    <td>{{ caseData.count_suspected }}</td>
+                                                    <td>{{ caseData.count_probable }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -401,6 +345,11 @@ export default {
             option_diseases: [],
             option_barangay: [],
 
+            //Case Classifications
+            suspected: null,
+            probable: null,
+            confirmed: null,
+
             //
             age_0_5: null,
             age_6_10: null,
@@ -409,15 +358,6 @@ export default {
             death: null,
             total_cases: null,
             total_cases_barangay: 0,
-
-            //Gender
-            male: 0,
-            female: 0,
-
-            //Case Classifications
-            suspected: null,
-            probable: null,
-            confirmed: null,
 
             //Maps
             loading: false,
@@ -619,8 +559,6 @@ export default {
             this.age_16_above = 0;
             this.death = 0;
             this.total_cases = 0;
-            this.male = 0;
-            this.female = 0;
             this.confirmed = 0;
             this.suspected = 0;
             this.probable = 0;
@@ -645,10 +583,6 @@ export default {
 
                 this.barData.datasets[4].data.push(caseData.total_deaths);
                 this.death += Math.round(caseData.total_deaths);
-
-                //gender
-                this.male += Math.round(caseData.count_male);
-                this.female += Math.round(caseData.count_female);
 
                 // Total Cases
                 this.total_cases += Math.round(caseData.total_cases);

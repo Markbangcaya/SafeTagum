@@ -17,8 +17,8 @@ class CreateBarangaysTable extends Migration
             $table->id();
             $table->string('name');
             // Other barangay attributes
-            $table->polygon('geometry')->nullable(); // Store GeoJSON as a polygon
-            $table->decimal('area')->nullable();
+            $table->polygon('geometry'); // Store GeoJSON as a polygon
+            $table->decimal('area');
             $table->timestamps();
             $table->softDeletes();
         });
