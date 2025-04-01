@@ -157,6 +157,7 @@ class PatientController extends Controller
                 'disease' => $request->type_of_disease[0]['name']
             ]);
         }
+        // dd($response->json());
         $forecastData = $response->json();
 
         return response(['forecasting' => $forecastData], 200);
@@ -206,7 +207,8 @@ class PatientController extends Controller
             ->whereNull('patient_assessments.deleted_at')
             ->groupBy('barangay_id')
             ->selectRaw('barangay_id, 
-                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 0 AND 5 THEN 1 ELSE 0 END) as count_0_5,
+            SUM(CASE WHEN TIMESTAMPDIFF(MONTH, birthdate, CURDATE()) BETWEEN 0 AND 11 THEN 1 ELSE 0 END) as count_0_11_months,
+                         SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 1 AND 5 THEN 1 ELSE 0 END) as count_1_5,
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 6 AND 10 THEN 1 ELSE 0 END) as count_6_10,
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) BETWEEN 11 AND 15 THEN 1 ELSE 0 END) as count_11_15,
                          SUM(CASE WHEN TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) > 15 THEN 1 ELSE 0 END) as count_16_above,

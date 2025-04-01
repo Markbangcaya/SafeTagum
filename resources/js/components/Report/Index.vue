@@ -75,13 +75,26 @@
                                                 this.form.type_of_disease.name }}</label>
                                             <div class="col-12 col-sm-6 col-md-3">
                                                 <div class="info-box">
+                                                    <span class="info-box-icon bg-pink elevation-1"><i
+                                                            class="fas fa-baby-carriage"></i></span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">0-11 Months Old</span>
+                                                        <span class="info-box-number">
+                                                            {{ this.age_0_11_months }}
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6 col-md-3">
+                                                <div class="info-box">
                                                     <span class="info-box-icon bg-info elevation-1"><i
                                                             class="fas fa-baby"></i></span>
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">0-5
+                                                        <span class="info-box-text">1-5
                                                             Years Old</span>
                                                         <span class="info-box-number">
-                                                            {{ this.age_0_5 }}
+                                                            {{ this.age_1_5 }}
                                                         </span>
                                                     </div>
 
@@ -212,24 +225,25 @@
                                     <div class="table-responsive">
                                         <table class="table table-primary text-center">
                                             <thead>
-                                                <tr>
-                                                    <th rowspan="2" class="text-center">Top Cases</th>
-                                                    <th rowspan="2" class="text-center">Barangay</th>
-                                                    <th colspan="4" class="text-center">Age Groups</th>
-                                                    <th rowspan="2" class="bg-danger text-white" style=" opacity: 0.8">
+                                                <tr class="table-bordered">
+                                                    <th rowspan=" 2" class="text-center align-middle">Top Cases</th>
+                                                    <th rowspan="2" class="text-center align-middle">Barangay</th>
+                                                    <th colspan="5" class="text-center">Age Groups</th>
+                                                    <th rowspan="2" class="bg-danger text-white align-middle"
+                                                        style=" opacity: 0.8">
                                                         Death</th>
-                                                    <th rowspan="2" class="bg-success text-white" style=" opacity: 0.8">
+                                                    <th rowspan="2" class="bg-success text-white align-middle"
+                                                        style=" opacity: 0.8">
                                                         Grand Total of Cases
                                                     </th>
-                                                    <th rowspan="2" class="bg-primary text-white" style=" opacity: 0.8">
-                                                        Male</th>
-                                                    <th rowspan="2" class="bg-secondary text-white"
-                                                        style=" opacity: 0.8">Female</th>
+                                                    <th colspan="2" class="text-center">Gender</th>
                                                     <th colspan="3" class="text-center">Case Classification</th>
                                                 </tr>
                                                 <tr>
-                                                    <!-- <th scope="col">Barangay</th> -->
-                                                    <th scope="col" class="bg-info text-dark" style=" opacity: 0.8">0-5
+                                                    <th scope="col" class="bg-pink text-white" style=" opacity: 0.8">
+                                                        0-11
+                                                        Months Old</th>
+                                                    <th scope="col" class="bg-info text-dark" style=" opacity: 0.8">1-5
                                                         Years Old</th>
                                                     <th scope="col" class="bg-primary text-white" style=" opacity: 0.8">
                                                         6-10 Years Old</th>
@@ -238,6 +252,10 @@
                                                     <th scope="col" class="bg-secondary text-white"
                                                         style=" opacity: 0.8">16 and Above Years
                                                         Old</th>
+                                                    <th rowspan="2" class="bg-primary text-white" style=" opacity: 0.8">
+                                                        Male</th>
+                                                    <th rowspan="2" class="bg-secondary text-white"
+                                                        style=" opacity: 0.8">Female</th>
                                                     <th scope="col" class="bg-danger text-white" style=" opacity: 0.8">
                                                         Confirmed</th>
                                                     <th scope="col" class="bg-warning text-dark" style=" opacity: 0.8">
@@ -248,13 +266,15 @@
                                             </thead>
                                             <tbody>
                                                 <tr v-if="cases.length === 0">
-                                                    <td colspan="13">No data available</td>
+                                                    <td colspan="14">No data available</td>
                                                 </tr>
                                                 <tr v-for="(caseData, index) in cases" :key="caseData.barangay.name">
                                                     <td scope="row">{{ index + 1 }}</td>
                                                     <td scope="row">{{ caseData.barangay.name }}</td>
+                                                    <td class="bg-pink text-white" style=" opacity: 0.8">{{
+                                                        caseData.count_0_11_months }}</td>
                                                     <td class="bg-info text-dark" style=" opacity: 0.8">{{
-                                                        caseData.count_0_5 }}</td>
+                                                        caseData.count_1_5 }}</td>
                                                     <td class="bg-primary text-white" style=" opacity: 0.8">{{
                                                         caseData.count_6_10 }}</td>
                                                     <td class="bg-warning text-dark" style=" opacity: 0.8">{{
@@ -402,7 +422,8 @@ export default {
             option_barangay: [],
 
             //
-            age_0_5: null,
+            age_0_11_months: null,
+            age_1_5: null,
             age_6_10: null,
             age_11_15: null,
             age_16_above: null,
@@ -505,7 +526,14 @@ export default {
                 labels: [],
                 datasets: [
                     {
-                        label: '0-5 Years Old',
+                        label: '0-11 Months',
+                        data: [], // Add this line
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '1-5 Years Old',
                         data: [],
                         backgroundColor: 'rgb(49,212,246)',
                         borderColor: 'rgb(12,204,244)',
@@ -613,7 +641,8 @@ export default {
             });
 
             // Reset the age groups and case classifications
-            this.age_0_5 = 0;
+            this.age_0_11_months = 0;
+            this.age_1_5 = 0;
             this.age_6_10 = 0;
             this.age_11_15 = 0;
             this.age_16_above = 0;
@@ -631,19 +660,22 @@ export default {
                 this.barData.labels.push(caseData.barangay.name);
 
                 // Age Group
-                this.barData.datasets[0].data.push(caseData.count_0_5);
-                this.age_0_5 += Math.round(caseData.count_0_5);
+                this.barData.datasets[0].data.push(caseData.count_0_11_months);
+                this.age_0_11_months += Math.round(caseData.count_0_11_months);
 
-                this.barData.datasets[1].data.push(caseData.count_6_10);
+                this.barData.datasets[1].data.push(caseData.count_1_5);
+                this.age_1_5 += Math.round(caseData.count_1_5);
+
+                this.barData.datasets[2].data.push(caseData.count_6_10);
                 this.age_6_10 += Math.round(caseData.count_6_10);
 
-                this.barData.datasets[2].data.push(caseData.count_11_15);
+                this.barData.datasets[3].data.push(caseData.count_11_15);
                 this.age_11_15 += Math.round(caseData.count_11_15);
 
-                this.barData.datasets[3].data.push(caseData.count_16_above);
+                this.barData.datasets[4].data.push(caseData.count_16_above);
                 this.age_16_above += Math.round(caseData.count_16_above);
 
-                this.barData.datasets[4].data.push(caseData.total_deaths);
+                this.barData.datasets[5].data.push(caseData.total_deaths);
                 this.death += Math.round(caseData.total_deaths);
 
                 //gender

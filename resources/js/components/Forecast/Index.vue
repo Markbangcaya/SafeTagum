@@ -499,6 +499,7 @@ export default {
                             this.sum2024 = 0;
                             this.sum2025 = 0;
                             const jsonData = JSON.parse(response.data.forecasting);
+                            var count = 0;
                             for (let i = 0; i < jsonData.length; i++) {
                                 if (Math.round(jsonData[i].Year) == 2021) {
                                     this.lineData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
@@ -511,15 +512,7 @@ export default {
                                     this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
                                     this.sum2024 += jsonData[i].Total_cases;
                                 } else if (Math.round(jsonData[i].Year) == 2025) {
-                                    //epidemic_threshold
-                                    this.linebarData.datasets[0].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].epidemic_threshold);
-                                    //alert_threshold
-                                    this.linebarData.datasets[1].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].alert_threshold);
-
                                     this.linebarData.datasets[2].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-                                    //For forcasting line bar data
-                                    this.lineData.datasets[3].data[Math.round(jsonData[i].Morbidity_Week) - 1] = Math.round(jsonData[i].Total_cases);
-
                                     this.sum2025 += jsonData[i].Total_cases;
                                 } else {
                                     const date = new Date(jsonData[i].Date);
@@ -528,13 +521,17 @@ export default {
                                     const dayOfYear = Math.floor((pstDate - firstDayOfYear) / 86400000);
                                     const weekNumber = Math.ceil((dayOfYear + firstDayOfYear.getDay() + 1) / 7);
 
-                                    //epidemic_threshold
-                                    this.linebarData.datasets[0].data[weekNumber - 1] = Math.round(jsonData[i].epidemic_threshold);
-                                    //alert_threshold
-                                    this.linebarData.datasets[1].data[weekNumber - 1] = Math.round(jsonData[i].alert_threshold);
-
-                                    this.linebarData.datasets[3].data[weekNumber - 1] = Math.round(jsonData[i].Forecast);
+                                    //For forcasting line bar data
+                                    this.linebarData.datasets[3].data[weekNumber - 2] = Math.round(jsonData[i].Forecast);
                                 }
+                                if (jsonData[i].epidemic_threshold != null) {
+                                    // //epidemic_threshold
+                                    this.linebarData.datasets[0].data[count] = Math.round(jsonData[i].epidemic_threshold);
+                                    // //alert_threshold
+                                    this.linebarData.datasets[1].data[count] = Math.round(jsonData[i].alert_threshold);
+                                    count++;
+                                }
+
                             }
                             Swal.fire({
                                 title: 'Forecast Successfully',
