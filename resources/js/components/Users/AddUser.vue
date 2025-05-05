@@ -25,6 +25,13 @@
                         <!-- <has-error :form="form" field="password"/> -->
                     </div>
                     <div class="form-group">
+                        <label>Barangay</label>
+                        <multiselect v-model="form.barangay" :options="option_barangay" :multiple="false"
+                            :close-on-select="true" :clear-on-select="false" :preserve-search="true"
+                            placeholder="Pick Barangay" label="name" track-by="name" :preselect-first="true">
+                        </multiselect>
+                    </div>
+                    <div class="form-group">
                         <label>Role</label>
                         <multiselect v-model="form.role" :options="option_roles" :multiple="false"
                             :close-on-select="true" :clear-on-select="false" :preserve-search="true"
@@ -60,11 +67,13 @@ export default {
                 name: '',
                 email: '',
                 password: '',
+                barangay: null,
                 role: null,
                 permissions: null,
             }),
-            option_permissions: [],
+            option_barangay: [],
             option_roles: [],
+            option_permissions: [],
         }
     },
     methods: {
@@ -87,10 +96,10 @@ export default {
                 })
             });
         },
-        loadPermissions() {
-            axios.get('/api/permission/all')
+        loadBarangay() {
+            axios.get('/api/barangay/all')
                 .then(response => {
-                    this.option_permissions = response.data.data;
+                    this.option_barangay = response.data.data;
                 });
         },
         loadRoles() {
@@ -99,10 +108,18 @@ export default {
                     this.option_roles = response.data.data;
                 });
         },
+        loadPermissions() {
+            axios.get('/api/permission/all')
+                .then(response => {
+                    this.option_permissions = response.data.data;
+                });
+        },
     },
     mounted() {
-        this.loadPermissions();
+        this.loadBarangay();
         this.loadRoles();
+        this.loadPermissions();
+
     }
 }
 </script>

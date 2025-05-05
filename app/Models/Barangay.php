@@ -24,4 +24,8 @@ class Barangay extends Model
     {
         return $this->hasMany(Purok::class);
     }
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

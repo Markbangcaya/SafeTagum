@@ -78,7 +78,8 @@
                                 </p>
                             </router-link>
                         </li>
-                        @can('access role')
+                        {{-- @can('access role') --}}
+                        @role('admin')
                         <li class="nav-item">
                             <router-link to="/Report" class="nav-link">
                                 <i class="nav-icon fas fa-file-lines"></i>
@@ -87,8 +88,8 @@
                                 </p>
                             </router-link>
                         </li>
-                        @endcan
-                        @can('access role')
+                        @endrole
+                        @role('admin')
                             <li class="nav-item">
                                 <router-link to="/purok" class="nav-link">
                                     <i class="nav-icon fas fa-tree-city"></i>
@@ -97,8 +98,8 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
-                        @can('access role')
+                        @endrole
+                        @role('admin')
                             <li class="nav-item">
                                 <router-link to="/barangay" class="nav-link">
                                     <i class="nav-icon fas fa-city"></i>
@@ -107,8 +108,8 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
-                        @can('access role')
+                        @endrole
+                        @role('admin')
                             <li class="nav-item">
                                 <router-link to="/disease" class="nav-link">
                                     <i class="nav-icon fas fa-disease"></i>
@@ -117,8 +118,8 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
-                        @can('access role')
+                        @endrole
+                        @role('admin')
                             <li class="nav-item">
                                 <router-link to="/users" class="nav-link">
                                     <i class="nav-icon fas fa-users"></i>
@@ -127,7 +128,7 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
+                        @endrole
                         <li class="nav-item">
                             <router-link to="/profile" class="nav-link">
                                 <i class="nav-icon fas fa-user"></i>
@@ -146,7 +147,7 @@
                                 </router-link>
                             </li>
                         @endcan --}}
-                        @can('access role')
+                        @role('admin')
                             <li class="nav-item">
                                 <router-link to="/role" class="nav-link">
                                     <i class="nav-icon fas fa-user-tag"></i>
@@ -155,7 +156,7 @@
                                     </p>
                                 </router-link>
                             </li>
-                        @endcan
+                        @endrole
                         {{-- @can('access registrar')
                             <li class="nav-item">
                                 <router-link to="/registrar" class="nav-link">
@@ -202,8 +203,9 @@
     </div>
     @auth
         <script>
-            window.user = @json(auth()->user());
-            window.role = @json(auth()->user()->role);
+            // window.user = @json(auth()->user());
+            window.user = @json(auth()->user()->load('barangay'));
+            window.role = @json(Auth::user()->getRoleNames()->first());
         </script>
     @endauth
     {{-- <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script> --}}

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\NewUserCredentials;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -27,11 +28,12 @@ class UserController extends Controller
     public function index(Request $request)
     {
         abort_if(Gate::denies('list user'), 403, 'You do not have the required authorization.');
-        $data = User::with('roles', 'permissions')->latest();
+        $data = User::with('roles', 'permissions', 'barangay')->latest();
         if ($request->search) {
             $data = $data->where('name', 'LIKE', '%' . $request->search . '%');
         }
         $data = $data->paginate($request->length);
+        // dd($data);
         return response(['data' => $data], 200);
     }
 
@@ -43,18 +45,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // return DB::transaction(function () use ($request) {
         $password = Str::random(10);
         $this->validate($request, [
             'name' => 'required|string',
             'email' => 'required|email',
-            // 'password' => 'required|string',
+            'barangay.id' => 'numeric',
         ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             // 'password' => $request->password,
             'password' => Hash::make($password),
+            'barangay_id' => $request->barangay['id'],
         ]);
+
         $user->assignRole($request->role['name']);
         foreach ($request->permissions as $permission) {
             $user->givePermissionTo($permission['name']);
@@ -62,7 +68,11 @@ class UserController extends Controller
 
         Mail::to($user->email)->send(new NewUserCredentials($user, $password));
 
+        // Rollback the transaction to prevent saving
+        // DB::rollBack();
+
         return response(['message' => 'success'], 200);
+        // });
     }
 
     /**
@@ -92,19 +102,20 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required|string|unique:users,name,' . $request->id,
             'email' => 'required|email|unique:users,email,' . $request->id,
+            'barangay.id' => 'numeric',
             'password' => 'required|sometimes',
         ]);
         $user = User::findOrFail($id);
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'barangay_id' => $request->barangay['id'],
         ]);
-        // dd($user, $request->password);
         if ($request->password) {
             // $user->password = $request->password;
             $user->password = Hash::make($request->password);
-            $user->save();
         }
+        $user->save();
         foreach ($user->permissions as $permission) {
             $user->revokePermissionTo($permission['name']);
         }

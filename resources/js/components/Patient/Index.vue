@@ -30,7 +30,7 @@
                                             <option value="30">30</option>
                                         </select>
                                         <button class="btn btn-success ml-auto" @click="openAddModal"
-                                            v-if="can('show user')"><i class="fas fa-user-plus"></i>
+                                            v-if="hasRole('admin')"><i class="fas fa-user-plus"></i>
                                             Add</button>
                                         <button type="button" class="btn btn-secondary" @click="exportToExcel">
                                             <i class="fas fa-file-export"></i> Export
@@ -48,7 +48,7 @@
                                             <multiselect v-model="form.barangay" :options="option_barangay"
                                                 :multiple="false" :close-on-select="true" :clear-on-select="false"
                                                 :preserve-search="true" placeholder="Filter By Barangay" label="name"
-                                                track-by="id" :preselect-first="true">
+                                                track-by="id" :preselect-first="true" :disabled="isBarangayDisabled">
                                             </multiselect>
                                             <input v-model="search" type="text" @keyup="getData" name="table_search"
                                                 class="form-control float-right" placeholder="Search Lastname/Epi ID" />
@@ -100,10 +100,10 @@
                                                     @click="openAssessModal(data)" v-if="can('show user')"><i
                                                         class="fas fa-search-plus"></i> Assessment</button>
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                    @click="openEditModal(data)" v-if="can('show user')"><i
+                                                    @click="openEditModal(data)" v-if="hasRole('admin')"><i
                                                         class="fas fa-edit"></i> Edit</button>
                                                 <button type="button" class="btn btn-danger btn-sm"
-                                                    @click="remove(data.id)" v-if="can('show user')"><i
+                                                    @click="remove(data.id)" v-if="hasRole('admin')"><i
                                                         class="fas fa-trash-alt"></i>
                                                     Remove</button>
                                             </td>
@@ -161,6 +161,7 @@ export default {
             search: '',
             showSchedule: false,
             is_searching: true,
+            isBarangayDisabled: false,
             selected_user: [],
             current_page: [],
             loading: false, // Add loading state
@@ -174,6 +175,9 @@ export default {
         }
     },
     methods: {
+        hasRole(role) {
+            return window.role === role;
+        },
         openAddModal() {
             $('#add-patient').modal('show');
         },
@@ -326,6 +330,19 @@ export default {
             axios.get('/api/barangay/all')
                 .then(response => {
                     this.option_barangay = response.data.data;
+
+                    // Automatically select the user's barangay if they are not an admin
+                    if (this.hasRole('user')) {
+                        const userBarangay = window.user.barangay.name; // Assuming `window.user.barangay` contains the user's barangay
+                        const selectedBarangay = this.option_barangay.find(
+                            barangay => barangay.name === userBarangay
+                        );
+                        if (selectedBarangay) {
+                            this.form.barangay = selectedBarangay;
+                            this.isBarangayDisabled = true; // Disable the field
+                        }
+                        this.getData();
+                    }
                 });
         },
         exportToExcel() {

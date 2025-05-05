@@ -35,6 +35,12 @@ class PatientController extends Controller
             ->leftjoin('safetagumtokens.tokenizeds', 'patients.lastname', '=', 'tokenizeds.token')
             ->latest();
 
+        // Inefficient
+        $users = Patient::all();
+
+        // Efficient
+        $users = Patient::select('firstname', 'lastname')->get();
+
         if ($request->search) {
             $searchTerm = $request->search;
 
@@ -144,12 +150,12 @@ class PatientController extends Controller
             foreach ($request->type_of_disease as $disease) {
                 $formattedData[$disease['name']] = $this->getDiseaseData($disease);
             }
-            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000');
+            $baseUrl = env('FORECAST_API_URL',  'http://127.0.0.1:8080');
             $endpoint = '/forecastalldisease';
             $fullUrl = $baseUrl . $endpoint;
             $response = Http::post($fullUrl, ['diseases' => $formattedData]);
         } else {
-            $baseUrl = env('FORECAST_API_URL', 'http://127.0.0.1:5000');
+            $baseUrl = env('FORECAST_API_URL',  'http://127.0.0.1:8080');
             $endpoint = '/forecast';
             $fullUrl = $baseUrl . $endpoint;
             $response = Http::post($fullUrl, [
@@ -157,7 +163,6 @@ class PatientController extends Controller
                 'disease' => $request->type_of_disease[0]['name']
             ]);
         }
-        // dd($response->json());
         $forecastData = $response->json();
 
         return response(['forecasting' => $forecastData], 200);

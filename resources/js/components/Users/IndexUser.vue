@@ -53,6 +53,7 @@
                                             <th>Id</th>
                                             <th>Name</th>
                                             <th>Email</th>
+                                            <th>Barangay</th>
                                             <th>User Role</th>
                                             <th></th>
                                         </tr>
@@ -62,6 +63,9 @@
                                             <td>{{ data.id }}</td>
                                             <td>{{ data.name }}</td>
                                             <td>{{ data.email }}</td>
+                                            <td v-if="data.barangay_id != null">{{ data.barangay.name }}
+                                            </td>
+                                            <td v-else class="text-danger">No Assigned Barangay </td>
                                             <td v-if="data.roles.length > 0">{{ data.roles[0].name }}</td>
                                             <td v-else class="text-danger">No Role</td>
                                             <td class="text-right">

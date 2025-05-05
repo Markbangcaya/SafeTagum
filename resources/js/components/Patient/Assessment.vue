@@ -13,7 +13,7 @@
                         <div class="card-header">
                             Patient Monitoring
                             <button class="btn btn-success btn-sm ml-auto" @click="openAddAssessmentModal"
-                                v-if="can('show user')"><i class="fas fa-user-plus"></i> Add
+                                v-if="hasRole('admin')"><i class="fas fa-user-plus"></i> Add
                                 Assessment</button>
                         </div>
                         <div class="card-body">
@@ -45,10 +45,10 @@
                                             <td v-else>Not Applicable</td>
                                             <td class="text-right">
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                    @click="openEditAssessmentModal(data)" v-if="can('show user')"><i
+                                                    @click="openEditAssessmentModal(data)" v-if="hasRole('admin')"><i
                                                         class="fas fa-edit"></i> Edit</button>
                                                 <button type="button" class="btn btn-danger btn-sm"
-                                                    @click="remove(data.id)" v-if="can('show user')"><i
+                                                    @click="remove(data.id)" v-if="hasRole('admin')"><i
                                                         class="fas fa-trash-alt"></i>
                                                     Remove</button>
                                             </td>
@@ -274,6 +274,9 @@ export default {
         }
     },
     methods: {
+        hasRole(role) {
+            return window.role === role;
+        },
         openAddAssessmentModal() {
             this.selected_user = this.form.id;
             $('#add-assessment').modal('show');
