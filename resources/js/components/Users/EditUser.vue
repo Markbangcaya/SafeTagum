@@ -29,6 +29,7 @@
                             :close-on-select="true" :clear-on-select="false" :preserve-search="true"
                             placeholder="Pick Barangay" label="name" track-by="name" :preselect-first="true">
                         </multiselect>
+                        <has-error :form="form" field="barangay.id" />
                     </div>
                     <div v-if="can('edit role')" class="form-group">
                         <label>Role</label>
@@ -38,7 +39,6 @@
                             @input="selectRole">
                         </multiselect>
                         <has-error :form="form" field="roles" />
-
                     </div>
                     <div v-if="can('edit permission')" class="form-group">
                         <label>Permission</label>
@@ -123,6 +123,12 @@ export default {
     watch: {
         row: function () {
             this.form.fill(this.row);
+
+            // Auto-select the role
+            this.form.roles = this.option_roles.find(
+                role => role.name === this.row.roles[0]?.name // Match the role name
+            );
+
             this.form.barangay = this.option_barangay.find(barangay => barangay.name === this.row.barangay.name);
         }
     },

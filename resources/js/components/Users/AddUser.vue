@@ -30,6 +30,7 @@
                             :close-on-select="true" :clear-on-select="false" :preserve-search="true"
                             placeholder="Pick Barangay" label="name" track-by="name" :preselect-first="true">
                         </multiselect>
+                        <has-error :form="form" field="barangay.id" />
                     </div>
                     <div class="form-group">
                         <label>Role</label>
@@ -38,8 +39,7 @@
                             placeholder="Pick some" label="name" track-by="name" :preselect-first="true"
                             @input="selectRole">
                         </multiselect>
-                        <has-error :form="form" field="guard_name" />
-
+                        <has-error :form="form" field="role" />
                     </div>
                     <div class="form-group">
                         <label>Permission</label>
@@ -47,7 +47,7 @@
                             :close-on-select="false" :clear-on-select="false" :preserve-search="true"
                             placeholder="Pick some" label="name" track-by="name" :preselect-first="true">
                         </multiselect>
-                        <has-error :form="form" field="guard_name" />
+                        <has-error :form="form" field="permissions" />
                     </div>
                 </div>
                 <div class="modal-footer">

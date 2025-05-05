@@ -50,7 +50,8 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required|string',
             'email' => 'required|email',
-            'barangay.id' => 'numeric',
+            'role.name' => 'required|string',
+            'barangay.id' => $request->role['name'] === 'user' ? 'required|numeric' : 'nullable|numeric',
         ]);
 
         $user = User::create([
@@ -58,7 +59,7 @@ class UserController extends Controller
             'email' => $request->email,
             // 'password' => $request->password,
             'password' => Hash::make($password),
-            'barangay_id' => $request->barangay['id'],
+            'barangay_id' => $request->barangay['id'] ?? null,
         ]);
 
         $user->assignRole($request->role['name']);
@@ -98,30 +99,43 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request->password);
+        // dd($request->all());
         $this->validate($request, [
             'name' => 'required|string|unique:users,name,' . $request->id,
             'email' => 'required|email|unique:users,email,' . $request->id,
-            'barangay.id' => 'numeric',
+            'roles.name' => 'required|string',
+            'barangay.id' => $request->roles['name'] === 'user' ? 'required|numeric' : 'nullable|numeric',
             'password' => 'required|sometimes',
         ]);
         $user = User::findOrFail($id);
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'barangay_id' => $request->barangay['id'],
+            'barangay_id' => $request->barangay['id'] ?? null,
         ]);
+        // //wont safe if no barangay id and cant edit role
+        // if ($request->barangay['id'] != null) {
+        //     $user->barangay_id = $request->barangay['id'];
+        // }
         if ($request->password) {
             // $user->password = $request->password;
             $user->password = Hash::make($request->password);
         }
+        // Revoke old roles and assign the new role
+        if ($request->roles['name']) {
+            $user->syncRoles([$request->roles['name']]); // Sync the new role
+        }
+
+        // Revoke all permissions and assign the new ones
+        $user->permissions()->detach(); // Detach all existing permissions
+        if (!empty($request->permissions)) {
+            foreach ($request->permissions as $permission) {
+                $user->givePermissionTo($permission['name']);
+            }
+        }
+
+        // Save the user
         $user->save();
-        foreach ($user->permissions as $permission) {
-            $user->revokePermissionTo($permission['name']);
-        }
-        foreach ($request->permissions as $permission) {
-            $user->givePermissionTo($permission['name']);
-        }
 
         return response(['message' => 'success'], 200);
     }
