@@ -39,4 +39,22 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+    /**
+     * Handle actions after the user is authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    protected function authenticated(Request $request, $user)
+    {
+
+        // Check if email_verified_at is null and update it
+        if (is_null($user->email_verified_at)) {
+            $user->update(['email_verified_at' => now()]);
+        }
+
+        // Redirect to the intended page
+        return redirect()->intended($this->redirectPath());
+    }
 }
